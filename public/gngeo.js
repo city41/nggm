@@ -191,7 +191,7 @@ Module['FS_createPath']('/', 'virtualfs', true, true);
   }
 
  }
- loadPackage({"files": [{"start": 0, "audio": 0, "end": 219, "filename": "/virtualfs/gngeorc"}, {"start": 219, "audio": 0, "end": 220997, "filename": "/virtualfs/gngeo_data.zip"}], "remote_package_size": 220997, "package_uuid": "cf82e940-fc6a-4a99-9f6d-6982d5cdc3c4"});
+ loadPackage({"files": [{"start": 0, "audio": 0, "end": 232, "filename": "/virtualfs/gngeorc"}, {"start": 232, "audio": 0, "end": 221010, "filename": "/virtualfs/gngeo_data.zip"}], "remote_package_size": 221010, "package_uuid": "440ae672-1469-4e27-aebe-472e54b4961d"});
 
 })();
 
@@ -10121,6 +10121,18 @@ var _free = Module["_free"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
   return Module["asm"]["_free"].apply(null, arguments)
+};
+
+var _get_rom_ctile_addr = Module["_get_rom_ctile_addr"] = function() {
+  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
+  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
+  return Module["asm"]["_get_rom_ctile_addr"].apply(null, arguments)
+};
+
+var _get_tile_ram_addr = Module["_get_tile_ram_addr"] = function() {
+  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
+  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
+  return Module["asm"]["_get_tile_ram_addr"].apply(null, arguments)
 };
 
 var _llvm_bswap_i16 = Module["_llvm_bswap_i16"] = function() {
