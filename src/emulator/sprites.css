@@ -1,0 +1,4 @@
+.sprites {
+    display: grid;
+    grid-template-columns: repeat(70, 16px);
+}

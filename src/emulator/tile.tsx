@@ -22,6 +22,7 @@ export const Tile: React.FunctionComponent<TileProps> = ({ tileIndex }) => {
     }
 
     let rows = [];
+    let key = 0;
 
     for (let y = 0; y < 16; ++y) {
         const pixels = [];
@@ -29,10 +30,12 @@ export const Tile: React.FunctionComponent<TileProps> = ({ tileIndex }) => {
             const p = tileData[y * 8 + x];
             pixels.push(
                 <div
+                    key={++key}
                     className="pixel"
                     style={{ backgroundColor: palette[p & 0xf] }}
                 />,
                 <div
+                    key={++key}
                     className="pixel"
                     style={{ backgroundColor: palette[(p >> 4) & 0xf] }}
                 />
@@ -42,10 +45,12 @@ export const Tile: React.FunctionComponent<TileProps> = ({ tileIndex }) => {
             const p = tileData[y * 8 + x];
             pixels.push(
                 <div
+                    key={++key}
                     className="pixel"
                     style={{ backgroundColor: palette[p & 0xf] }}
                 />,
                 <div
+                    key={++key}
                     className="pixel"
                     style={{ backgroundColor: palette[(p >> 4) & 0xf] }}
                 />

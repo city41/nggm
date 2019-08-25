@@ -6,7 +6,7 @@ export const Tiles: React.FunctionComponent = () => {
     const [tileCount, setTileCount] = useState(0);
 
     const tiles = new Array(tileCount).fill(1, 0, 100).map((_, i) => {
-        return <Tile tileIndex={i + tileOffset} />;
+        return <Tile key={i} tileIndex={i + tileOffset} />;
     });
 
     return (

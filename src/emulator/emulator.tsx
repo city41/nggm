@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Tiles } from "./tiles";
+import { Sprites } from "./sprites";
 
 interface EmulatorProps {
     className?: string;
@@ -107,6 +108,7 @@ export const Emulator: React.FunctionComponent<EmulatorProps> = () => {
                 {isPaused ? "resume" : "pause"}
             </button>
             <Tiles />
+            <Sprites />
         </>
     );
 };

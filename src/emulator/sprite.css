@@ -1,0 +1,6 @@
+.sprite {
+    width: 16px;
+    display: grid;
+    grid-template-columns: 16px;
+    grid-template-rows: repeat(32, 16px);
+}
