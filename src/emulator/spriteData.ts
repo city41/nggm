@@ -64,6 +64,10 @@ function getTileData(spriteIndex: number, spriteSize: number): TileData[] {
 function getYAndSpriteSize(
     spriteIndex: number
 ): { y: number; spriteSize: number } {
+    if (spriteIndex < 0) {
+        throw new Error("getYAndSpriteSize: sprite index under zero!");
+    }
+
     const tileRamAddr = window.Module._get_tile_ram_addr();
     const scb3StartAddr = tileRamAddr + SCB3_BYTE_OFFSET;
 
@@ -80,6 +84,7 @@ function getYAndSpriteSize(
 
     let spriteSize;
     if (sticky) {
+        spriteSize = getYAndSpriteSize(spriteIndex - 1).spriteSize;
     } else {
         spriteSize = scb3Word & 0x3f;
     }
