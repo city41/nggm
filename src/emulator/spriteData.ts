@@ -7,8 +7,14 @@
 // each sprite has 64, 16-bit, words
 const SCB1_SPRITE_SIZE_BYTES = 64 * 2;
 
-// it starts at word $8200, s *2 to get byte address
+// it starts at word $8000, so *2 to get byte address
+const SCB2_BYTE_OFFSET = 0x8000 * 2;
+
+// it starts at word $8200, so *2 to get byte address
 const SCB3_BYTE_OFFSET = 0x8200 * 2;
+
+// it starts at word $8400, so *2 to get byte address
+const SCB4_BYTE_OFFSET = 0x8400 * 2;
 
 interface TileData {
     tileIndex: number;
@@ -25,7 +31,6 @@ interface SpriteData {
 }
 
 function getTileData(spriteIndex: number, spriteSize: number): TileData[] {
-    console.log("spriteSize", spriteSize);
     const tileRamAddr = window.Module._get_tile_ram_addr();
     const spriteOffset = SCB1_SPRITE_SIZE_BYTES * spriteIndex;
 
@@ -61,11 +66,11 @@ function getTileData(spriteIndex: number, spriteSize: number): TileData[] {
     return tileData;
 }
 
-function getYAndSpriteSize(
+function getYSpriteSizeSticky(
     spriteIndex: number
-): { y: number; spriteSize: number } {
+): { y: number; spriteSize: number; sticky: boolean } {
     if (spriteIndex < 0) {
-        throw new Error("getYAndSpriteSize: sprite index under zero!");
+        throw new Error("getYSpriteSizeSticky: sprite index under zero!");
     }
 
     const tileRamAddr = window.Module._get_tile_ram_addr();
@@ -77,27 +82,105 @@ function getYAndSpriteSize(
         window.HEAPU8[spriteScb3Addr] |
         (window.HEAPU8[spriteScb3Addr + 1] << 8);
 
-    // according to the neo geo wiki, this should be 496 - y,
-    // but I believe gngeo has already done the shift for us
-    const y = (scb3Word >> 7) & 0x7f;
     const sticky = !!((scb3Word >> 6) & 1);
 
-    let spriteSize;
     if (sticky) {
-        spriteSize = getYAndSpriteSize(spriteIndex - 1).spriteSize;
+        return {
+            ...getYSpriteSizeSticky(spriteIndex - 1),
+            sticky
+        };
     } else {
-        spriteSize = scb3Word & 0x3f;
+        const yScale = getScale(spriteIndex, { ignoreSticky: true }).yScale;
+        const spriteSize = scb3Word & 0x3f;
+
+        let fullmode;
+
+        if (spriteSize === 0x20) {
+            fullmode = 1;
+        } else if (spriteSize >= 0x21) {
+            fullmode = 2;
+        } else {
+            fullmode = 0;
+        }
+
+        // getting the final screen y is very complicated and
+        // honestly don't fully understand it. This code was copied
+        // from gngeo, video.c#draw_screen()
+        let y = 0x200 - (scb3Word >> 7);
+
+        if (y > 0x110) {
+            y -= 0x200;
+        }
+
+        if (fullmode === 2 || (fullmode === 1 && yScale === 0xff)) {
+            while (y < 0) {
+                y += (yScale + 1) << 1;
+            }
+        }
+
+        return { y, spriteSize, sticky };
+    }
+}
+
+function getX(spriteIndex: number): number {
+    if (spriteIndex < 0) {
+        throw new Error("getX: sprite index under zero!");
     }
 
-    return { y, spriteSize };
+    const sticky = getYSpriteSizeSticky(spriteIndex).sticky;
+
+    if (sticky) {
+        return getX(spriteIndex - 1) + 16;
+    }
+
+    const tileRamAddr = window.Module._get_tile_ram_addr();
+    const scb4StartAddr = tileRamAddr + SCB4_BYTE_OFFSET;
+
+    const spriteScb4Addr = scb4StartAddr + spriteIndex * 2;
+
+    const scb4Word =
+        window.HEAPU8[spriteScb4Addr] |
+        (window.HEAPU8[spriteScb4Addr + 1] << 8);
+
+    return scb4Word >> 7;
+}
+
+function getScale(
+    spriteIndex: number,
+    options?: { ignoreSticky: boolean }
+): { yScale: number; xScale: number } {
+    if (spriteIndex < 0) {
+        throw new Error("getScale: sprite index under zero!");
+    }
+
+    if (!options || !options.ignoreSticky) {
+        const sticky = getYSpriteSizeSticky(spriteIndex).sticky;
+
+        if (sticky) {
+            return getScale(spriteIndex - 1);
+        }
+    }
+
+    const tileRamAddr = window.Module._get_tile_ram_addr();
+    const scb2StartAddr = tileRamAddr + SCB2_BYTE_OFFSET;
+    const spriteScb2Addr = scb2StartAddr + spriteIndex * 2;
+
+    const scb2Word =
+        window.HEAPU8[spriteScb2Addr] |
+        (window.HEAPU8[spriteScb2Addr + 1] << 8);
+
+    const yScale = scb2Word & 0xff;
+    const xScale = (scb2Word >> 8) & 0xf;
+
+    return { yScale, xScale };
 }
 
 export function getSpriteData(spriteIndex: number): SpriteData {
-    const { y, spriteSize } = getYAndSpriteSize(spriteIndex);
+    const { y, spriteSize } = getYSpriteSizeSticky(spriteIndex);
 
     return {
         tiles: getTileData(spriteIndex, spriteSize),
-        x: 0,
+        x: getX(spriteIndex),
         sticky: false,
         y
     };

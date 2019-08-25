@@ -13,6 +13,10 @@ export const Sprite: React.FunctionComponent<SpriteProps> = ({
 }) => {
     const spriteData = getSpriteData(spriteIndex);
 
+    if (spriteData.tiles.length === 0) {
+        return null;
+    }
+
     const tiles = spriteData.tiles.map((tileData, i) => (
         <Tile
             key={i}
@@ -22,9 +26,14 @@ export const Sprite: React.FunctionComponent<SpriteProps> = ({
         />
     ));
 
+    const style = {
+        top: spriteData.y,
+        left: spriteData.x,
+        gridTemplateRows: `repeat(${spriteData.tiles.length}, 16px)`
+    };
+
     return (
-        <div className="sprite">
-            <div>{spriteData.y}</div>
+        <div className="sprite" style={style}>
             {tiles}
         </div>
     );
