@@ -71,14 +71,24 @@ export const Emulator: React.FunctionComponent<EmulatorProps> = () => {
         setGameName(file.name.replace(".zip", ""));
     }
 
-    function startGame() {
+    function startGame(overrideGameName?: string) {
         const argv = window.stackAlloc(3 * 4);
 
         window.HEAP32[argv >> 2] = window.allocateUTF8OnStack("gngeo");
-        window.HEAP32[(argv >> 2) + 1] = window.allocateUTF8OnStack(gameName);
+        window.HEAP32[(argv >> 2) + 1] = window.allocateUTF8OnStack(
+            overrideGameName || gameName
+        );
         window.HEAP32[(argv >> 2) + 2] = 0;
 
         window.Module._run_rom(2, argv);
+    }
+
+    let debugButton = null;
+
+    if (process.env.NODE_ENV !== "production") {
+        debugButton = (
+            <button onClick={() => startGame("samsho2")}>samsho2</button>
+        );
     }
 
     return (
@@ -100,10 +110,14 @@ export const Emulator: React.FunctionComponent<EmulatorProps> = () => {
                     onChange={loadROMFile}
                 />
             </div>
-            <button disabled={!biosLoaded || !romLoaded} onClick={startGame}>
+            {debugButton}
+            <button
+                disabled={!biosLoaded || !romLoaded}
+                onClick={() => startGame()}
+            >
                 start emulation
             </button>
-            <button disabled={!biosLoaded || !romLoaded} onClick={togglePause}>
+            <button onClick={togglePause}>
                 {isPaused ? "resume" : "pause"}
             </button>
             <Sprites />
