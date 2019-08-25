@@ -25,6 +25,8 @@ export const Sprite: React.FunctionComponent<SpriteProps> = ({
     const tiles = spriteData.tiles.map((tileData, i) => (
         <Tile
             key={i}
+            positioned={positioned}
+            y={tileData.y - spriteData.y}
             tileIndex={tileData.tileIndex}
             paletteIndex={tileData.paletteIndex}
             horizontalFlip={tileData.horizontalFlip}

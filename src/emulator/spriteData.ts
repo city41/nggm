@@ -17,6 +17,7 @@ const SCB3_BYTE_OFFSET = 0x8200 * 2;
 const SCB4_BYTE_OFFSET = 0x8400 * 2;
 
 interface TileData {
+    y: number;
     tileIndex: number;
     paletteIndex: number;
     horizontalFlip: boolean;
@@ -30,7 +31,11 @@ interface SpriteData {
     sticky: boolean;
 }
 
-function getTileData(spriteIndex: number, spriteSize: number): TileData[] {
+function getTileData(
+    spriteIndex: number,
+    spriteSize: number,
+    tileYs: number[]
+): TileData[] {
     const tileRamAddr = window.Module._get_tile_ram_addr();
     const spriteOffset = SCB1_SPRITE_SIZE_BYTES * spriteIndex;
 
@@ -56,6 +61,7 @@ function getTileData(spriteIndex: number, spriteSize: number): TileData[] {
         const horizontalFlip = !!(secondWord & 1);
 
         tileData.push({
+            y: tileYs[w / 4],
             tileIndex,
             paletteIndex,
             horizontalFlip,
@@ -91,11 +97,13 @@ function transformY(rawY: number, yScale: number, spriteSize: number): number {
             y += (yScale + 1) << 1;
         }
     }
+
+    return y;
 }
 
 function getYSpriteSizeSticky(
     spriteIndex: number
-): { y: number; spriteSize: number; sticky: boolean } {
+): { y: number; tileYs: number[]; spriteSize: number; sticky: boolean } {
     if (spriteIndex < 0) {
         throw new Error("getYSpriteSizeSticky: sprite index under zero!");
     }
@@ -122,8 +130,13 @@ function getYSpriteSizeSticky(
         const rawY = scb3Word >> 7;
 
         const y = transformY(rawY, yScale, spriteSize);
+        const tileYs = [];
 
-        return { y, spriteSize, sticky };
+        for (let t = 0; t < spriteSize; ++t) {
+            tileYs.push((y + 16 * t) % 512);
+        }
+
+        return { y, tileYs, spriteSize, sticky };
     }
 }
 
@@ -191,10 +204,14 @@ export function getSpriteData(
     spriteIndex: number,
     honorTileSize: boolean
 ): SpriteData {
-    const { y, spriteSize } = getYSpriteSizeSticky(spriteIndex);
+    const { y, tileYs, spriteSize } = getYSpriteSizeSticky(spriteIndex);
 
     return {
-        tiles: getTileData(spriteIndex, honorTileSize ? spriteSize : 32),
+        tiles: getTileData(
+            spriteIndex,
+            honorTileSize ? spriteSize : 32,
+            tileYs
+        ),
         x: getX(spriteIndex),
         sticky: false,
         y

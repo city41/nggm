@@ -1,14 +1,19 @@
 import React from "react";
+import classnames from "classnames";
 import { getRgbFromNeoGeoPalette } from "./neoGeoPalette";
+
+import styles from "./tile.module.css";
 
 // 16 rows, each row has 2 ints (32 bits each)
 const TILE_SIZE_INTS = 2 * 16;
 const TILE_SIZE_BYTES = TILE_SIZE_INTS * 4;
 
 interface TileProps {
+    y: number;
     tileIndex: number;
     paletteIndex: number;
     horizontalFlip?: boolean;
+    positioned: boolean;
 }
 
 const map: Record<string, number> = {
@@ -23,9 +28,11 @@ const map: Record<string, number> = {
 };
 
 export const Tile: React.FunctionComponent<TileProps> = ({
+    y: tileY,
     tileIndex,
     paletteIndex,
-    horizontalFlip
+    horizontalFlip,
+    positioned
 }) => {
     function renderCanvas(canvas: HTMLCanvasElement) {
         const cromAddr = window.Module._get_rom_ctile_addr();
@@ -71,6 +78,19 @@ export const Tile: React.FunctionComponent<TileProps> = ({
         context.putImageData(imageData, 0, 0);
     }
 
-    const style = horizontalFlip ? { transform: "scale(-1, 1)" } : {};
-    return <canvas ref={r => r && renderCanvas(r)} style={style} />;
+    const flipStyle = horizontalFlip ? { transform: "scale(-1, 1)" } : {};
+
+    const inlineStyle = { ...flipStyle, top: tileY };
+
+    const className = classnames({
+        [styles.positioned]: positioned
+    });
+
+    return (
+        <canvas
+            className={className}
+            ref={r => r && renderCanvas(r)}
+            style={inlineStyle}
+        />
+    );
 };
