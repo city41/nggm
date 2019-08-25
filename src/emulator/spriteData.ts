@@ -1,7 +1,14 @@
+// ALERT!
+// vram addresses in the neo geo are word wide, not byte wide!
+// TODO: can probably just use HEAPU16 and make this all much simpler
+// ALERT!
+
 // in SCB1,
 // each sprite has 64, 16-bit, words
 const SCB1_SPRITE_SIZE_BYTES = 64 * 2;
-// const SCB3_OFFSET = 0x8200;
+
+// it starts at word $8200, s *2 to get byte address
+const SCB3_BYTE_OFFSET = 0x8200 * 2;
 
 interface TileData {
     tileIndex: number;
@@ -17,13 +24,14 @@ interface SpriteData {
     sticky: boolean;
 }
 
-function getTileData(spriteIndex: number): TileData[] {
+function getTileData(spriteIndex: number, spriteSize: number): TileData[] {
+    console.log("spriteSize", spriteSize);
     const tileRamAddr = window.Module._get_tile_ram_addr();
     const spriteOffset = SCB1_SPRITE_SIZE_BYTES * spriteIndex;
 
     const spriteData: number[] = [];
 
-    for (let i = 0; i < SCB1_SPRITE_SIZE_BYTES; ++i) {
+    for (let i = 0; i < spriteSize * 4; ++i) {
         spriteData[i] = window.HEAPU8[tileRamAddr + spriteOffset + i];
     }
 
@@ -53,11 +61,33 @@ function getTileData(spriteIndex: number): TileData[] {
     return tileData;
 }
 
+function getYAndSpriteSize(
+    spriteIndex: number
+): { y: number; spriteSize: number } {
+    const tileRamAddr = window.Module._get_tile_ram_addr();
+    const scb3StartAddr = tileRamAddr + SCB3_BYTE_OFFSET;
+
+    const spriteScb3Addr = scb3StartAddr + spriteIndex * 2;
+
+    const scb3Word =
+        window.HEAPU8[spriteScb3Addr] |
+        (window.HEAPU8[spriteScb3Addr + 1] << 8);
+
+    // according to the neo geo wiki, this should be 496 - y,
+    // but I believe gngeo has already done the shift for us
+    const y = (scb3Word >> 7) & 0x7f;
+    const spriteSize = scb3Word & 0x3f;
+
+    return { y, spriteSize };
+}
+
 export function getSpriteData(spriteIndex: number): SpriteData {
+    const { y, spriteSize } = getYAndSpriteSize(spriteIndex);
+
     return {
-        tiles: getTileData(spriteIndex),
+        tiles: getTileData(spriteIndex, spriteSize),
         x: 0,
-        y: 0,
-        sticky: false
+        sticky: false,
+        y
     };
 }

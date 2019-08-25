@@ -22,5 +22,10 @@ export const Sprite: React.FunctionComponent<SpriteProps> = ({
         />
     ));
 
-    return <div className="sprite">{tiles}</div>;
+    return (
+        <div className="sprite">
+            <div>{spriteData.y}</div>
+            {tiles}
+        </div>
+    );
 };
