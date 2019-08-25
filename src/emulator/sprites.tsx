@@ -6,9 +6,9 @@ import "./sprites.css";
 const SPRITE_CHUNK_SIZE = 448;
 
 export const Sprites: React.FunctionComponent = () => {
-    const [spriteCount, setSpriteCount] = useState(0);
+    const [dumpCount, setDumpCount] = useState(0);
 
-    const sprites = new Array(spriteCount)
+    const sprites = new Array(dumpCount ? SPRITE_CHUNK_SIZE : 0)
         .fill(1, 0, SPRITE_CHUNK_SIZE)
         .map((_, i) => {
             return <Sprite key={i} spriteIndex={i} />;
@@ -18,7 +18,7 @@ export const Sprites: React.FunctionComponent = () => {
         <>
             <button
                 onClick={() => {
-                    setSpriteCount(SPRITE_CHUNK_SIZE);
+                    setDumpCount(dumpCount + 1);
                 }}
             >
                 dump sprites
