@@ -21,3 +21,10 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+roms
+
+# gngeo wasm build artifacts
+gngeo.data
+gngeo.js
+gngeo.wasm
+
