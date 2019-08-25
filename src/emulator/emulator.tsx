@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Tiles } from "./tiles";
 import { Sprites } from "./sprites";
 
 interface EmulatorProps {
@@ -107,7 +106,6 @@ export const Emulator: React.FunctionComponent<EmulatorProps> = () => {
             <button disabled={!biosLoaded || !romLoaded} onClick={togglePause}>
                 {isPaused ? "resume" : "pause"}
             </button>
-            <Tiles />
             <Sprites />
         </>
     );

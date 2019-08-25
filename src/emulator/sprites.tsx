@@ -12,7 +12,7 @@ export const Sprites: React.FunctionComponent = () => {
     const sprites = new Array(spriteCount)
         .fill(1, 0, SPRITE_CHUNK_SIZE)
         .map((_, i) => {
-            return <Sprite spriteIndex={i + spriteOffset} />;
+            return <Sprite key={i} spriteIndex={i + spriteOffset} />;
         });
 
     return (

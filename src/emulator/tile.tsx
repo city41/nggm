@@ -1,4 +1,5 @@
 import React from "react";
+import { getRgbFromNeoGeoPalette } from "./neoGeoPalette";
 
 import "./tile.css";
 
@@ -11,7 +12,10 @@ interface TileProps {
     paletteIndex: number;
 }
 
-export const Tile: React.FunctionComponent<TileProps> = ({ tileIndex }) => {
+export const Tile: React.FunctionComponent<TileProps> = ({
+    tileIndex,
+    paletteIndex
+}) => {
     const cromAddr = window.Module._get_rom_ctile_addr();
     const tileOffset = TILE_SIZE_BYTES * tileIndex;
 
@@ -32,12 +36,22 @@ export const Tile: React.FunctionComponent<TileProps> = ({ tileIndex }) => {
                 <div
                     key={++key}
                     className="pixel"
-                    style={{ backgroundColor: palette[p & 0xf] }}
+                    style={{
+                        backgroundColor: getRgbFromNeoGeoPalette(
+                            paletteIndex,
+                            p & 0xf
+                        )
+                    }}
                 />,
                 <div
                     key={++key}
                     className="pixel"
-                    style={{ backgroundColor: palette[(p >> 4) & 0xf] }}
+                    style={{
+                        backgroundColor: getRgbFromNeoGeoPalette(
+                            paletteIndex,
+                            (p >> 4) & 0xf
+                        )
+                    }}
                 />
             );
         }
@@ -47,16 +61,30 @@ export const Tile: React.FunctionComponent<TileProps> = ({ tileIndex }) => {
                 <div
                     key={++key}
                     className="pixel"
-                    style={{ backgroundColor: palette[p & 0xf] }}
+                    style={{
+                        backgroundColor: getRgbFromNeoGeoPalette(
+                            paletteIndex,
+                            p & 0xf
+                        )
+                    }}
                 />,
                 <div
                     key={++key}
                     className="pixel"
-                    style={{ backgroundColor: palette[(p >> 4) & 0xf] }}
+                    style={{
+                        backgroundColor: getRgbFromNeoGeoPalette(
+                            paletteIndex,
+                            (p >> 4) & 0xf
+                        )
+                    }}
                 />
             );
         }
-        rows.push(<div className="row">{pixels}</div>);
+        rows.push(
+            <div key={rows.length + 1} className="row">
+                {pixels}
+            </div>
+        );
     }
 
     return <div className="tile">{rows}</div>;

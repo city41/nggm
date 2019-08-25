@@ -56,8 +56,8 @@ Uint8* get_rom_ctile_addr() {
     return memory.rom.tiles.p;
 }
 
-Uint32* get_current_pc_pal_addr() {
-    return current_pc_pal;
+Uint8* get_current_pal_addr() {
+    return current_pal;
 }
 
 

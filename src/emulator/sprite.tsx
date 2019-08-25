@@ -34,7 +34,12 @@ export const Sprite: React.FunctionComponent<SpriteProps> = ({
         // second word, bits 4 through 7 = most sig bits of tile index
         const tileIndex = firstWord | (((secondWord >> 4) & 0xf) << 16);
 
-        tiles.push(<Tile key={w} tileIndex={tileIndex} />);
+        // top half of second word is the palette index
+        const paletteIndex = (secondWord >> 8) & 0xff;
+
+        tiles.push(
+            <Tile key={w} tileIndex={tileIndex} paletteIndex={paletteIndex} />
+        );
     }
 
     return <div className="sprite">{tiles}</div>;

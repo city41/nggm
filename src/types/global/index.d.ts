@@ -8,6 +8,7 @@ declare global {
             _run_rom: (argc: number, argv: number) => void;
             _get_rom_ctile_addr: () => number;
             _get_tile_ram_addr: () => number;
+            _get_current_pal_addr: () => number;
         };
         HEAP32: Int32Array;
         HEAPU32: Int32Array;
