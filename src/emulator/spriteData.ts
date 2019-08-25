@@ -130,7 +130,8 @@ function getX(spriteIndex: number): number {
     const sticky = getYSpriteSizeSticky(spriteIndex).sticky;
 
     if (sticky) {
-        return getX(spriteIndex - 1) + 16;
+        const xScale = getScale(spriteIndex).xScale;
+        return getX(spriteIndex - 1) + xScale;
     }
 
     const tileRamAddr = window.Module._get_tile_ram_addr();
@@ -142,7 +143,13 @@ function getX(spriteIndex: number): number {
         window.HEAPU8[spriteScb4Addr] |
         (window.HEAPU8[spriteScb4Addr + 1] << 8);
 
-    return scb4Word >> 7;
+    let x = scb4Word >> 7;
+
+    if (x >= 0x1f0) {
+        x -= 0x200;
+    }
+
+    return x;
 }
 
 function getScale(
@@ -170,7 +177,7 @@ function getScale(
         (window.HEAPU8[spriteScb2Addr + 1] << 8);
 
     const yScale = scb2Word & 0xff;
-    const xScale = (scb2Word >> 8) & 0xf;
+    const xScale = ((scb2Word >> 8) & 0xf) + 1;
 
     return { yScale, xScale };
 }
