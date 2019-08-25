@@ -1,3 +1,7 @@
+// this is a blue/yellow palette generated at build time
+// useful if you need a palette for testing and can't get a real palette
+// from a running game
+
 import zip from "lodash.zip";
 
 const step7 = Math.floor(256 / 7);

@@ -1,5 +1,4 @@
 import React from "react";
-import { palette } from "./palette";
 
 import "./tile.css";
 
@@ -9,6 +8,7 @@ const TILE_SIZE_BYTES = TILE_SIZE_INTS * 4;
 
 interface TileProps {
     tileIndex: number;
+    paletteIndex: number;
 }
 
 export const Tile: React.FunctionComponent<TileProps> = ({ tileIndex }) => {
