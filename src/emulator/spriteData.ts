@@ -76,7 +76,13 @@ function getYAndSpriteSize(
     // according to the neo geo wiki, this should be 496 - y,
     // but I believe gngeo has already done the shift for us
     const y = (scb3Word >> 7) & 0x7f;
-    const spriteSize = scb3Word & 0x3f;
+    const sticky = !!((scb3Word >> 6) & 1);
+
+    let spriteSize;
+    if (sticky) {
+    } else {
+        spriteSize = scb3Word & 0x3f;
+    }
 
     return { y, spriteSize };
 }
