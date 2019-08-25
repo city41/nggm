@@ -59,13 +59,14 @@ function getTileData(
         const paletteIndex = (secondWord >> 8) & 0xff;
 
         const horizontalFlip = !!(secondWord & 1);
+        const verticalFlip = !!(secondWord & 2);
 
         tileData.push({
             y: tileYs[w / 4],
             tileIndex,
             paletteIndex,
             horizontalFlip,
-            verticalFlip: false
+            verticalFlip
         });
     }
 

@@ -30,6 +30,7 @@ export const Sprite: React.FunctionComponent<SpriteProps> = ({
             tileIndex={tileData.tileIndex}
             paletteIndex={tileData.paletteIndex}
             horizontalFlip={tileData.horizontalFlip}
+            verticalFlip={tileData.verticalFlip}
         />
     ));
 

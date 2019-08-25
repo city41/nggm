@@ -13,6 +13,7 @@ interface TileProps {
     tileIndex: number;
     paletteIndex: number;
     horizontalFlip?: boolean;
+    verticalFlip?: boolean;
     positioned: boolean;
 }
 
@@ -32,6 +33,7 @@ export const Tile: React.FunctionComponent<TileProps> = ({
     tileIndex,
     paletteIndex,
     horizontalFlip,
+    verticalFlip,
     positioned
 }) => {
     function renderCanvas(canvas: HTMLCanvasElement) {
@@ -78,9 +80,13 @@ export const Tile: React.FunctionComponent<TileProps> = ({
         context.putImageData(imageData, 0, 0);
     }
 
-    const flipStyle = horizontalFlip ? { transform: "scale(-1, 1)" } : {};
+    const horizontalScale = horizontalFlip ? -1 : 1;
+    const verticalScale = verticalFlip ? -1 : 1;
 
-    const inlineStyle = { ...flipStyle, top: tileY };
+    const inlineStyle = {
+        transform: `scale(${horizontalScale},${verticalScale})`,
+        top: tileY
+    };
 
     const className = classnames({
         [styles.positioned]: positioned
