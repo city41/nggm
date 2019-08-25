@@ -10,6 +10,7 @@ const TILE_SIZE_BYTES = TILE_SIZE_INTS * 4;
 interface TileProps {
     tileIndex: number;
     paletteIndex: number;
+    horizontalFlip?: boolean;
 }
 
 const map: Record<string, number> = {
@@ -25,7 +26,8 @@ const map: Record<string, number> = {
 
 export const Tile: React.FunctionComponent<TileProps> = ({
     tileIndex,
-    paletteIndex
+    paletteIndex,
+    horizontalFlip
 }) => {
     function renderCanvas(canvas: HTMLCanvasElement) {
         const cromAddr = window.Module._get_rom_ctile_addr();
@@ -41,6 +43,7 @@ export const Tile: React.FunctionComponent<TileProps> = ({
         canvas.height = 16;
 
         const context = canvas.getContext("2d")!;
+
         const imageData = context.getImageData(0, 0, 16, 16);
 
         for (let y = 0; y < 16; ++y) {
@@ -70,5 +73,6 @@ export const Tile: React.FunctionComponent<TileProps> = ({
         context.putImageData(imageData, 0, 0);
     }
 
-    return <canvas ref={r => r && renderCanvas(r)} />;
+    const style = horizontalFlip ? { transform: "scale(-1, 1)" } : {};
+    return <canvas ref={r => r && renderCanvas(r)} style={style} />;
 };

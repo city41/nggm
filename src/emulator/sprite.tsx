@@ -37,8 +37,15 @@ export const Sprite: React.FunctionComponent<SpriteProps> = ({
         // top half of second word is the palette index
         const paletteIndex = (secondWord >> 8) & 0xff;
 
+        const horizontalFlip = !!(secondWord & 1);
+
         tiles.push(
-            <Tile key={w} tileIndex={tileIndex} paletteIndex={paletteIndex} />
+            <Tile
+                key={w}
+                tileIndex={tileIndex}
+                paletteIndex={paletteIndex}
+                horizontalFlip={horizontalFlip}
+            />
         );
     }
 
