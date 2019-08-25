@@ -1,0 +1,20 @@
+# gngeo.js
+
+This fork of gngeo is an attempt to get gngeo working in a browser using WebAssembly. The ultimate goal is to build a web based tool related to Neo Geo games, so the emulator will be stripped to just the bare essentials.
+
+## How to build and run
+
+check out EMSCRIPTEN.md in this repo
+
+## original README
+
+The original README for gngeo has been preserved in this repo at README.original
+
+## How it differs
+
+* sound has been completely removed
+* all cores not written in C have been removed (only gen68k remains)
+* all capabilities to build for alternate platforms (wii, gp2x, etc) have been removed
+* will pull in emscripten specific concepts into the code as needed
+* will standup an emscripten based build system
+* all code related to loading files from the file system will be removed in favor of finding the rom data at a shared memory location between wasm and normal JS
