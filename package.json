@@ -2,6 +2,7 @@
 	"name": "ngbg",
 	"version": "0.1.0",
 	"private": true,
+    "homepage": "https://city41.github.io/ngbg",
 	"dependencies": {
 		"@types/jest": "24.0.18",
 		"@types/node": "12.7.2",
@@ -45,3 +46,4 @@
 		"prettier": "^1.18.2"
 	}
 }
+
