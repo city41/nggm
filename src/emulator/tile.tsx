@@ -1,8 +1,6 @@
 import React from "react";
 import { getRgbFromNeoGeoPalette } from "./neoGeoPalette";
 
-import "./tile.css";
-
 // 16 rows, each row has 2 ints (32 bits each)
 const TILE_SIZE_INTS = 2 * 16;
 const TILE_SIZE_BYTES = TILE_SIZE_INTS * 4;

@@ -182,11 +182,14 @@ function getScale(
     return { yScale, xScale };
 }
 
-export function getSpriteData(spriteIndex: number): SpriteData {
+export function getSpriteData(
+    spriteIndex: number,
+    honorTileSize: boolean
+): SpriteData {
     const { y, spriteSize } = getYSpriteSizeSticky(spriteIndex);
 
     return {
-        tiles: getTileData(spriteIndex, spriteSize),
+        tiles: getTileData(spriteIndex, honorTileSize ? spriteSize : 32),
         x: getX(spriteIndex),
         sticky: false,
         y

@@ -1,5 +1,11 @@
 .sprites {
+    display: grid;
+    grid-template-columns: repeat(80, 16px);
+}
+
+.positioned {
     position: relative;
+    display: block;
     width: 600px;
     height: 500px;
     border: 1px solid grey;
