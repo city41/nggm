@@ -12,80 +12,63 @@ interface TileProps {
     paletteIndex: number;
 }
 
+const map: Record<string, number> = {
+    0: 3,
+    1: 2,
+    2: 1,
+    3: 0,
+    4: 7,
+    5: 6,
+    6: 5,
+    7: 4
+};
+
 export const Tile: React.FunctionComponent<TileProps> = ({
     tileIndex,
     paletteIndex
 }) => {
-    const cromAddr = window.Module._get_rom_ctile_addr();
-    const tileOffset = TILE_SIZE_BYTES * tileIndex;
+    function renderCanvas(canvas: HTMLCanvasElement) {
+        const cromAddr = window.Module._get_rom_ctile_addr();
+        const tileOffset = TILE_SIZE_BYTES * tileIndex;
 
-    const tileData: number[] = [];
+        const tileData: number[] = [];
 
-    for (let i = 0; i < TILE_SIZE_BYTES; ++i) {
-        tileData[i] = window.HEAPU8[cromAddr + tileOffset + i];
+        for (let i = 0; i < TILE_SIZE_BYTES; ++i) {
+            tileData[i] = window.HEAPU8[cromAddr + tileOffset + i];
+        }
+
+        canvas.width = 16;
+        canvas.height = 16;
+
+        const context = canvas.getContext("2d")!;
+        const imageData = context.getImageData(0, 0, 16, 16);
+
+        for (let y = 0; y < 16; ++y) {
+            for (let x = 0; x < 8; ++x) {
+                const pixelPair = tileData[y * 8 + map[x]];
+
+                const leftPixelColorIndex = (pixelPair >> 4) & 0xf;
+                const rightPixelColorIndex = pixelPair & 0xf;
+
+                const leftPixel = getRgbFromNeoGeoPalette(
+                    paletteIndex,
+                    leftPixelColorIndex
+                );
+                const rightPixel = getRgbFromNeoGeoPalette(
+                    paletteIndex,
+                    rightPixelColorIndex
+                );
+
+                for (let i = 0; i < leftPixel.length; ++i) {
+                    imageData.data[(y * 16 + x * 2) * 4 + i] = leftPixel[i];
+                    imageData.data[(y * 16 + x * 2 + 1) * 4 + i] =
+                        rightPixel[i];
+                }
+            }
+        }
+
+        context.putImageData(imageData, 0, 0);
     }
 
-    let rows = [];
-    let key = 0;
-
-    for (let y = 0; y < 16; ++y) {
-        const pixels = [];
-        for (let x = 4; x < 8; ++x) {
-            const p = tileData[y * 8 + x];
-            pixels.push(
-                <div
-                    key={++key}
-                    className="pixel"
-                    style={{
-                        backgroundColor: getRgbFromNeoGeoPalette(
-                            paletteIndex,
-                            p & 0xf
-                        )
-                    }}
-                />,
-                <div
-                    key={++key}
-                    className="pixel"
-                    style={{
-                        backgroundColor: getRgbFromNeoGeoPalette(
-                            paletteIndex,
-                            (p >> 4) & 0xf
-                        )
-                    }}
-                />
-            );
-        }
-        for (let x = 0; x < 4; ++x) {
-            const p = tileData[y * 8 + x];
-            pixels.push(
-                <div
-                    key={++key}
-                    className="pixel"
-                    style={{
-                        backgroundColor: getRgbFromNeoGeoPalette(
-                            paletteIndex,
-                            p & 0xf
-                        )
-                    }}
-                />,
-                <div
-                    key={++key}
-                    className="pixel"
-                    style={{
-                        backgroundColor: getRgbFromNeoGeoPalette(
-                            paletteIndex,
-                            (p >> 4) & 0xf
-                        )
-                    }}
-                />
-            );
-        }
-        rows.push(
-            <div key={rows.length + 1} className="row">
-                {pixels}
-            </div>
-        );
-    }
-
-    return <div className="tile">{rows}</div>;
+    return <canvas ref={r => r && renderCanvas(r)} />;
 };

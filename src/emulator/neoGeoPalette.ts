@@ -7,7 +7,7 @@ const PALETTE_SIZE_IN_BYTES = 16 * 2;
  * Convert from a neo geo palette color to a 32 rgb color
  * https://wiki.neogeodev.org/index.php?title=Colors
  */
-function convert(col16: number) {
+function convert(col16: number): number[] {
     // the least significant bit is shared by each channel
     // if it is zero, the entire color is a tad darker, hence the name "dark bit"
     const darkBit = (col16 >> 15) & 1;
@@ -30,15 +30,15 @@ function convert(col16: number) {
     const g = (g5 / 63) * 255;
     const r = (r5 / 63) * 255;
 
-    return { r, g, b };
+    return [r, g, b, 255];
 }
 
 export function getRgbFromNeoGeoPalette(
     paletteIndex: number,
     colorIndex: number
-): string {
+): number[] {
     if (colorIndex === 0) {
-        return "transparent";
+        return [0, 0, 0, 0];
     }
 
     const palAddr = window.Module._get_current_pal_addr();
@@ -53,7 +53,5 @@ export function getRgbFromNeoGeoPalette(
 
     const combinedColor = color[0] | (color[1] << 8);
 
-    const { r, g, b } = convert(combinedColor);
-
-    return `rgb(${r}, ${g}, ${b})`;
+    return convert(combinedColor);
 }
