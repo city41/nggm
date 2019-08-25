@@ -83,6 +83,7 @@ export const Emulator: React.FunctionComponent<EmulatorProps> = () => {
 
     return (
         <>
+            <canvas id="canvas" />
             <div>
                 BIOS
                 <input
