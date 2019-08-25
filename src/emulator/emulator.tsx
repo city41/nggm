@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Tiles } from "./tiles";
 
 interface EmulatorProps {
     className?: string;
@@ -77,8 +78,7 @@ export const Emulator: React.FunctionComponent<EmulatorProps> = () => {
         window.HEAP32[(argv >> 2) + 1] = window.allocateUTF8OnStack(gameName);
         window.HEAP32[(argv >> 2) + 2] = 0;
 
-        // @ts-ignore
-        window._run_rom(2, argv);
+        window.Module._run_rom(2, argv);
     }
 
     return (
@@ -106,6 +106,7 @@ export const Emulator: React.FunctionComponent<EmulatorProps> = () => {
             <button disabled={!biosLoaded || !romLoaded} onClick={togglePause}>
                 {isPaused ? "resume" : "pause"}
             </button>
+            <Tiles />
         </>
     );
 };

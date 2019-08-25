@@ -1,0 +1,21 @@
+.tile {
+    display: inline-block;
+    width: 64px;
+    height: 64px;
+    margin: 4px;
+}
+.row {
+    width: 64px;
+    height: 4px;
+    margin: 0;
+    padding: 0;
+    transform: scaleX(-1);
+}
+
+.pixel {
+    display: inline-block;
+    width: 4px;
+    height: 4px;
+    margin: 0;
+    padding: 0;
+}
