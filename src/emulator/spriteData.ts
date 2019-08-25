@@ -66,6 +66,33 @@ function getTileData(spriteIndex: number, spriteSize: number): TileData[] {
     return tileData;
 }
 
+function transformY(rawY: number, yScale: number, spriteSize: number): number {
+    let fullmode;
+
+    if (spriteSize === 0x20) {
+        fullmode = 1;
+    } else if (spriteSize >= 0x21) {
+        fullmode = 2;
+    } else {
+        fullmode = 0;
+    }
+
+    // getting the final screen y is very complicated and
+    // honestly don't fully understand it. This code was copied
+    // from gngeo, video.c#draw_screen()
+    let y = 0x200 - rawY;
+
+    if (y > 0x110) {
+        y -= 0x200;
+    }
+
+    if (fullmode === 2 || (fullmode === 1 && yScale === 0xff)) {
+        while (y < 0) {
+            y += (yScale + 1) << 1;
+        }
+    }
+}
+
 function getYSpriteSizeSticky(
     spriteIndex: number
 ): { y: number; spriteSize: number; sticky: boolean } {
@@ -92,31 +119,9 @@ function getYSpriteSizeSticky(
     } else {
         const yScale = getScale(spriteIndex, { ignoreSticky: true }).yScale;
         const spriteSize = scb3Word & 0x3f;
+        const rawY = scb3Word >> 7;
 
-        let fullmode;
-
-        if (spriteSize === 0x20) {
-            fullmode = 1;
-        } else if (spriteSize >= 0x21) {
-            fullmode = 2;
-        } else {
-            fullmode = 0;
-        }
-
-        // getting the final screen y is very complicated and
-        // honestly don't fully understand it. This code was copied
-        // from gngeo, video.c#draw_screen()
-        let y = 0x200 - (scb3Word >> 7);
-
-        if (y > 0x110) {
-            y -= 0x200;
-        }
-
-        if (fullmode === 2 || (fullmode === 1 && yScale === 0xff)) {
-            while (y < 0) {
-                y += (yScale + 1) << 1;
-            }
-        }
+        const y = transformY(rawY, yScale, spriteSize);
 
         return { y, spriteSize, sticky };
     }
