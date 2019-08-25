@@ -1,10 +1,12 @@
 # NGBG
 
-A Neo Geo background extraction tool.
+A Neo Geo background extraction tool. Once finished, it will enable making animated gifs of Neo Geo backgrounds very easy.
 
 ## Status
 
 Extracting sprites pretty well, but still have a lot of work to do to massage them into a format ideal for grabbing animation frames
+
+Overall very raw, very early, not even close to alpha quality.
 
 ## How to use
 
