@@ -35,6 +35,17 @@ export const Emulator: React.FunctionComponent<EmulatorProps> = () => {
     const [biosLoaded, setBiosLoaded] = useState(false);
     const [romLoaded, setRomLoaded] = useState(false);
     const [gameName, setGameName] = useState("");
+    const [isPaused, setIsPaused] = useState(false);
+
+    function togglePause() {
+        if (isPaused) {
+            window.Module.resumeMainLoop();
+        } else {
+            window.Module.pauseMainLoop();
+        }
+
+        setIsPaused(!isPaused);
+    }
 
     async function loadBiosFile(e: React.ChangeEvent<HTMLInputElement>) {
         const file = e.target && e.target.files && e.target.files[0];
@@ -89,7 +100,10 @@ export const Emulator: React.FunctionComponent<EmulatorProps> = () => {
                 />
             </div>
             <button disabled={!biosLoaded || !romLoaded} onClick={startGame}>
-                play
+                start emulation
+            </button>
+            <button disabled={!biosLoaded || !romLoaded} onClick={togglePause}>
+                {isPaused ? "resume" : "pause"}
             </button>
         </>
     );
