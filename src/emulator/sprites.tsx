@@ -33,13 +33,13 @@ export const Sprites: React.FunctionComponent = () => {
             <input
                 type="checkbox"
                 checked={positioned}
-                onClick={() => setPositioned(!positioned)}
+                onChange={() => setPositioned(!positioned)}
             />
             positioned
             <input
                 type="checkbox"
                 checked={honorTileSize}
-                onClick={() => setHonorTileSize(!honorTileSize)}
+                onChange={() => setHonorTileSize(!honorTileSize)}
             />
             honor tile size
             <button

@@ -102,6 +102,33 @@ function transformY(rawY: number, yScale: number, spriteSize: number): number {
     return y;
 }
 
+const dataView = new DataView(new ArrayBuffer(2));
+
+/**
+ * special function to deal with the 9 bit x and y values for
+ * a tile's position. This is needed to properly convert a negative
+ * 9 bit value into the corresponding negative JS number
+ */
+function handleNeoGeo9Bit(neoGeoWord: number): number {
+    let value = neoGeoWord >> 7;
+
+    // check the very top, 16th bit, if it is set, we need to massage
+    // x into a negative sixteen bit value
+    // x is actually 9 bits, but we need to bump up to 16 since obviously
+    // dataView.setInt9() does not exist :)
+    if (neoGeoWord & 0x8000) {
+        // javascript crappiness. x is of type number, which is 64 bits
+        // we need to maintain the negative if x was negative in 9 bits
+        // then when we run it through the dataView, we'll get the proper
+        // negative value for x
+        value |= 0xfe00;
+    }
+
+    // convert from unsigned to signed
+    dataView.setUint16(0, value);
+    return dataView.getInt16(0);
+}
+
 function getYSpriteSizeSticky(
     spriteIndex: number
 ): { y: number; tileYs: number[]; spriteSize: number; sticky: boolean } {
@@ -128,7 +155,7 @@ function getYSpriteSizeSticky(
     } else {
         const yScale = getScale(spriteIndex, { ignoreSticky: true }).yScale;
         const spriteSize = scb3Word & 0x3f;
-        const rawY = scb3Word >> 7;
+        const rawY = handleNeoGeo9Bit(scb3Word);
 
         const y = transformY(rawY, yScale, spriteSize);
         const tileYs = [];
@@ -162,7 +189,7 @@ function getX(spriteIndex: number): number {
         window.HEAPU8[spriteScb4Addr] |
         (window.HEAPU8[spriteScb4Addr + 1] << 8);
 
-    let x = scb4Word >> 7;
+    let x = handleNeoGeo9Bit(scb4Word);
 
     if (x >= 0x1f0) {
         x -= 0x200;
