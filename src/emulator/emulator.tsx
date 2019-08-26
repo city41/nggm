@@ -96,27 +96,14 @@ export const Emulator: React.FunctionComponent<EmulatorProps> = () => {
             <canvas id="canvas" />
             <div>
                 BIOS
-                <input
-                    disabled={biosLoaded}
-                    type="file"
-                    onChange={loadBiosFile}
-                />
+                <input type="file" onChange={loadBiosFile} />
             </div>
             <div>
                 ROM
-                <input
-                    disabled={romLoaded}
-                    type="file"
-                    onChange={loadROMFile}
-                />
+                <input type="file" onChange={loadROMFile} />
             </div>
             {debugButton}
-            <button
-                disabled={!biosLoaded || !romLoaded}
-                onClick={() => startGame()}
-            >
-                start emulation
-            </button>
+            <button onClick={() => startGame()}>start emulation</button>
             <button onClick={togglePause}>
                 {isPaused ? "resume" : "pause"}
             </button>
