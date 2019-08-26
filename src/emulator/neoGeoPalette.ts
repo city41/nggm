@@ -1,6 +1,4 @@
-// each palette has 16 colors, each color is a 32 bit rgb value
-// NOTE: this is due to using gngeo's pc palette instead of actual
-// neo geo palettes, which only have 16bit colors (Thanks gngeo!)
+// each palette has 16 colors, each color is a 16 bit rgb value
 const PALETTE_SIZE_IN_BYTES = 16 * 2;
 
 /**
