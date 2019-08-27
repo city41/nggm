@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import * as Space from "react-spaces";
 import { Emulator } from "./emulator";
 import { SpriteManager } from "./spriteManager";
+import { ComposeScreen } from "./composeScreen";
 
 import styles from "./app.module.css";
 
 export const App: React.FunctionComponent = () => {
+    const [composedSprites, setComposedSprites] = useState<number[]>([]);
+
     return (
         <Space.ViewPort>
             <Space.TopResizable size="50%">
@@ -13,14 +16,19 @@ export const App: React.FunctionComponent = () => {
                     <Emulator />
                 </Space.LeftResizable>
                 <Space.Fill>
-                    <div>compose screen</div>
+                    <ComposeScreen composedSprites={composedSprites} />
                 </Space.Fill>
                 <Space.RightResizable size="30%">
                     <div>gif builder</div>
                 </Space.RightResizable>
             </Space.TopResizable>
             <Space.Fill>
-                <SpriteManager />
+                <SpriteManager
+                    composedSprites={composedSprites}
+                    onComposedSpritesChanged={newComposedSprites =>
+                        setComposedSprites(newComposedSprites)
+                    }
+                />
             </Space.Fill>
         </Space.ViewPort>
     );

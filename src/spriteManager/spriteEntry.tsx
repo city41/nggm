@@ -11,6 +11,10 @@ interface SpriteEntryProps {
     render?: boolean;
     hideIfEmpty: boolean;
     tight?: boolean;
+    focused?: boolean;
+    honorTileSize: boolean;
+    onClick: () => void;
+    onComposeChange: (composed: boolean) => void;
 }
 
 export const SpriteEntry: React.FunctionComponent<SpriteEntryProps> = ({
@@ -18,23 +22,36 @@ export const SpriteEntry: React.FunctionComponent<SpriteEntryProps> = ({
     spriteIndex,
     render,
     hideIfEmpty,
-    tight
+    tight,
+    focused,
+    honorTileSize,
+    onClick,
+    onComposeChange
 }) => {
     const classes = classnames(styles.root, className, {
         [styles.hide]: render && hideIfEmpty && isSpriteEmpty(spriteIndex),
-        [styles.tight]: tight
+        [styles.tight]: tight,
+        [styles.focused]: focused
     });
 
     return (
-        <div className={classes}>
+        <div className={classes} onClick={onClick}>
             <div className={styles.index}>{spriteIndex}</div>
-            {render && (
-                <Sprite
-                    spriteIndex={spriteIndex}
-                    positioned={false}
-                    honorTileSize
-                />
-            )}
+            <input
+                className={styles.composeCheckbox}
+                type="checkbox"
+                onChange={e => onComposeChange(e.target.checked)}
+            />
+            <div className={styles.spriteContainer}>
+                {render && (
+                    <Sprite
+                        className={styles.sprite}
+                        spriteIndex={spriteIndex}
+                        positioned={false}
+                        honorTileSize={honorTileSize}
+                    />
+                )}
+            </div>
         </div>
     );
 };

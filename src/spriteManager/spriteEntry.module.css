@@ -1,6 +1,6 @@
 .root {
     height: 100%;
-    background-color: grey;
+    background-color: #aaa;
     width: 32px;
     border-right: 1px solid rgba(0, 0, 0, 0.5);
 
@@ -23,4 +23,17 @@
     writing-mode: vertical-lr;
     height: 40px;
     margin-top: 8px;
+}
+
+.focused {
+    background-color: #ddd;
+}
+
+.spriteContainer {
+    flex: 1;
+}
+
+.composeCheckbox {
+    justify-self: flex-start;
+    margin-bottom: 20px;
 }

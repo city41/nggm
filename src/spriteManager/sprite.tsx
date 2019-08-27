@@ -6,12 +6,14 @@ import { getSpriteData } from "./spriteData";
 import styles from "./sprite.module.css";
 
 interface SpriteProps {
+    className?: string;
     spriteIndex: number;
     positioned: boolean;
     honorTileSize: boolean;
 }
 
 export const Sprite: React.FunctionComponent<SpriteProps> = ({
+    className,
     spriteIndex,
     positioned,
     honorTileSize
@@ -40,7 +42,7 @@ export const Sprite: React.FunctionComponent<SpriteProps> = ({
         gridTemplateRows: `repeat(${spriteData.tiles.length}, 16px)`
     };
 
-    const spriteClassName = classnames(styles.sprite, {
+    const spriteClassName = classnames(styles.sprite, className, {
         [styles.positioned]: positioned
     });
 

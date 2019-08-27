@@ -8,21 +8,32 @@ const TOTAL_SPRITE_COUNT = 448;
 
 interface SpriteManagerProps {
     className?: string;
+    onComposedSpritesChanged: (newComposedSprites: number[]) => void;
+    composedSprites: number[];
 }
 
 export const SpriteManager: React.FunctionComponent<SpriteManagerProps> = ({
-    className
+    className,
+    onComposedSpritesChanged,
+    composedSprites
 }) => {
     const [dumpCount, setDumpCount] = useState(0);
     const [hideEmtpySprites, setHideEmptySprites] = useState(true);
-    const [tight, setTight] = useState(false);
+    const [tight, setTight] = useState(true);
+    const [focusedIndex, setFocusedIndex] = useState<null | number>(null);
+    const [honorTileSize, setHonorTileSize] = useState(true);
 
     const classes = classnames(styles.root, className);
 
     return (
         <div className={classes}>
             <div className={styles.controls}>
-                <button onClick={() => setDumpCount(dumpCount + 1)}>
+                <button
+                    onClick={() => {
+                        setDumpCount(dumpCount + 1);
+                        onComposedSpritesChanged([]);
+                    }}
+                >
                     dump
                 </button>
                 <input
@@ -34,9 +45,22 @@ export const SpriteManager: React.FunctionComponent<SpriteManagerProps> = ({
                 <input
                     type="checkbox"
                     checked={tight}
-                    onChange={e => setTight(!tight)}
+                    onChange={() => setTight(!tight)}
                 />
                 tight
+                <input
+                    type="checkbox"
+                    checked={honorTileSize}
+                    onChange={() => setHonorTileSize(!honorTileSize)}
+                />
+                honor tile size
+                <button
+                    onClick={() => {
+                        onComposedSpritesChanged([]);
+                    }}
+                >
+                    clear
+                </button>
             </div>
             <div
                 className={styles.spriteEntries}
@@ -52,10 +76,26 @@ export const SpriteManager: React.FunctionComponent<SpriteManagerProps> = ({
                             render={dumpCount > 0}
                             hideIfEmpty={hideEmtpySprites}
                             tight={tight}
+                            onClick={() => setFocusedIndex(i)}
+                            onComposeChange={composed => {
+                                if (composed) {
+                                    onComposedSpritesChanged(
+                                        composedSprites.concat(i)
+                                    );
+                                } else {
+                                    onComposedSpritesChanged(
+                                        composedSprites.filter(v => v !== i)
+                                    );
+                                }
+                            }}
+                            focused={focusedIndex === i}
+                            honorTileSize={honorTileSize}
                         />
                     ))}
             </div>
-            <div className={styles.focusedEntry}>focused entry</div>
+            {focusedIndex !== null && (
+                <div className={styles.focusedEntry}>sprite {focusedIndex}</div>
+            )}
         </div>
     );
 };
