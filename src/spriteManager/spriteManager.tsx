@@ -19,7 +19,6 @@ export const SpriteManager: React.FunctionComponent<SpriteManagerProps> = ({
 }) => {
     const [dumpCount, setDumpCount] = useState(0);
     const [hideEmtpySprites, setHideEmptySprites] = useState(true);
-    const [tight, setTight] = useState(true);
     const [focusedIndex, setFocusedIndex] = useState<null | number>(null);
     const [honorTileSize, setHonorTileSize] = useState(true);
 
@@ -42,12 +41,6 @@ export const SpriteManager: React.FunctionComponent<SpriteManagerProps> = ({
                     onChange={() => setHideEmptySprites(!hideEmtpySprites)}
                 />
                 hide empty sprites
-                <input
-                    type="checkbox"
-                    checked={tight}
-                    onChange={() => setTight(!tight)}
-                />
-                tight
                 <input
                     type="checkbox"
                     checked={honorTileSize}
@@ -75,7 +68,6 @@ export const SpriteManager: React.FunctionComponent<SpriteManagerProps> = ({
                             spriteIndex={i}
                             render={dumpCount > 0}
                             hideIfEmpty={hideEmtpySprites}
-                            tight={tight}
                             onClick={() => setFocusedIndex(i)}
                             onComposeChange={composed => {
                                 if (composed) {

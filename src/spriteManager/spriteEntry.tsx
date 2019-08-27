@@ -10,7 +10,6 @@ interface SpriteEntryProps {
     spriteIndex: number;
     render?: boolean;
     hideIfEmpty: boolean;
-    tight?: boolean;
     focused?: boolean;
     honorTileSize: boolean;
     onClick: () => void;
@@ -22,7 +21,6 @@ export const SpriteEntry: React.FunctionComponent<SpriteEntryProps> = ({
     spriteIndex,
     render,
     hideIfEmpty,
-    tight,
     focused,
     honorTileSize,
     onClick,
@@ -30,7 +28,6 @@ export const SpriteEntry: React.FunctionComponent<SpriteEntryProps> = ({
 }) => {
     const classes = classnames(styles.root, className, {
         [styles.hide]: render && hideIfEmpty && isSpriteEmpty(spriteIndex),
-        [styles.tight]: tight,
         [styles.focused]: focused
     });
 
