@@ -1,0 +1,23 @@
+.app {
+    width: 100%;
+    height: 100%;
+
+    display: grid;
+    grid-template-rows: 1fr 2fr;
+    grid-template-columns: 1fr 1fr;
+}
+
+.emulator {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.composeScreen {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.spriteManager {
+    grid-column: 1 / -1;
+    grid-row: 2;
+}

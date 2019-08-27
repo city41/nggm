@@ -220,3 +220,7 @@ export function getSpriteData(
         y
     };
 }
+
+export function isSpriteEmpty(spriteIndex: number): boolean {
+    return getYSpriteSizeSticky(spriteIndex).spriteSize === 0;
+}

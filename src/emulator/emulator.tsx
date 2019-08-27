@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Sprites } from "./sprites";
+import classnames from "classnames";
 
 interface EmulatorProps {
     className?: string;
@@ -32,9 +32,7 @@ async function addFileToVirtualFS(file: File) {
     );
 }
 
-export const Emulator: React.FunctionComponent<EmulatorProps> = () => {
-    const [biosLoaded, setBiosLoaded] = useState(false);
-    const [romLoaded, setRomLoaded] = useState(false);
+export const Emulator: React.FunctionComponent<EmulatorProps> = props => {
     const [gameName, setGameName] = useState("");
     const [isPaused, setIsPaused] = useState(false);
 
@@ -56,7 +54,6 @@ export const Emulator: React.FunctionComponent<EmulatorProps> = () => {
         }
 
         await addFileToVirtualFS(file);
-        setBiosLoaded(true);
     }
 
     async function loadROMFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -67,7 +64,6 @@ export const Emulator: React.FunctionComponent<EmulatorProps> = () => {
         }
 
         await addFileToVirtualFS(file);
-        setRomLoaded(true);
         setGameName(file.name.replace(".zip", ""));
     }
 
@@ -91,8 +87,10 @@ export const Emulator: React.FunctionComponent<EmulatorProps> = () => {
         );
     }
 
+    const classes = classnames(props.className);
+
     return (
-        <>
+        <div className={classes}>
             <canvas id="canvas" />
             <div>
                 BIOS
@@ -107,7 +105,6 @@ export const Emulator: React.FunctionComponent<EmulatorProps> = () => {
             <button onClick={togglePause}>
                 {isPaused ? "resume" : "pause"}
             </button>
-            <Sprites />
-        </>
+        </div>
     );
 };

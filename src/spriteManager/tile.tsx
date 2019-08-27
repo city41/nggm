@@ -1,6 +1,6 @@
 import React from "react";
 import classnames from "classnames";
-import { getRgbFromNeoGeoPalette } from "./neoGeoPalette";
+import { getRgbFromNeoGeoPalette } from "../palette/neoGeoPalette";
 
 import styles from "./tile.module.css";
 

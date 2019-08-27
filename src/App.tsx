@@ -1,6 +1,27 @@
 import React from "react";
+import * as Space from "react-spaces";
 import { Emulator } from "./emulator";
+import { SpriteManager } from "./spriteManager";
+
+import styles from "./app.module.css";
 
 export const App: React.FunctionComponent = () => {
-    return <Emulator />;
+    return (
+        <Space.ViewPort>
+            <Space.TopResizable size="50%">
+                <Space.LeftResizable size="30%">
+                    <Emulator />
+                </Space.LeftResizable>
+                <Space.Fill>
+                    <div>compose screen</div>
+                </Space.Fill>
+                <Space.RightResizable size="30%">
+                    <div>gif builder</div>
+                </Space.RightResizable>
+            </Space.TopResizable>
+            <Space.Fill>
+                <SpriteManager />
+            </Space.Fill>
+        </Space.ViewPort>
+    );
 };

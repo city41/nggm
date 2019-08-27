@@ -1,0 +1,26 @@
+.root {
+    height: 100%;
+    background-color: grey;
+    width: 32px;
+    border-right: 1px solid rgba(0, 0, 0, 0.5);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.hide {
+    display: none;
+}
+
+.tight {
+    width: 16px;
+    border-right: 1px dotted rgba(255, 255, 255, 0.5);
+}
+
+.tight .index {
+    font-size: 0.8rem;
+    writing-mode: vertical-lr;
+    height: 40px;
+    margin-top: 8px;
+}
