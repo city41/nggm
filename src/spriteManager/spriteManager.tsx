@@ -5,7 +5,7 @@ import { uniq } from "lodash";
 
 import styles from "./spriteManager.module.css";
 
-const TOTAL_SPRITE_COUNT = 448;
+const TOTAL_SPRITE_COUNT = 381;
 
 function arrayFrom(minValue: number, maxValue: number) {
     const count = maxValue - minValue + 1;
@@ -64,6 +64,7 @@ export const SpriteManager: React.FunctionComponent<SpriteManagerProps> = ({
                 </button>
             </div>
             <div
+                key={dumpCount}
                 className={styles.spriteEntries}
                 style={{
                     gridTemplateColumns: `repeat(${TOTAL_SPRITE_COUNT}, max-content)`

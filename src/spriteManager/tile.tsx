@@ -28,75 +28,79 @@ const map: Record<string, number> = {
     7: 4
 };
 
-export const Tile: React.FunctionComponent<TileProps> = ({
-    y: tileY,
-    tileIndex,
-    paletteIndex,
-    horizontalFlip,
-    verticalFlip,
-    positioned
-}) => {
-    function renderCanvas(canvas: HTMLCanvasElement) {
-        const cromAddr = window.Module._get_rom_ctile_addr();
-        const tileOffset = TILE_SIZE_BYTES * tileIndex;
+export class Tile extends React.PureComponent<TileProps> {
+    render() {
+        const {
+            y: tileY,
+            tileIndex,
+            paletteIndex,
+            horizontalFlip,
+            verticalFlip,
+            positioned
+        } = this.props;
 
-        const tileData: number[] = [];
+        function renderCanvas(canvas: HTMLCanvasElement) {
+            const cromAddr = window.Module._get_rom_ctile_addr();
+            const tileOffset = TILE_SIZE_BYTES * tileIndex;
 
-        for (let i = 0; i < TILE_SIZE_BYTES; ++i) {
-            tileData[i] = window.HEAPU8[cromAddr + tileOffset + i];
-        }
+            const tileData: number[] = [];
 
-        canvas.width = 16;
-        canvas.height = 16;
+            for (let i = 0; i < TILE_SIZE_BYTES; ++i) {
+                tileData[i] = window.HEAPU8[cromAddr + tileOffset + i];
+            }
 
-        const context = canvas.getContext("2d")!;
+            canvas.width = 16;
+            canvas.height = 16;
 
-        const imageData = context.getImageData(0, 0, 16, 16);
+            const context = canvas.getContext("2d")!;
 
-        for (let y = 0; y < 16; ++y) {
-            for (let x = 0; x < 8; ++x) {
-                const pixelPair = tileData[y * 8 + map[x]];
+            const imageData = context.getImageData(0, 0, 16, 16);
 
-                const leftPixelColorIndex = (pixelPair >> 4) & 0xf;
-                const rightPixelColorIndex = pixelPair & 0xf;
+            for (let y = 0; y < 16; ++y) {
+                for (let x = 0; x < 8; ++x) {
+                    const pixelPair = tileData[y * 8 + map[x]];
 
-                const leftPixel = getRgbFromNeoGeoPalette(
-                    paletteIndex,
-                    leftPixelColorIndex
-                );
-                const rightPixel = getRgbFromNeoGeoPalette(
-                    paletteIndex,
-                    rightPixelColorIndex
-                );
+                    const leftPixelColorIndex = (pixelPair >> 4) & 0xf;
+                    const rightPixelColorIndex = pixelPair & 0xf;
 
-                for (let i = 0; i < leftPixel.length; ++i) {
-                    imageData.data[(y * 16 + x * 2) * 4 + i] = leftPixel[i];
-                    imageData.data[(y * 16 + x * 2 + 1) * 4 + i] =
-                        rightPixel[i];
+                    const leftPixel = getRgbFromNeoGeoPalette(
+                        paletteIndex,
+                        leftPixelColorIndex
+                    );
+                    const rightPixel = getRgbFromNeoGeoPalette(
+                        paletteIndex,
+                        rightPixelColorIndex
+                    );
+
+                    for (let i = 0; i < leftPixel.length; ++i) {
+                        imageData.data[(y * 16 + x * 2) * 4 + i] = leftPixel[i];
+                        imageData.data[(y * 16 + x * 2 + 1) * 4 + i] =
+                            rightPixel[i];
+                    }
                 }
             }
+
+            context.putImageData(imageData, 0, 0);
         }
 
-        context.putImageData(imageData, 0, 0);
+        const horizontalScale = horizontalFlip ? -1 : 1;
+        const verticalScale = verticalFlip ? -1 : 1;
+
+        const inlineStyle = {
+            transform: `scale(${horizontalScale},${verticalScale})`,
+            top: tileY
+        };
+
+        const className = classnames({
+            [styles.positioned]: positioned
+        });
+
+        return (
+            <canvas
+                className={className}
+                ref={r => r && renderCanvas(r)}
+                style={inlineStyle}
+            />
+        );
     }
-
-    const horizontalScale = horizontalFlip ? -1 : 1;
-    const verticalScale = verticalFlip ? -1 : 1;
-
-    const inlineStyle = {
-        transform: `scale(${horizontalScale},${verticalScale})`,
-        top: tileY
-    };
-
-    const className = classnames({
-        [styles.positioned]: positioned
-    });
-
-    return (
-        <canvas
-            className={className}
-            ref={r => r && renderCanvas(r)}
-            style={inlineStyle}
-        />
-    );
-};
+}
