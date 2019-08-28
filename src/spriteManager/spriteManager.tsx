@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import classnames from "classnames";
 import { SpriteEntry } from "./spriteEntry";
+import { SingleSpriteDetail } from "./singleSpriteDetail";
 import { uniq } from "lodash";
 
 import styles from "./spriteManager.module.css";
@@ -74,6 +75,7 @@ export const SpriteManager: React.FunctionComponent<SpriteManagerProps> = ({
                     .fill(1, 0, TOTAL_SPRITE_COUNT)
                     .map((_, i) => (
                         <SpriteEntry
+                            key={i}
                             spriteIndex={i}
                             render={dumpCount > 0}
                             hideIfEmpty={hideEmtpySprites}
@@ -125,7 +127,10 @@ export const SpriteManager: React.FunctionComponent<SpriteManagerProps> = ({
                         />
                     ))}
             </div>
-            {focusedIndices.length > 0 && (
+            {focusedIndices.length === 1 && (
+                <SingleSpriteDetail spriteIndex={focusedIndices[0]} />
+            )}
+            {focusedIndices.length > 1 && (
                 <div className={styles.focusedEntry}>
                     {focusedIndices.length} focused sprites
                     <button

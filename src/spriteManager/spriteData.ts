@@ -29,6 +29,7 @@ interface SpriteData {
     x: number;
     y: number;
     sticky: boolean;
+    spriteSize: number;
 }
 
 function getTileData(
@@ -207,7 +208,7 @@ export function getSpriteData(
     spriteIndex: number,
     honorTileSize: boolean
 ): SpriteData {
-    const { y, tileYs, spriteSize } = getYSpriteSizeSticky(spriteIndex);
+    const { sticky, y, tileYs, spriteSize } = getYSpriteSizeSticky(spriteIndex);
 
     return {
         tiles: getTileData(
@@ -216,8 +217,9 @@ export function getSpriteData(
             tileYs
         ),
         x: getX(spriteIndex),
-        sticky: false,
-        y
+        sticky,
+        y,
+        spriteSize
     };
 }
 
