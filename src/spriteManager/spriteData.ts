@@ -22,6 +22,7 @@ interface TileData {
     paletteIndex: number;
     horizontalFlip: boolean;
     verticalFlip: boolean;
+    autoAnimation: 0 | 2 | 3;
 }
 
 interface SpriteData {
@@ -54,7 +55,33 @@ function getTileData(
 
         // first word = least sig bits of tile index
         // second word, bits 4 through 7 = most sig bits of tile index
-        const tileIndex = firstWord | (((secondWord >> 4) & 0xf) << 16);
+        let tileIndex = firstWord | (((secondWord >> 4) & 0xf) << 16);
+
+        let autoAnimation: 0 | 2 | 3 = 0;
+
+        // automatic animation
+        if (secondWord & 0x8) {
+            // 3 bit auto animation: the 4th bit is set, indicating this tile does 3bit auto animation
+            // that means take its tileIndex, and replace its bottom three bits with those of the animation counter
+
+            const animationCounter = window.Module._get_neogeo_frame_counter();
+
+            // & ~7 = wipe out bottom three bits
+            // + animationCounter & 7 = add on the bottom three bits of the animation counter
+            tileIndex = (tileIndex & ~7) + ((tileIndex + animationCounter) & 7);
+
+            autoAnimation = 3;
+        } else if (secondWord & 0x4) {
+            // 2 bit auto animation
+
+            const animationCounter = window.Module._get_neogeo_frame_counter();
+
+            // & ~3 = wipe out bottom two bits
+            // + animationCounter & 3 = add on the bottom two bits of the animation counter
+            tileIndex = (tileIndex & ~3) + ((tileIndex + animationCounter) & 3);
+
+            autoAnimation = 2;
+        }
 
         // top half of second word is the palette index
         const paletteIndex = (secondWord >> 8) & 0xff;
@@ -67,7 +94,8 @@ function getTileData(
             tileIndex,
             paletteIndex,
             horizontalFlip,
-            verticalFlip
+            verticalFlip,
+            autoAnimation
         });
     }
 

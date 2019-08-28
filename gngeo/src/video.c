@@ -66,6 +66,12 @@ Uint32 ddaxskip_i[16] = {
 };
 Uint32 dda_x_skip_i;
 
+#ifdef __EMSCRIPTEN__
+unsigned int get_neogeo_frame_counter() {
+    return neogeo_frame_counter;
+}
+#endif
+
 static __inline__ Uint16 alpha_blend(Uint16 dest, Uint16 src, Uint8 a) {
 	static Uint8 dr, dg, db, sr, sg, sb;
 

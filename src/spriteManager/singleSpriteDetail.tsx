@@ -34,6 +34,12 @@ export const SingleSpriteDetail: React.FunctionComponent<
                         <td>size</td>
                         <td>{data.spriteSize}</td>
                     </tr>
+                    <tr>
+                        <td>auto anim</td>
+                        <td>
+                            {data.tiles.map(t => t.autoAnimation).join(",")}
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>

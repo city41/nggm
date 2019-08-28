@@ -40,7 +40,6 @@ export class Tile extends React.PureComponent<TileProps> {
         } = this.props;
 
         function renderCanvas(canvas: HTMLCanvasElement) {
-            console.log("renderCanvas");
             const cromAddr = window.Module._get_rom_ctile_addr();
             const tileOffset = TILE_SIZE_BYTES * tileIndex;
 
