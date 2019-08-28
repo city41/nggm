@@ -1,10 +1,17 @@
 import React, { useState } from "react";
 import classnames from "classnames";
 import { SpriteEntry } from "./spriteEntry";
+import { uniq } from "lodash";
 
 import styles from "./spriteManager.module.css";
 
 const TOTAL_SPRITE_COUNT = 448;
+
+function arrayFrom(minValue: number, maxValue: number) {
+    const count = maxValue - minValue + 1;
+
+    return new Array(count).fill(0, 0, count).map((_, i) => i + minValue);
+}
 
 interface SpriteManagerProps {
     className?: string;
@@ -19,8 +26,9 @@ export const SpriteManager: React.FunctionComponent<SpriteManagerProps> = ({
 }) => {
     const [dumpCount, setDumpCount] = useState(0);
     const [hideEmtpySprites, setHideEmptySprites] = useState(true);
-    const [focusedIndex, setFocusedIndex] = useState<null | number>(null);
+    const [focusedIndices, setFocusedIndices] = useState<number[]>([]);
     const [honorTileSize, setHonorTileSize] = useState(true);
+    const [shiftStartIndex, setShiftStartIndex] = useState<null | number>(null);
 
     const classes = classnames(styles.root, className);
 
@@ -68,7 +76,37 @@ export const SpriteManager: React.FunctionComponent<SpriteManagerProps> = ({
                             spriteIndex={i}
                             render={dumpCount > 0}
                             hideIfEmpty={hideEmtpySprites}
-                            onClick={() => setFocusedIndex(i)}
+                            onClick={e => {
+                                if (e.ctrlKey) {
+                                    setFocusedIndices(focusedIndices.concat(i));
+                                    setShiftStartIndex(null);
+                                } else if (e.shiftKey) {
+                                    if (
+                                        shiftStartIndex !== null ||
+                                        focusedIndices.length === 1
+                                    ) {
+                                        const minIndex = Math.min(
+                                            shiftStartIndex ||
+                                                focusedIndices[0],
+                                            i
+                                        );
+                                        const maxIndex = Math.max(
+                                            shiftStartIndex ||
+                                                focusedIndices[0],
+                                            i
+                                        );
+                                        setFocusedIndices(
+                                            arrayFrom(minIndex, maxIndex)
+                                        );
+                                    } else {
+                                        setFocusedIndices([i]);
+                                        setShiftStartIndex(i);
+                                    }
+                                } else {
+                                    setFocusedIndices([i]);
+                                    setShiftStartIndex(null);
+                                }
+                            }}
                             onComposeChange={composed => {
                                 if (composed) {
                                     onComposedSpritesChanged(
@@ -80,13 +118,26 @@ export const SpriteManager: React.FunctionComponent<SpriteManagerProps> = ({
                                     );
                                 }
                             }}
-                            focused={focusedIndex === i}
+                            focused={focusedIndices.indexOf(i) > -1}
+                            composed={composedSprites.indexOf(i) > -1}
                             honorTileSize={honorTileSize}
                         />
                     ))}
             </div>
-            {focusedIndex !== null && (
-                <div className={styles.focusedEntry}>sprite {focusedIndex}</div>
+            {focusedIndices.length > 0 && (
+                <div className={styles.focusedEntry}>
+                    {focusedIndices.length} focused sprites
+                    <button
+                        onClick={() => {
+                            const composed = uniq(
+                                composedSprites.concat(focusedIndices)
+                            );
+                            onComposedSpritesChanged(composed);
+                        }}
+                    >
+                        compose
+                    </button>
+                </div>
             )}
         </div>
     );

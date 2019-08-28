@@ -4,8 +4,6 @@ import { Emulator } from "./emulator";
 import { SpriteManager } from "./spriteManager";
 import { ComposeScreen } from "./composeScreen";
 
-import styles from "./app.module.css";
-
 export const App: React.FunctionComponent = () => {
     const [composedSprites, setComposedSprites] = useState<number[]>([]);
 
