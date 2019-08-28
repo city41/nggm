@@ -39,7 +39,8 @@ export const Sprite: React.FunctionComponent<SpriteProps> = ({
     const style = {
         top: spriteData.y,
         left: spriteData.x,
-        gridTemplateRows: `repeat(${spriteData.tiles.length}, 16px)`
+        gridTemplateRows: `repeat(${spriteData.tiles.length}, 16px)`,
+        zIndex: spriteIndex
     };
 
     const spriteClassName = classnames(styles.sprite, className, {

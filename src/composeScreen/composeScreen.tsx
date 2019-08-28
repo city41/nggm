@@ -13,7 +13,12 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
     composedSprites
 }) => {
     const sprites = composedSprites.map(spriteIndex => (
-        <Sprite spriteIndex={spriteIndex} positioned honorTileSize={false} />
+        <Sprite
+            key={spriteIndex}
+            spriteIndex={spriteIndex}
+            positioned
+            honorTileSize={false}
+        />
     ));
     return <div className={styles.root}>{sprites}</div>;
 };
