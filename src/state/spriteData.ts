@@ -16,7 +16,7 @@ const SCB3_BYTE_OFFSET = 0x8200 * 2;
 // it starts at word $8400, so *2 to get byte address
 const SCB4_BYTE_OFFSET = 0x8400 * 2;
 
-interface TileData {
+export interface TileData {
     y: number;
     tileIndex: number;
     paletteIndex: number;

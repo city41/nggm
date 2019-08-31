@@ -1,16 +1,13 @@
 import React, { useState } from "react";
 import { useDrop } from "react-dnd";
-import { Sprite } from "../spriteTray/sprite";
-import { getBackdropColor, neoGeoColorToCSS } from "../palette/neoGeoPalette";
-import { uniqBy } from "lodash";
-import { useAppState } from "../state";
+import { ExtractedSprite } from "./extractedSprite";
+import {
+    getBackdropNeoGeoColor,
+    neoGeoColorToCSS
+} from "../palette/neoGeoPalette";
+import { useAppState, extractSpriteAction } from "../state";
 
 import styles from "./composeScreen.module.css";
-
-interface SpriteData {
-    spriteIndex: number;
-    positionIndex: number;
-}
 
 interface ComposeScreenProps {
     className?: string;
@@ -19,9 +16,8 @@ interface ComposeScreenProps {
 export const ComposeScreen: React.FunctionComponent<
     ComposeScreenProps
 > = ({}) => {
-    const [state] = useAppState();
+    const [state, dispatch] = useAppState();
     const [divRef, setDivRef] = useState<null | HTMLDivElement>(null);
-    const [spriteData, setSpriteData] = useState<SpriteData[]>([]);
 
     const [_, dropRef] = useDrop({
         accept: "Sprite",
@@ -31,35 +27,23 @@ export const ComposeScreen: React.FunctionComponent<
                     monitor.getClientOffset().x -
                     divRef.getBoundingClientRect().left;
 
-                const positionIndex = Math.floor(x / 16);
+                const composedX = Math.floor(x / 16) * 16;
                 const spriteIndex = item.spriteIndex;
-                const newSpriteDataEntry = {
-                    spriteIndex,
-                    positionIndex
-                };
 
-                const newSpriteData = uniqBy(
-                    [newSpriteDataEntry].concat(spriteData),
-                    "spriteIndex"
-                );
-
-                setSpriteData(newSpriteData);
+                dispatch(extractSpriteAction(spriteIndex, composedX));
             }
         }
     });
 
-    const spriteCmps = spriteData.map(sd => (
-        <Sprite
-            key={sd.spriteIndex}
-            spriteIndex={sd.spriteIndex}
-            overrideX={sd.positionIndex * 16}
-            positioned
-            honorTileSize={false}
+    const sprites = state.extractedSprites.map(extractedSprite => (
+        <ExtractedSprite
+            key={extractedSprite.spriteMemoryIndex}
+            data={extractedSprite}
         />
     ));
 
     const backgroundColor = state.isPaused
-        ? neoGeoColorToCSS(getBackdropColor())
+        ? neoGeoColorToCSS(getBackdropNeoGeoColor())
         : "transparent";
 
     return (
@@ -71,7 +55,7 @@ export const ComposeScreen: React.FunctionComponent<
             className={styles.root}
             style={{ backgroundColor }}
         >
-            {spriteCmps}
+            {sprites}
         </div>
     );
 };

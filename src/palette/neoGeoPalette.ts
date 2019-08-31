@@ -1,11 +1,14 @@
 // each palette has 16 colors, each color is a 16 bit rgb value
-const PALETTE_SIZE_IN_BYTES = 16 * 2;
+const COLORS_PER_PALETTE = 16;
+const PALETTE_SIZE_IN_BYTES = COLORS_PER_PALETTE * 2;
 
 /**
  * Convert from a neo geo palette color to a 32 rgb color
  * https://wiki.neogeodev.org/index.php?title=Colors
  */
-function convert(col16: number): [number, number, number, number] {
+function convertNeoGeoColorToRGBColor(
+    col16: number
+): [number, number, number, number] {
     // the least significant bit is shared by each channel
     // if it is zero, the entire color is a tad darker, hence the name "dark bit"
     const darkBit = (col16 >> 15) & 1;
@@ -31,6 +34,25 @@ function convert(col16: number): [number, number, number, number] {
     return [r, g, b, 255];
 }
 
+export function getNeoGeoPalette(paletteMemoryIndex: number): number[] {
+    const palAddr = window.Module._get_current_pal_addr();
+    const palOffset = paletteMemoryIndex * PALETTE_SIZE_IN_BYTES;
+    const palIndexInHeap = (palAddr + palOffset) / 2;
+
+    return [
+        ...window.Module.HEAPU16.slice(
+            palIndexInHeap,
+            palIndexInHeap + COLORS_PER_PALETTE
+        )
+    ];
+}
+
+export function convertNeoGeoPaletteToRGB(
+    neoGeoPalette: number[]
+): Array<[number, number, number, number]> {
+    return neoGeoPalette.map(convertNeoGeoColorToRGBColor);
+}
+
 export function getRgbFromNeoGeoPalette(
     paletteIndex: number,
     colorIndex: number
@@ -51,10 +73,10 @@ export function getRgbFromNeoGeoPalette(
 
     const combinedColor = color[0] | (color[1] << 8);
 
-    return convert(combinedColor);
+    return convertNeoGeoColorToRGBColor(combinedColor);
 }
 
-export function getBackdropColor() {
+export function getBackdropNeoGeoColor(): number {
     let palAddr = window.Module._get_current_pal_addr();
 
     // get to the final color in all the palettes, ie the backdrop color
@@ -68,7 +90,7 @@ export function getBackdropColor() {
 }
 
 export function neoGeoColorToCSS(neoGeoColor: number): string {
-    const asArray = convert(neoGeoColor);
+    const asArray = convertNeoGeoColorToRGBColor(neoGeoColor);
 
     return `rgb(${asArray[0]}, ${asArray[1]}, ${asArray[2]})`;
 }

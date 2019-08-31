@@ -2,7 +2,7 @@ import React from "react";
 import classnames from "classnames";
 import { useDrag } from "react-dnd";
 import { Tile } from "./tile";
-import { getSpriteData } from "./spriteData";
+import { getSpriteData } from "../state/spriteData";
 
 import styles from "./sprite.module.css";
 

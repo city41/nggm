@@ -1,7 +1,7 @@
 import React from "react";
 import classnames from "classnames";
 import { Sprite } from "./sprite";
-import { isSpriteEmpty } from "./spriteData";
+import { isSpriteEmpty } from "../state/spriteData";
 
 import styles from "./spriteEntry.module.css";
 
