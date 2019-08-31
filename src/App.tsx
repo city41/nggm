@@ -5,16 +5,25 @@ import { SpriteManager } from "./spriteManager";
 import { ComposeScreen } from "./composeScreen";
 
 export const App: React.FunctionComponent = () => {
+    const [emulatorRunning, setEmulatorRunning] = useState(false);
     const [composedSprites, setComposedSprites] = useState<number[]>([]);
 
     return (
         <Space.ViewPort>
             <Space.TopResizable size="50%">
                 <Space.LeftResizable size="30%">
-                    <Emulator />
+                    <Emulator
+                        onEmulatorRunning={() => {
+                            console.log("emulatorRunning", emulatorRunning);
+                            setEmulatorRunning(true);
+                        }}
+                    />
                 </Space.LeftResizable>
                 <Space.Fill>
-                    <ComposeScreen composedSprites={composedSprites} />
+                    <ComposeScreen
+                        emulatorRunning={emulatorRunning}
+                        composedSprites={composedSprites}
+                    />
                 </Space.Fill>
                 <Space.RightResizable size="30%">
                     <div>gif builder</div>

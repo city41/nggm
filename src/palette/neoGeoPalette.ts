@@ -5,7 +5,7 @@ const PALETTE_SIZE_IN_BYTES = 16 * 2;
  * Convert from a neo geo palette color to a 32 rgb color
  * https://wiki.neogeodev.org/index.php?title=Colors
  */
-function convert(col16: number): number[] {
+function convert(col16: number): [number, number, number, number] {
     // the least significant bit is shared by each channel
     // if it is zero, the entire color is a tad darker, hence the name "dark bit"
     const darkBit = (col16 >> 15) & 1;
@@ -52,4 +52,23 @@ export function getRgbFromNeoGeoPalette(
     const combinedColor = color[0] | (color[1] << 8);
 
     return convert(combinedColor);
+}
+
+export function getBackdropColor() {
+    let palAddr = window.Module._get_current_pal_addr();
+
+    // get to the final color in all the palettes, ie the backdrop color
+    // https://wiki.neogeodev.org/index.php?title=Palettes
+    palAddr += 0x1ffe;
+
+    // since we are going to use HEAPU16, divide the address by two
+    palAddr /= 2;
+
+    return window.Module.HEAPU16[palAddr];
+}
+
+export function neoGeoColorToCSS(neoGeoColor: number): string {
+    const asArray = convert(neoGeoColor);
+
+    return `rgb(${asArray[0]}, ${asArray[1]}, ${asArray[2]})`;
 }

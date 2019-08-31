@@ -3,6 +3,7 @@ import classnames from "classnames";
 
 interface EmulatorProps {
     className?: string;
+    onEmulatorRunning: () => void;
 }
 
 function loadFile<T>(file: File): Promise<T> {
@@ -76,6 +77,7 @@ export const Emulator: React.FunctionComponent<EmulatorProps> = props => {
         );
         window.HEAP32[(argv >> 2) + 2] = 0;
 
+        props.onEmulatorRunning();
         window.Module._run_rom(2, argv);
     }
 
