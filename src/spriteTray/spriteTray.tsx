@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import classnames from "classnames";
 import { SpriteEntry } from "./spriteEntry";
-import { SingleSpriteDetail } from "./singleSpriteDetail";
-import { uniq } from "lodash";
+import { useAppState } from "../state";
 
-import styles from "./spriteManager.module.css";
+import styles from "./spriteTray.module.css";
 
 const TOTAL_SPRITE_COUNT = 381;
 
@@ -14,58 +13,25 @@ function arrayFrom(minValue: number, maxValue: number) {
     return new Array(count).fill(0, 0, count).map((_, i) => i + minValue);
 }
 
-interface SpriteManagerProps {
+interface SpriteTrayProps {
     className?: string;
-    onComposedSpritesChanged: (newComposedSprites: number[]) => void;
-    composedSprites: number[];
 }
 
-export const SpriteManager: React.FunctionComponent<SpriteManagerProps> = ({
-    className,
-    onComposedSpritesChanged,
-    composedSprites
+export const SpriteTray: React.FunctionComponent<SpriteTrayProps> = ({
+    className
 }) => {
-    const [dumpCount, setDumpCount] = useState(0);
-    const [hideEmtpySprites, setHideEmptySprites] = useState(true);
+    const [state] = useAppState();
     const [focusedIndices, setFocusedIndices] = useState<number[]>([]);
-    const [honorTileSize, setHonorTileSize] = useState(true);
     const [shiftStartIndex, setShiftStartIndex] = useState<null | number>(null);
 
-    const classes = classnames(styles.root, className);
+    const classes = classnames(styles.root, className, {
+        [styles.locked]: !state.isPaused
+    });
 
     return (
         <div className={classes}>
-            <div className={styles.controls}>
-                <button
-                    onClick={() => {
-                        setDumpCount(dumpCount + 1);
-                        onComposedSpritesChanged([]);
-                    }}
-                >
-                    dump
-                </button>
-                <input
-                    type="checkbox"
-                    checked={hideEmtpySprites}
-                    onChange={() => setHideEmptySprites(!hideEmtpySprites)}
-                />
-                hide empty sprites
-                <input
-                    type="checkbox"
-                    checked={honorTileSize}
-                    onChange={() => setHonorTileSize(!honorTileSize)}
-                />
-                honor tile size
-                <button
-                    onClick={() => {
-                        onComposedSpritesChanged([]);
-                    }}
-                >
-                    clear
-                </button>
-            </div>
             <div
-                key={dumpCount}
+                key={state.pauseId}
                 className={styles.spriteEntries}
                 style={{
                     gridTemplateColumns: `repeat(${TOTAL_SPRITE_COUNT}, max-content)`
@@ -77,8 +43,8 @@ export const SpriteManager: React.FunctionComponent<SpriteManagerProps> = ({
                         <SpriteEntry
                             key={i}
                             spriteIndex={i}
-                            render={dumpCount > 0}
-                            hideIfEmpty={hideEmtpySprites}
+                            render={state.isPaused}
+                            hideIfEmpty
                             onClick={e => {
                                 if (e.ctrlKey) {
                                     setFocusedIndices(focusedIndices.concat(i));
@@ -111,28 +77,10 @@ export const SpriteManager: React.FunctionComponent<SpriteManagerProps> = ({
                                 }
                             }}
                             focused={focusedIndices.indexOf(i) > -1}
-                            honorTileSize={honorTileSize}
+                            honorTileSize
                         />
                     ))}
             </div>
-            {focusedIndices.length === 1 && (
-                <SingleSpriteDetail spriteIndex={focusedIndices[0]} />
-            )}
-            {focusedIndices.length > 1 && (
-                <div className={styles.focusedEntry}>
-                    {focusedIndices.length} focused sprites
-                    <button
-                        onClick={() => {
-                            const composed = uniq(
-                                composedSprites.concat(focusedIndices)
-                            );
-                            onComposedSpritesChanged(composed);
-                        }}
-                    >
-                        compose
-                    </button>
-                </div>
-            )}
         </div>
     );
 };

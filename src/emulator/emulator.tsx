@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import classnames from "classnames";
+import { useAppState, START_EMULATION, TOGGLE_PAUSE } from "../state";
 
 interface EmulatorProps {
     className?: string;
-    onEmulatorRunning: () => void;
 }
 
 function loadFile<T>(file: File): Promise<T> {
@@ -34,17 +34,17 @@ async function addFileToVirtualFS(file: File) {
 }
 
 export const Emulator: React.FunctionComponent<EmulatorProps> = props => {
+    const [state, dispatch] = useAppState();
     const [gameName, setGameName] = useState("");
-    const [isPaused, setIsPaused] = useState(false);
 
     function togglePause() {
-        if (isPaused) {
+        if (state.isPaused) {
             window.Module.resumeMainLoop();
         } else {
             window.Module.pauseMainLoop();
         }
 
-        setIsPaused(!isPaused);
+        dispatch(TOGGLE_PAUSE);
     }
 
     async function loadBiosFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -77,7 +77,7 @@ export const Emulator: React.FunctionComponent<EmulatorProps> = props => {
         );
         window.HEAP32[(argv >> 2) + 2] = 0;
 
-        props.onEmulatorRunning();
+        dispatch(START_EMULATION);
         window.Module._run_rom(2, argv);
     }
 
@@ -104,8 +104,8 @@ export const Emulator: React.FunctionComponent<EmulatorProps> = props => {
             </div>
             {debugButton}
             <button onClick={() => startGame()}>start emulation</button>
-            <button onClick={togglePause}>
-                {isPaused ? "resume" : "pause"}
+            <button disabled={!state.hasStarted} onClick={togglePause}>
+                {state.isPaused ? "resume" : "pause"}
             </button>
         </div>
     );

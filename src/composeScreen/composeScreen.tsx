@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useDrop } from "react-dnd";
-import { Sprite } from "../spriteManager/sprite";
+import { Sprite } from "../spriteTray/sprite";
 import { getBackdropColor, neoGeoColorToCSS } from "../palette/neoGeoPalette";
 import { uniqBy } from "lodash";
+import { useAppState } from "../state";
 
 import styles from "./composeScreen.module.css";
 
@@ -13,14 +14,12 @@ interface SpriteData {
 
 interface ComposeScreenProps {
     className?: string;
-    composedSprites: number[];
-    emulatorRunning: boolean;
 }
 
-export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
-    composedSprites,
-    emulatorRunning
-}) => {
+export const ComposeScreen: React.FunctionComponent<
+    ComposeScreenProps
+> = ({}) => {
+    const [state] = useAppState();
     const [divRef, setDivRef] = useState<null | HTMLDivElement>(null);
     const [spriteData, setSpriteData] = useState<SpriteData[]>([]);
 
@@ -59,7 +58,7 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
         />
     ));
 
-    const backgroundColor = emulatorRunning
+    const backgroundColor = state.isPaused
         ? neoGeoColorToCSS(getBackdropColor())
         : "transparent";
 
