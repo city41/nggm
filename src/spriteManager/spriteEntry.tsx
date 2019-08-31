@@ -11,10 +11,8 @@ interface SpriteEntryProps {
     render?: boolean;
     hideIfEmpty: boolean;
     focused?: boolean;
-    composed?: boolean;
     honorTileSize: boolean;
     onClick: (e: React.MouseEvent<HTMLDivElement>) => void;
-    onComposeChange: (composed: boolean) => void;
 }
 
 export const SpriteEntry: React.FunctionComponent<SpriteEntryProps> = ({
@@ -23,10 +21,8 @@ export const SpriteEntry: React.FunctionComponent<SpriteEntryProps> = ({
     render,
     hideIfEmpty,
     focused,
-    composed,
     honorTileSize,
-    onClick,
-    onComposeChange
+    onClick
 }) => {
     const classes = classnames(styles.root, className, {
         [styles.hide]: render && hideIfEmpty && isSpriteEmpty(spriteIndex),
@@ -36,12 +32,6 @@ export const SpriteEntry: React.FunctionComponent<SpriteEntryProps> = ({
     return (
         <div className={classes} onClick={onClick}>
             <div className={styles.index}>{spriteIndex}</div>
-            <input
-                className={styles.composeCheckbox}
-                type="checkbox"
-                checked={composed}
-                onChange={e => onComposeChange(e.target.checked)}
-            />
             <div className={styles.spriteContainer}>
                 {render && (
                     <Sprite

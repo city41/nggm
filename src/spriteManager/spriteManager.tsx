@@ -110,19 +110,7 @@ export const SpriteManager: React.FunctionComponent<SpriteManagerProps> = ({
                                     setShiftStartIndex(null);
                                 }
                             }}
-                            onComposeChange={composed => {
-                                if (composed) {
-                                    onComposedSpritesChanged(
-                                        composedSprites.concat(i)
-                                    );
-                                } else {
-                                    onComposedSpritesChanged(
-                                        composedSprites.filter(v => v !== i)
-                                    );
-                                }
-                            }}
                             focused={focusedIndices.indexOf(i) > -1}
-                            composed={composedSprites.indexOf(i) > -1}
                             honorTileSize={honorTileSize}
                         />
                     ))}
