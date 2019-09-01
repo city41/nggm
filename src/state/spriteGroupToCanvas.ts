@@ -49,18 +49,20 @@ function flip(
 // TODO: account for when sprites didn't compose right up to (0,0)
 export function spriteGroupToCanvas(
     spriteGroups: ExtractedSpriteGroup[],
-    animationCounter = 0
+    animationCounter = 0,
+    width?: number,
+    height?: number
 ): HTMLCanvasElement {
     const sprites = spriteGroups.reduce<ExtractedSprite[]>(
         (b, sg) => b.concat(sg.sprites),
         []
     );
 
-    const { width, height } = getDimensions(sprites);
+    const dimensions = getDimensions(sprites);
 
     const canvas = document.createElement("canvas");
-    canvas.width = width;
-    canvas.height = height;
+    canvas.width = width || dimensions.width;
+    canvas.height = height || dimensions.height;
 
     const context = canvas.getContext("2d");
 

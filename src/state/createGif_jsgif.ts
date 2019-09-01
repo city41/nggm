@@ -7,7 +7,11 @@ const TOTAL_FRAMES = 8;
 // loop set to zero means forever
 const FOREVER = 0;
 
-export function createGif(spriteGroups: ExtractedSpriteGroup[]): string {
+export function createGif(
+    spriteGroups: ExtractedSpriteGroup[],
+    width: number,
+    height: number
+): string {
     // @ts-ignore
     const encoder: any = new GIFEncoder();
     encoder.setRepeat(FOREVER);
@@ -17,7 +21,7 @@ export function createGif(spriteGroups: ExtractedSpriteGroup[]): string {
     encoder.start();
 
     for (let i = 0; i < TOTAL_FRAMES; ++i) {
-        const frameCanvas = spriteGroupToCanvas(spriteGroups, i);
+        const frameCanvas = spriteGroupToCanvas(spriteGroups, i, width, height);
         encoder.addFrame(frameCanvas.getContext("2d")!);
     }
 
