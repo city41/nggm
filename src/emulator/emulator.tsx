@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import classnames from "classnames";
 import { useAppState, START_EMULATION, TOGGLE_PAUSE } from "../state";
 
+import styles from "./emulator.module.css";
+
 interface EmulatorProps {
     className?: string;
 }
@@ -89,7 +91,7 @@ export const Emulator: React.FunctionComponent<EmulatorProps> = props => {
         );
     }
 
-    const classes = classnames(props.className);
+    const classes = classnames(styles.root, props.className);
 
     return (
         <div className={classes}>

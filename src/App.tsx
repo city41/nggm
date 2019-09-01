@@ -20,9 +20,6 @@ export const App: React.FunctionComponent = () => {
                         <Space.Fill>
                             <ComposeScreen />
                         </Space.Fill>
-                        <Space.RightResizable size="30%">
-                            <BuildImage />
-                        </Space.RightResizable>
                     </Space.TopResizable>
                     <Space.Fill>
                         <SpriteTray />

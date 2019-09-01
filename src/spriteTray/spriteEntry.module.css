@@ -1,7 +1,7 @@
 .root {
     height: 100%;
     background-color: #aaa;
-    width: 16px;
+    width: 12px;
     border-right: 1px dotted rgba(255, 255, 255, 0.5);
 
     display: flex;
@@ -30,7 +30,6 @@
     flex: 1;
 }
 
-.composeCheckbox {
-    justify-self: flex-start;
-    margin-bottom: 20px;
+.sprite {
+    transform: scale(0.75);
 }
