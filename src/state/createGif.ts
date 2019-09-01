@@ -37,9 +37,18 @@ function getFrameData(
 
         const paletteIndex = palette.indexOf(color);
 
+        // TODO: build a decent palette when we go over 256
+        // which will probably happen a lot with neo geo games
+        //
+        // TEMP: if ran out of palette space, all additional colors
+        // are ignored and that pixel gets color zero instead
         if (paletteIndex === -1) {
-            pixels[p] = palette.length;
-            palette.push(color);
+            if (palette.length < 256) {
+                pixels[p] = palette.length;
+                palette.push(color);
+            } else {
+                pixels[p] = 0;
+            }
         } else {
             pixels[p] = paletteIndex;
         }
