@@ -50,7 +50,10 @@ export function getNeoGeoPalette(paletteMemoryIndex: number): number[] {
 export function convertNeoGeoPaletteToRGB(
     neoGeoPalette: number[]
 ): Array<[number, number, number, number]> {
-    return neoGeoPalette.map(convertNeoGeoColorToRGBColor);
+    const mapped = neoGeoPalette.map(convertNeoGeoColorToRGBColor);
+
+    // the first color is always transparent
+    return [[0, 0, 0, 0], ...mapped.slice(1)];
 }
 
 export function getRgbFromNeoGeoPalette(

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import classnames from "classnames";
 import { useDrag } from "react-dnd";
 import { Tile } from "./tile";
@@ -12,6 +12,10 @@ interface SpriteProps {
     positioned: boolean;
     overrideX?: number;
     honorTileSize: boolean;
+}
+
+interface PreviewProps {
+    connect: any;
 }
 
 export const Sprite: React.FunctionComponent<SpriteProps> = ({

@@ -6,7 +6,7 @@ import React, {
     FunctionComponent
 } from "react";
 import { AppState } from "./types";
-import { extractSprite } from "./extractSprite";
+import { extractSprites } from "./extractSprites";
 
 export interface Action {
     type: "StartEmulation" | "TogglePause" | "ExtractSprite";
@@ -52,7 +52,7 @@ export function reducer(state: AppState, action: Action): AppState {
                 ...state,
                 extractedSprites: [
                     ...state.extractedSprites,
-                    extractSprite(spriteMemoryIndex, composedX)
+                    ...extractSprites(spriteMemoryIndex, composedX)
                 ]
             };
     }
