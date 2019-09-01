@@ -191,7 +191,7 @@ Module['FS_createPath']('/', 'virtualfs', true, true);
   }
 
  }
- loadPackage({"files": [{"start": 0, "audio": 0, "end": 336, "filename": "/virtualfs/gngeorc"}, {"start": 336, "audio": 0, "end": 221114, "filename": "/virtualfs/gngeo_data.zip"}], "remote_package_size": 221114, "package_uuid": "decba45b-3311-46ae-a5e6-8616e5ae5aa8"});
+ loadPackage({"files": [{"start": 0, "audio": 0, "end": 336, "filename": "/virtualfs/gngeorc"}, {"start": 336, "audio": 0, "end": 221114, "filename": "/virtualfs/gngeo_data.zip"}], "remote_package_size": 221114, "package_uuid": "a550b127-8ee3-4901-8862-2169d235c595"});
 
 })();
 
@@ -10127,6 +10127,18 @@ var _get_current_pal_addr = Module["_get_current_pal_addr"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
   return Module["asm"]["_get_current_pal_addr"].apply(null, arguments)
+};
+
+var _get_neogeo_frame_counter = Module["_get_neogeo_frame_counter"] = function() {
+  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
+  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
+  return Module["asm"]["_get_neogeo_frame_counter"].apply(null, arguments)
+};
+
+var _get_neogeo_frame_counter_speed = Module["_get_neogeo_frame_counter_speed"] = function() {
+  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
+  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
+  return Module["asm"]["_get_neogeo_frame_counter_speed"].apply(null, arguments)
 };
 
 var _get_rom_ctile_addr = Module["_get_rom_ctile_addr"] = function() {
