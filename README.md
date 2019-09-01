@@ -4,20 +4,17 @@ A Neo Geo background extraction tool. Once finished, it will enable making anima
 
 ## Status
 
-Extracting sprites pretty well, but still have a lot of work to do to massage them into a format ideal for grabbing animation frames
-
-Overall very raw, very early, not even close to alpha quality.
+The tool now successfully extracts simple backgrounds. There is still much work to be done:
+  
+* tools to nudge sprites, they are often wrapped incorrectly in raw memory
+* ability to support parallaxing backgrounds
+* support manual sprite animation
+* other tools to just make life easier (like drag a window to crop the size of the gif)
 
 ## How to use
 
-WARNING: very, _very_ raw at this point!
-
-1. Head to https://city41.github.io/ngbg
-2. click the first file dialog, labeled "BIOS" and choose your neogeo.zip bios file
-3. click the second file dialog, labeled "ROM" and choose your neo geo ROM zip file
-4. click "start emulation"
-5. get to a point in the game you like, then click "pause"
-6. click "dump sprites"
+For now, easiest to just watch this video and just play around with things
+https://www.youtube.com/watch?v=xgQp2mm5K20
 
 NOTE: gngeo is the emulator that is running, and it wants your ROM files to be in a very specific format. For me, my samsho2, mslug, kof94 and kof95 roms all work fine. But my aof, aof3, pulstar, etc ROMs do not load. I'll eventually fix this.
 
@@ -34,4 +31,3 @@ game controls:
 TODO: solidify p2 controls
 
 
-![screenshot](https://raw.githubusercontent.com/city41/ngbg/master/screenshot.png)
