@@ -47,7 +47,10 @@ function flip(
 }
 
 // TODO: account for when sprites didn't compose right up to (0,0)
-export function buildPng(spriteGroups: ExtractedSpriteGroup[]): string {
+export function spriteGroupToCanvas(
+    spriteGroups: ExtractedSpriteGroup[],
+    animationCounter = 0
+): HTMLCanvasElement {
     const sprites = spriteGroups.reduce<ExtractedSprite[]>(
         (b, sg) => b.concat(sg.sprites),
         []
@@ -68,7 +71,22 @@ export function buildPng(spriteGroups: ExtractedSpriteGroup[]): string {
     sortedSprites.forEach(sprite => {
         sprite.tiles.forEach(tile => {
             let tileCanvas = document.createElement("canvas");
-            renderTileToCanvas(tileCanvas, tile.tileIndex, tile.rgbPalette);
+
+            let tileIndex = tile.tileIndex;
+
+            if (tile.autoAnimation === 3) {
+                // 3 bit auto animation: the 4th bit is set, indicating this tile does 3bit auto animation
+                // that means take its tileIndex, and replace its bottom three bits with those of the animation counter
+                tileIndex =
+                    (tileIndex & ~7) + ((tileIndex + animationCounter) & 7);
+            }
+            if (tile.autoAnimation === 2) {
+                // 2 bit auto animation: like above but replace its bottom two bits
+                tileIndex =
+                    (tileIndex & ~3) + ((tileIndex + animationCounter) & 3);
+            }
+
+            renderTileToCanvas(tileCanvas, tileIndex, tile.rgbPalette);
 
             if (tile.horizontalFlip || tile.verticalFlip) {
                 tileCanvas = flip(tileCanvas, tile);
@@ -78,5 +96,5 @@ export function buildPng(spriteGroups: ExtractedSpriteGroup[]): string {
         });
     });
 
-    return canvas.toDataURL("png");
+    return canvas;
 }

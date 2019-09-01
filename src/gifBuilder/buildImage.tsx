@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useAppState } from "../state";
-import { buildPng } from "../state/buildPng";
+import { createGif } from "../state/createGif";
 
 export const BuildImage: React.FunctionComponent = () => {
     const [dataUrl, setDataUrl] = useState<null | string>(null);
@@ -9,11 +9,12 @@ export const BuildImage: React.FunctionComponent = () => {
     return (
         <div>
             <button
-                onClick={() =>
-                    setDataUrl(buildPng(state.extractedSpriteGroups))
-                }
+                onClick={() => {
+                    const dataUrl = createGif(state.extractedSpriteGroups);
+                    setDataUrl(dataUrl);
+                }}
             >
-                build image
+                build gif
             </button>
             {dataUrl && <img src={dataUrl} />}
         </div>
