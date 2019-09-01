@@ -15,14 +15,12 @@ interface ComposeScreenProps {
     className?: string;
 }
 
-const RAF_COUNTDOWN = 10;
-
 export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
     className
 }) => {
     const [animationCounter, setAnimationCounter] = useState({
         animation: 0,
-        rafFrameCountdown: RAF_COUNTDOWN
+        rafFrameCountdown: 0
     });
     const [runPreview, setRunPreview] = useState(false);
     const [state, dispatch] = useAppState();
@@ -30,6 +28,9 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
 
     useEffect(() => {
         if (runPreview) {
+            // minus one because on my machine the animation can't quite keep up
+            const frameCountdown =
+                window.Module._get_neogeo_frame_counter_speed() - 1;
             requestAnimationFrame(() => {
                 const diff = animationCounter.rafFrameCountdown === 0 ? 1 : 0;
 
@@ -37,7 +38,7 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
                     animation: animationCounter.animation + diff,
                     rafFrameCountdown:
                         diff === 1
-                            ? RAF_COUNTDOWN
+                            ? frameCountdown
                             : animationCounter.rafFrameCountdown - 1
                 });
             });

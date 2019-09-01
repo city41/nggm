@@ -10,12 +10,13 @@ const FOREVER = 0;
 export function createGif(
     spriteGroups: ExtractedSpriteGroup[],
     width: number,
-    height: number
+    height: number,
+    delay: number
 ): string {
     // @ts-ignore
     const encoder: any = new GIFEncoder();
     encoder.setRepeat(FOREVER);
-    encoder.setDelay(10);
+    encoder.setDelay(delay);
     encoder.setQuality(1);
 
     encoder.start();

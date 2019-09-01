@@ -10,6 +10,7 @@ declare global {
             _get_tile_ram_addr: () => number;
             _get_current_pal_addr: () => number;
             _get_neogeo_frame_counter: () => number;
+            _get_neogeo_frame_counter_speed: () => number;
         };
         HEAP32: Int32Array;
         HEAPU32: Int32Array;

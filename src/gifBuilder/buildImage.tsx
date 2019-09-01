@@ -5,8 +5,8 @@ import { createGif } from "../state/createGif_jsgif";
 export const BuildImage: React.FunctionComponent = () => {
     const [dataUrl, setDataUrl] = useState<null | string>(null);
     const [state] = useAppState();
-    const [width, setWidth] = useState("");
-    const [height, setHeight] = useState("");
+    const [width, setWidth] = useState("640");
+    const [height, setHeight] = useState("256");
 
     return (
         <div>
@@ -28,10 +28,14 @@ export const BuildImage: React.FunctionComponent = () => {
                 disabled={!width || !height}
                 onClick={() => {
                     if (width && height) {
+                        const delay =
+                            window.Module._get_neogeo_frame_counter_speed() *
+                            16;
                         const dataUrl = createGif(
                             state.extractedSpriteGroups,
                             Number(width),
-                            Number(height)
+                            Number(height),
+                            delay
                         );
                         setDataUrl(dataUrl);
                     }

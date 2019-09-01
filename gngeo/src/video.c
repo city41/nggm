@@ -70,6 +70,10 @@ Uint32 dda_x_skip_i;
 unsigned int get_neogeo_frame_counter() {
     return neogeo_frame_counter;
 }
+
+unsigned int get_neogeo_frame_counter_speed() {
+    return neogeo_frame_counter_speed;
+}
 #endif
 
 static __inline__ Uint16 alpha_blend(Uint16 dest, Uint16 src, Uint8 a) {
