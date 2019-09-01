@@ -38,6 +38,33 @@ function haveSameSprites(a: ExtractedSpriteGroup, b: ExtractedSpriteGroup) {
     return isEqual(aIndices, bIndices);
 }
 
+/**
+ * Given a newly formed sprite group, if there are other sprite groups already from the same pauseId,
+ * then position this new group relative to them. This makes it so the user doesn't have to try and manually
+ * line up groups.
+ *
+ * example: Samurai Shodown title screen. User drags in background, then drags in "Samurai" sprite, the "Samurai"
+ * sprite will position itself properly on top of the background
+ */
+function positionSpriteGroupInRelationToExistingGroups(
+    newGroup: ExtractedSpriteGroup,
+    oldGroups: ExtractedSpriteGroup[]
+) {
+    const sameGroup = oldGroups.find(og => og.pauseId === newGroup.pauseId);
+
+    // first sprite from this pauseId? Then there is nothing to position
+    if (!sameGroup) {
+        return;
+    }
+
+    const screenToComposeDiffX =
+        sameGroup.sprites[0].composedX - sameGroup.sprites[0].screenX;
+
+    newGroup.sprites.forEach(
+        s => (s.composedX = s.screenX + screenToComposeDiffX)
+    );
+}
+
 export function reducer(state: AppState, action: Action): AppState {
     switch (action.type) {
         case "StartEmulation":
@@ -71,6 +98,11 @@ export function reducer(state: AppState, action: Action): AppState {
                 esg =>
                     esg.pauseId !== newSpriteGroup.pauseId ||
                     !haveSameSprites(esg, newSpriteGroup)
+            );
+
+            positionSpriteGroupInRelationToExistingGroups(
+                newSpriteGroup,
+                oldSpriteGroups
             );
 
             return {
