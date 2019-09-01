@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useAppState } from "../state";
-import { createGif } from "../state/createGif";
+import { createGif } from "../state/createGif_jsgif";
 
 export const BuildImage: React.FunctionComponent = () => {
     const [dataUrl, setDataUrl] = useState<null | string>(null);
