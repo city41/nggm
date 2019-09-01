@@ -2,10 +2,11 @@ import React from "react";
 import * as Space from "react-spaces";
 import { DndProvider } from "react-dnd";
 import HTML5Backend from "react-dnd-html5-backend";
+import { Provider as AppStateProvider } from "./state";
 import { Emulator } from "./emulator";
 import { SpriteTray } from "./spriteTray";
 import { ComposeScreen } from "./composeScreen";
-import { Provider as AppStateProvider } from "./state";
+import { BuildImage } from "./gifBuilder/buildImage";
 
 export const App: React.FunctionComponent = () => {
     return (
@@ -20,7 +21,7 @@ export const App: React.FunctionComponent = () => {
                             <ComposeScreen />
                         </Space.Fill>
                         <Space.RightResizable size="30%">
-                            <div>gif builder</div>
+                            <BuildImage />
                         </Space.RightResizable>
                     </Space.TopResizable>
                     <Space.Fill>
