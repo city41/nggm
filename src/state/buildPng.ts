@@ -18,6 +18,34 @@ function getDimensions(
     };
 }
 
+function flip(
+    canvas: HTMLCanvasElement,
+    tile: ExtractedTile
+): HTMLCanvasElement {
+    const xScale = tile.horizontalFlip ? -1 : 1;
+    const yScale = tile.verticalFlip ? -1 : 1;
+    const translateX = tile.horizontalFlip ? canvas.width : 0;
+    const translateY = tile.verticalFlip ? canvas.height : 0;
+
+    const newCanvas = document.createElement("canvas");
+    newCanvas.width = canvas.width;
+    newCanvas.height = canvas.height;
+
+    const context = newCanvas.getContext("2d");
+
+    if (context) {
+        context.save();
+        context.translate(translateX, translateY);
+        context.scale(xScale, yScale);
+
+        context.drawImage(canvas, 0, 0);
+
+        context.restore();
+    }
+
+    return newCanvas;
+}
+
 // TODO: account for when sprites didn't compose right up to (0,0)
 export function buildPng(sprites: ExtractedSprite[]): string {
     const { width, height } = getDimensions(sprites);
@@ -34,8 +62,12 @@ export function buildPng(sprites: ExtractedSprite[]): string {
 
     sortedSprites.forEach(sprite => {
         sprite.tiles.forEach(tile => {
-            const tileCanvas = document.createElement("canvas");
+            let tileCanvas = document.createElement("canvas");
             renderTileToCanvas(tileCanvas, tile.tileIndex, tile.rgbPalette);
+
+            if (tile.horizontalFlip || tile.verticalFlip) {
+                tileCanvas = flip(tileCanvas, tile);
+            }
 
             context!.drawImage(tileCanvas, sprite.composedX, tile.composedY);
         });
