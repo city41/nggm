@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import classnames from "classnames";
 import { useDrop } from "react-dnd";
 import { ExtractedSprite as ExtractedSpriteCmp } from "./extractedSprite";
@@ -15,11 +15,34 @@ interface ComposeScreenProps {
     className?: string;
 }
 
+const RAF_COUNTDOWN = 10;
+
 export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
     className
 }) => {
+    const [animationCounter, setAnimationCounter] = useState({
+        animation: 0,
+        rafFrameCountdown: RAF_COUNTDOWN
+    });
+    const [runPreview, setRunPreview] = useState(false);
     const [state, dispatch] = useAppState();
     const [divRef, setDivRef] = useState<null | HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (runPreview) {
+            requestAnimationFrame(() => {
+                const diff = animationCounter.rafFrameCountdown === 0 ? 1 : 0;
+
+                setAnimationCounter({
+                    animation: animationCounter.animation + diff,
+                    rafFrameCountdown:
+                        diff === 1
+                            ? RAF_COUNTDOWN
+                            : animationCounter.rafFrameCountdown - 1
+                });
+            });
+        }
+    });
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, dropRef] = useDrop({
@@ -49,6 +72,8 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
         <ExtractedSpriteCmp
             key={extractedSprite.spriteMemoryIndex}
             data={extractedSprite}
+            autoAnimate={runPreview}
+            animationCounter={animationCounter.animation}
         />
     ));
 
@@ -66,15 +91,24 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
     const finalClassName = classnames(styles.root, className);
 
     return (
-        <div
-            className={finalClassName}
-            ref={div => {
-                setDivRef(div);
-                dropRef(div);
-            }}
-            style={style}
-        >
-            {sprites}
+        <div>
+            <button onClick={() => setRunPreview(!runPreview)}>
+                {runPreview ? "stop" : "preview"}
+            </button>
+            <div>
+                {animationCounter.animation} (
+                {animationCounter.rafFrameCountdown})
+            </div>
+            <div
+                className={finalClassName}
+                ref={div => {
+                    setDivRef(div);
+                    dropRef(div);
+                }}
+                style={style}
+            >
+                {sprites}
+            </div>
         </div>
     );
 };

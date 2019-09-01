@@ -32,6 +32,8 @@ export interface ExtractedTile {
      * indicates whether this tile should flip horizontally
      */
     horizontalFlip: boolean;
+
+    autoAnimation: 0 | 2 | 3;
 }
 
 /**
