@@ -41,7 +41,8 @@ function getSpriteGroup(spriteMemoryIndex: number): number[] {
 
 export function extractSprites(
     spriteMemoryIndex: number,
-    composedX: number
+    composedX: number,
+    pauseId: number
 ): ExtractedSprite[] {
     const allSpriteMemoryIndices = getSpriteGroup(spriteMemoryIndex);
 
@@ -49,6 +50,7 @@ export function extractSprites(
         const spriteData = getSpriteData(smi, true);
         return {
             spriteMemoryIndex: smi,
+            pauseId,
             tiles: spriteData.tiles.map(convertTileDataToExtractedTile),
             screenX: spriteData.x,
             screenY: spriteData.y,

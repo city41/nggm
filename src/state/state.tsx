@@ -16,6 +16,7 @@ export interface ExtractSpriteAction {
     type: "ExtractSprite";
     spriteMemoryIndex: number;
     composedX: number;
+    pauseId?: number;
 }
 
 export const initialState: AppState = {
@@ -46,14 +47,30 @@ export function reducer(state: AppState, action: Action): AppState {
         case "ExtractSprite":
             const {
                 spriteMemoryIndex,
-                composedX
+                composedX,
+                pauseId
             } = action as ExtractSpriteAction;
+
+            const newSprites = extractSprites(
+                spriteMemoryIndex,
+                composedX,
+                // if the sprites came with their own pauseId, then they are existing sprites being moved,
+                // otherwise they are new sprites being added
+                typeof pauseId === "number" ? pauseId : state.pauseId
+            );
+
+            const oldSprites = state.extractedSprites.filter(
+                es =>
+                    !newSprites.some(
+                        ns =>
+                            ns.spriteMemoryIndex === es.spriteMemoryIndex &&
+                            ns.pauseId === es.pauseId
+                    )
+            );
+
             return {
                 ...state,
-                extractedSprites: [
-                    ...state.extractedSprites,
-                    ...extractSprites(spriteMemoryIndex, composedX)
-                ]
+                extractedSprites: [...oldSprites, ...newSprites]
             };
     }
 
@@ -89,11 +106,13 @@ export const START_EMULATION: Action = {
 
 export function extractSpriteAction(
     spriteMemoryIndex: number,
-    composedX: number
+    composedX: number,
+    pauseId: number
 ): ExtractSpriteAction {
     return {
         type: "ExtractSprite",
         spriteMemoryIndex,
-        composedX
+        composedX,
+        pauseId
     };
 }

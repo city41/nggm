@@ -1,4 +1,5 @@
 import React from "react";
+import { useDrag } from "react-dnd";
 import { ExtractedSprite as ExtractedSpriteData } from "../state/types";
 import { ExtractedTile } from "./extractedTile";
 
@@ -11,6 +12,15 @@ interface ExtractedSpriteProps {
 export const ExtractedSprite: React.FunctionComponent<ExtractedSpriteProps> = ({
     data
 }) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [_, dragRef] = useDrag({
+        item: {
+            spriteIndex: data.spriteMemoryIndex,
+            pauseId: data.pauseId,
+            type: "Sprite"
+        }
+    });
+
     const tiles = data.tiles.map((tileData, i) => (
         <ExtractedTile
             key={i}
@@ -30,7 +40,7 @@ export const ExtractedSprite: React.FunctionComponent<ExtractedSpriteProps> = ({
     };
 
     return (
-        <div className={styles.root} style={style}>
+        <div ref={dragRef} className={styles.root} style={style}>
             {tiles}
         </div>
     );

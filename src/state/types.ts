@@ -44,8 +44,16 @@ export interface ExtractedSprite {
      *
      * NOTE: since vram changes every frame, it is only safe to rely on this value
      * within one pauseId and while isPaused is true
+     *
+     * But can combine with pauseId to get a stable id
      */
     spriteMemoryIndex: number;
+
+    /**
+     * the pauseId that was active when this sprite was extracted. Combining this
+     * with spriteMemoryIndex creates a stable id
+     */
+    pauseId: number;
 
     /**
      * The tiles that make up this sprite

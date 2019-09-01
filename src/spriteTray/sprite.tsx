@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import classnames from "classnames";
 import { useDrag } from "react-dnd";
 import { Tile } from "./tile";
@@ -25,6 +25,7 @@ export const Sprite: React.FunctionComponent<SpriteProps> = ({
     overrideX,
     honorTileSize
 }) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, dragRef] = useDrag({
         item: { spriteIndex, type: "Sprite" }
     });
