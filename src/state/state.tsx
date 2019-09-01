@@ -23,7 +23,7 @@ export interface ExtractSpriteAction {
 export const initialState: AppState = {
     hasStarted: false,
     isPaused: false,
-    pauseId: -1,
+    pauseId: 0,
     extractedSpriteGroups: []
 };
 
@@ -65,6 +65,24 @@ function positionSpriteGroupInRelationToExistingGroups(
     );
 }
 
+function moveRelatedGroups(
+    focusedGroup: ExtractedSpriteGroup,
+    allGroups: ExtractedSpriteGroup[],
+    newComposedX: number
+) {
+    const xDiff = newComposedX - focusedGroup.sprites[0].composedX;
+
+    const sameGroup = allGroups.filter(
+        sg => sg.pauseId === focusedGroup.pauseId
+    );
+
+    sameGroup.forEach(group => {
+        group.sprites.forEach(s => {
+            s.composedX += xDiff;
+        });
+    });
+}
+
 export function reducer(state: AppState, action: Action): AppState {
     switch (action.type) {
         case "StartEmulation":
@@ -86,29 +104,56 @@ export function reducer(state: AppState, action: Action): AppState {
                 pauseId
             } = action as ExtractSpriteAction;
 
-            const newSpriteGroup = extractSpriteGroup(
-                spriteMemoryIndex,
-                composedX,
-                // if the sprite came with its own pauseId, then they are existing sprites being moved,
-                // otherwise they are new sprites being added
-                typeof pauseId === "number" ? pauseId : state.pauseId
-            );
+            if (pauseId) {
+                const currentSpriteGroup = state.extractedSpriteGroups.find(
+                    sg => {
+                        return (
+                            sg.pauseId === pauseId &&
+                            sg.sprites.some(
+                                s => s.spriteMemoryIndex === spriteMemoryIndex
+                            )
+                        );
+                    }
+                );
 
-            const oldSpriteGroups = state.extractedSpriteGroups.filter(
-                esg =>
-                    esg.pauseId !== newSpriteGroup.pauseId ||
-                    !haveSameSprites(esg, newSpriteGroup)
-            );
+                if (!currentSpriteGroup) {
+                    throw new Error(
+                        "Something is wrong, ExtractSprite action failed to find a matching currentSpriteGroup"
+                    );
+                }
 
-            positionSpriteGroupInRelationToExistingGroups(
-                newSpriteGroup,
-                oldSpriteGroups
-            );
+                moveRelatedGroups(
+                    currentSpriteGroup,
+                    state.extractedSpriteGroups,
+                    composedX
+                );
 
-            return {
-                ...state,
-                extractedSpriteGroups: [...oldSpriteGroups, newSpriteGroup]
-            };
+                return {
+                    ...state,
+                    extractedSpriteGroups: state.extractedSpriteGroups
+                };
+            } else {
+                const newSpriteGroup = extractSpriteGroup(
+                    spriteMemoryIndex,
+                    composedX,
+                    state.pauseId
+                );
+
+                const oldSpriteGroups = state.extractedSpriteGroups.filter(
+                    esg =>
+                        esg.pauseId !== newSpriteGroup.pauseId ||
+                        !haveSameSprites(esg, newSpriteGroup)
+                );
+                positionSpriteGroupInRelationToExistingGroups(
+                    newSpriteGroup,
+                    oldSpriteGroups
+                );
+
+                return {
+                    ...state,
+                    extractedSpriteGroups: [...oldSpriteGroups, newSpriteGroup]
+                };
+            }
     }
 
     return assertUnreachable(action.type);
