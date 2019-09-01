@@ -5,8 +5,9 @@ import React, {
     Dispatch,
     FunctionComponent
 } from "react";
-import { AppState } from "./types";
-import { extractSprites } from "./extractSprites";
+import { AppState, ExtractedSpriteGroup } from "./types";
+import { extractSpriteGroup } from "./extractSpriteGroup";
+import { isEqual } from "lodash";
 
 export interface Action {
     type: "StartEmulation" | "TogglePause" | "ExtractSprite";
@@ -23,11 +24,18 @@ export const initialState: AppState = {
     hasStarted: false,
     isPaused: false,
     pauseId: -1,
-    extractedSprites: []
+    extractedSpriteGroups: []
 };
 
 function assertUnreachable(_: never): never {
     throw new Error("Non exhaustive switch statement");
+}
+
+function haveSameSprites(a: ExtractedSpriteGroup, b: ExtractedSpriteGroup) {
+    const aIndices = a.sprites.map(es => es.spriteMemoryIndex).sort();
+    const bIndices = b.sprites.map(es => es.spriteMemoryIndex).sort();
+
+    return isEqual(aIndices, bIndices);
 }
 
 export function reducer(state: AppState, action: Action): AppState {
@@ -51,26 +59,23 @@ export function reducer(state: AppState, action: Action): AppState {
                 pauseId
             } = action as ExtractSpriteAction;
 
-            const newSprites = extractSprites(
+            const newSpriteGroup = extractSpriteGroup(
                 spriteMemoryIndex,
                 composedX,
-                // if the sprites came with their own pauseId, then they are existing sprites being moved,
+                // if the sprite came with its own pauseId, then they are existing sprites being moved,
                 // otherwise they are new sprites being added
                 typeof pauseId === "number" ? pauseId : state.pauseId
             );
 
-            const oldSprites = state.extractedSprites.filter(
-                es =>
-                    !newSprites.some(
-                        ns =>
-                            ns.spriteMemoryIndex === es.spriteMemoryIndex &&
-                            ns.pauseId === es.pauseId
-                    )
+            const oldSpriteGroups = state.extractedSpriteGroups.filter(
+                esg =>
+                    esg.pauseId !== newSpriteGroup.pauseId ||
+                    !haveSameSprites(esg, newSpriteGroup)
             );
 
             return {
                 ...state,
-                extractedSprites: [...oldSprites, ...newSprites]
+                extractedSpriteGroups: [...oldSpriteGroups, newSpriteGroup]
             };
     }
 

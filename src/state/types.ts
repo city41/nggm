@@ -40,6 +40,11 @@ export interface ExtractedTile {
  */
 export interface ExtractedSprite {
     /**
+     * The group this sprite belongs to
+     */
+    group: ExtractedSpriteGroup;
+
+    /**
      * offset into video RAM where this sprite came from.
      *
      * NOTE: since vram changes every frame, it is only safe to rely on this value
@@ -48,12 +53,6 @@ export interface ExtractedSprite {
      * But can combine with pauseId to get a stable id
      */
     spriteMemoryIndex: number;
-
-    /**
-     * the pauseId that was active when this sprite was extracted. Combining this
-     * with spriteMemoryIndex creates a stable id
-     */
-    pauseId: number;
 
     /**
      * The tiles that make up this sprite
@@ -83,6 +82,23 @@ export interface ExtractedSprite {
     composedY: number;
 }
 
+/**
+ * A sprite group is a set of sprites that are all stickied together
+ * The first sprite should not have sticky set, and the remaining ones should
+ */
+export interface ExtractedSpriteGroup {
+    /**
+     * the pauseId that was active when this sprite group was extracted. Combining this
+     * with spriteMemoryIndex creates a stable id
+     */
+    pauseId: number;
+
+    /**
+     * The sprites that make up the group
+     */
+    sprites: ExtractedSprite[];
+}
+
 export interface AppState {
     /**
      * indicates emulation has started, it may have since been paused
@@ -106,8 +122,8 @@ export interface AppState {
     pauseId: number;
 
     /**
-     * These are sprites that have been "severed" from the Neo Geo and preserved.
+     * These are sprite groups that have been "severed" from the Neo Geo and preserved.
      * They can be safely interacted with at any time
      */
-    extractedSprites: ExtractedSprite[];
+    extractedSpriteGroups: ExtractedSpriteGroup[];
 }

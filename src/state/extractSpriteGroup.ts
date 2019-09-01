@@ -1,4 +1,4 @@
-import { ExtractedSprite, ExtractedTile } from "./types";
+import { ExtractedSpriteGroup, ExtractedSprite, ExtractedTile } from "./types";
 import { getSpriteData, TileData } from "./spriteData";
 import {
     getNeoGeoPalette,
@@ -39,23 +39,35 @@ function getSpriteGroup(spriteMemoryIndex: number): number[] {
     return spriteMemoryIndices;
 }
 
-export function extractSprites(
+type ExtractedSpriteMinusGroup = Omit<ExtractedSprite, "group">;
+
+export function extractSpriteGroup(
     spriteMemoryIndex: number,
     composedX: number,
     pauseId: number
-): ExtractedSprite[] {
+): ExtractedSpriteGroup {
     const allSpriteMemoryIndices = getSpriteGroup(spriteMemoryIndex);
 
-    return allSpriteMemoryIndices.map((smi, i) => {
-        const spriteData = getSpriteData(smi, true);
-        return {
-            spriteMemoryIndex: smi,
-            pauseId,
-            tiles: spriteData.tiles.map(convertTileDataToExtractedTile),
-            screenX: spriteData.x,
-            screenY: spriteData.y,
-            composedX: composedX + i * 16,
-            composedY: spriteData.y
-        };
-    });
+    const sprites: ExtractedSpriteMinusGroup[] = allSpriteMemoryIndices.map(
+        (smi, i) => {
+            const spriteData = getSpriteData(smi, true);
+            return {
+                spriteMemoryIndex: smi,
+                tiles: spriteData.tiles.map(convertTileDataToExtractedTile),
+                screenX: spriteData.x,
+                screenY: spriteData.y,
+                composedX: composedX + i * 16,
+                composedY: spriteData.y
+            };
+        }
+    );
+
+    const group: ExtractedSpriteGroup = {
+        pauseId,
+        sprites: sprites as ExtractedSprite[]
+    };
+
+    sprites.forEach(s => ((s as ExtractedSprite).group = group));
+
+    return group;
 }

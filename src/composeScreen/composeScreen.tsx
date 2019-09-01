@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import classnames from "classnames";
 import { useDrop } from "react-dnd";
-import { ExtractedSprite } from "./extractedSprite";
+import { ExtractedSprite as ExtractedSpriteCmp } from "./extractedSprite";
 import {
     getBackdropNeoGeoColor,
     neoGeoColorToCSS
 } from "../palette/neoGeoPalette";
 import { useAppState, extractSpriteAction } from "../state";
+import { ExtractedSprite } from "../state/types";
 
 import styles from "./composeScreen.module.css";
 
@@ -38,8 +39,14 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
         }
     });
 
-    const sprites = state.extractedSprites.map(extractedSprite => (
-        <ExtractedSprite
+    const extractedSprites = state.extractedSpriteGroups.reduce<
+        ExtractedSprite[]
+    >((b, esg) => {
+        return b.concat(esg.sprites);
+    }, []);
+
+    const sprites = extractedSprites.map(extractedSprite => (
+        <ExtractedSpriteCmp
             key={extractedSprite.spriteMemoryIndex}
             data={extractedSprite}
         />
@@ -49,7 +56,7 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
         ? neoGeoColorToCSS(getBackdropNeoGeoColor())
         : "transparent";
 
-    const maxX = Math.max(0, ...state.extractedSprites.map(es => es.composedX));
+    const maxX = Math.max(0, ...extractedSprites.map(es => es.composedX));
 
     const style = {
         backgroundColor,

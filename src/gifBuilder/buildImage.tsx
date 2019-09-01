@@ -9,7 +9,9 @@ export const BuildImage: React.FunctionComponent = () => {
     return (
         <div>
             <button
-                onClick={() => setDataUrl(buildPng(state.extractedSprites))}
+                onClick={() =>
+                    setDataUrl(buildPng(state.extractedSpriteGroups))
+                }
             >
                 build image
             </button>

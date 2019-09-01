@@ -1,4 +1,4 @@
-import { ExtractedSprite, ExtractedTile } from "./types";
+import { ExtractedSpriteGroup, ExtractedSprite, ExtractedTile } from "./types";
 import { renderTileToCanvas } from "./renderTileToCanvas";
 
 function getDimensions(
@@ -47,7 +47,12 @@ function flip(
 }
 
 // TODO: account for when sprites didn't compose right up to (0,0)
-export function buildPng(sprites: ExtractedSprite[]): string {
+export function buildPng(spriteGroups: ExtractedSpriteGroup[]): string {
+    const sprites = spriteGroups.reduce<ExtractedSprite[]>(
+        (b, sg) => b.concat(sg.sprites),
+        []
+    );
+
     const { width, height } = getDimensions(sprites);
 
     const canvas = document.createElement("canvas");
