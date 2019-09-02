@@ -25,7 +25,8 @@ export interface Action {
         | "ToggleVisibilityOfGroup"
         | "NewLayer"
         | "DeleteLayer"
-        | "ToggleVisibilityOfLayer";
+        | "ToggleVisibilityOfLayer"
+        | "SetFocusedLayer";
 }
 
 export interface ExtractSpriteAction {
@@ -52,6 +53,11 @@ export interface DeleteLayerAction {
 
 export interface ToggleVisibilityOfLayerAction {
     type: "ToggleVisibilityOfLayer";
+    layer: Layer;
+}
+
+export interface SetFocusedLayerAction {
+    type: "SetFocusedLayer";
     layer: Layer;
 }
 
@@ -200,10 +206,11 @@ export function reducer(state: AppState, action: Action): AppState {
                     state.pauseId
                 );
 
-                const layer = state.layers[state.layers.length - 1] || {
-                    groups: [newSpriteGroup],
-                    hidden: false
-                };
+                const layer = state.layers[state.focusedLayerIndex || -1] ||
+                    state.layers[state.layers.length - 1] || {
+                        groups: [newSpriteGroup],
+                        hidden: false
+                    };
 
                 const oldSpriteGroups = layer.groups.filter(
                     esg =>
@@ -315,7 +322,8 @@ export function reducer(state: AppState, action: Action): AppState {
 
             return {
                 ...state,
-                layers: state.layers.filter(l => l !== layer)
+                layers: state.layers.filter(l => l !== layer),
+                focusedLayerIndex: -1
             };
         }
 
@@ -336,6 +344,15 @@ export function reducer(state: AppState, action: Action): AppState {
             return {
                 ...state,
                 layers
+            };
+        }
+
+        case "SetFocusedLayer": {
+            const { layer } = action as SetFocusedLayerAction;
+
+            return {
+                ...state,
+                focusedLayerIndex: state.layers.indexOf(layer)
             };
         }
     }
@@ -421,6 +438,13 @@ export function toggleVisiblityOfLayerAction(
 ): ToggleVisibilityOfLayerAction {
     return {
         type: "ToggleVisibilityOfLayer",
+        layer
+    };
+}
+
+export function setFocusedLayerAction(layer: Layer): SetFocusedLayerAction {
+    return {
+        type: "SetFocusedLayer",
         layer
     };
 }

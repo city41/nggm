@@ -135,6 +135,12 @@ export interface AppState {
      * They can be safely interacted with at any time
      */
     layers: Layer[];
+
+    /**
+     * the indesx of the layer that will receive new sprite groups that get dragged in. If no
+     * layer is the focused layer, then the last layer gets the new sprite groups
+     */
+    focusedLayerIndex?: number;
 }
 
 export interface Layer {

@@ -6,7 +6,8 @@ import {
     toggleVisiblityOfGroupAction,
     NEW_LAYER,
     deleteLayerAction,
-    toggleVisiblityOfLayerAction
+    toggleVisiblityOfLayerAction,
+    setFocusedLayerAction
 } from "../state";
 import { Layer as LayerData, ExtractedSpriteGroup } from "../state/types";
 
@@ -40,6 +41,8 @@ interface LayerProps {
     onGroupToggleVisibility: (group: ExtractedSpriteGroup) => void;
     onDelete: () => void;
     onToggleVisibility: () => void;
+    onClick: () => void;
+    focused?: boolean;
 }
 
 const Layer: React.FunctionComponent<LayerProps> = ({
@@ -47,7 +50,9 @@ const Layer: React.FunctionComponent<LayerProps> = ({
     onDelete,
     onToggleVisibility,
     onGroupDelete,
-    onGroupToggleVisibility
+    onGroupToggleVisibility,
+    onClick,
+    focused
 }) => {
     const groups = layer.groups.map((group, i) => (
         <Group
@@ -57,8 +62,13 @@ const Layer: React.FunctionComponent<LayerProps> = ({
             onToggleVisibility={() => onGroupToggleVisibility(group)}
         />
     ));
+
+    const classes = classnames(styles.layer, {
+        [styles.focused]: focused
+    });
+
     return (
-        <div className={styles.layer}>
+        <div className={classes} onClick={() => onClick()}>
             <div>
                 layer
                 <button onClick={() => onDelete()}>delete</button>
@@ -84,6 +94,8 @@ export const Layers: React.FunctionComponent<LayersProps> = ({ className }) => {
         <Layer
             key={i}
             layer={layer}
+            focused={i === state.focusedLayerIndex}
+            onClick={() => dispatch(setFocusedLayerAction(layer))}
             onDelete={() => dispatch(deleteLayerAction(layer))}
             onToggleVisibility={() =>
                 dispatch(toggleVisiblityOfLayerAction(layer))
