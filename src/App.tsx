@@ -6,7 +6,6 @@ import { Provider as AppStateProvider } from "./state";
 import { Emulator } from "./emulator";
 import { SpriteTray } from "./spriteTray";
 import { ComposeScreen } from "./composeScreen";
-import { BuildImage } from "./gifBuilder/buildImage";
 
 export const App: React.FunctionComponent = () => {
     return (
@@ -20,9 +19,6 @@ export const App: React.FunctionComponent = () => {
                         <Space.Fill>
                             <ComposeScreen />
                         </Space.Fill>
-                        <Space.RightResizable size="30%">
-                            <BuildImage />
-                        </Space.RightResizable>
                     </Space.TopResizable>
                     <Space.Fill>
                         <SpriteTray />

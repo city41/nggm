@@ -8,6 +8,7 @@ import {
 } from "../palette/neoGeoPalette";
 import { useAppState, extractSpriteAction, HANDLE_NEGATIVES } from "../state";
 import { ExtractedSprite } from "../state/types";
+import { BuildGifModal } from "../gifBuilder/buildGifModal";
 
 import styles from "./composeScreen.module.css";
 
@@ -23,6 +24,7 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
         rafFrameCountdown: 0
     });
     const [runPreview, setRunPreview] = useState(false);
+    const [showBuildGifModal, setShowBuildGifModal] = useState(false);
     const [state, dispatch] = useAppState();
     const [divRef, setDivRef] = useState<null | HTMLDivElement>(null);
 
@@ -92,27 +94,36 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
     const finalClassName = classnames(styles.root, className);
 
     return (
-        <div>
-            <button onClick={() => setRunPreview(!runPreview)}>
-                {runPreview ? "stop" : "preview"}
-            </button>
+        <>
+            <BuildGifModal
+                isOpen={showBuildGifModal}
+                onRequestClose={() => setShowBuildGifModal(false)}
+            />
             <div>
-                {animationCounter.animation} (
-                {animationCounter.rafFrameCountdown})
+                <button onClick={() => setRunPreview(!runPreview)}>
+                    {runPreview ? "stop" : "preview"}
+                </button>
+                <button onClick={() => setShowBuildGifModal(true)}>
+                    build gif
+                </button>
+                <div>
+                    {animationCounter.animation} (
+                    {animationCounter.rafFrameCountdown})
+                </div>
+                <div
+                    className={finalClassName}
+                    ref={div => {
+                        setDivRef(div);
+                        dropRef(div);
+                    }}
+                    style={style}
+                >
+                    {sprites}
+                </div>
+                <button onClick={() => dispatch(HANDLE_NEGATIVES)}>
+                    handle negatives
+                </button>
             </div>
-            <div
-                className={finalClassName}
-                ref={div => {
-                    setDivRef(div);
-                    dropRef(div);
-                }}
-                style={style}
-            >
-                {sprites}
-            </div>
-            <button onClick={() => dispatch(HANDLE_NEGATIVES)}>
-                handle negatives
-            </button>
-        </div>
+        </>
     );
 };

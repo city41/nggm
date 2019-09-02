@@ -7,12 +7,16 @@ export const BuildImage: React.FunctionComponent = () => {
     const [state] = useAppState();
     const [width, setWidth] = useState("640");
     const [height, setHeight] = useState("384");
+    console.log("BuildImage render");
 
     return (
         <div>
             width
             <input
                 value={width}
+                onKeyDown={e => {
+                    console.log("input keydown");
+                }}
                 onChange={e => {
                     setWidth(e.target.value || "");
                 }}
@@ -31,11 +35,13 @@ export const BuildImage: React.FunctionComponent = () => {
                         const delay =
                             window.Module._get_neogeo_frame_counter_speed() *
                             16;
-                        const dataUrl = createGif(
+                        createGif(
                             state.extractedSpriteGroups,
                             Number(width),
                             Number(height),
-                            delay
+                            delay,
+                            () => {},
+                            setDataUrl
                         );
                         setDataUrl(dataUrl);
                     }
