@@ -163,6 +163,25 @@ function pushDownOutOfNegative(
     return groups;
 }
 
+// TODO: make this create new groups and not mutate to support undo/redo in future
+function pushInOutOfNegative(
+    groups: ExtractedSpriteGroup[]
+): ExtractedSpriteGroup[] {
+    const sprites = groups.reduce<ExtractedSprite[]>((ss, sg) => {
+        return ss.concat(sg.sprites);
+    }, []);
+
+    const mostNegative = Math.min(...sprites.map(s => s.composedX));
+
+    if (mostNegative < 0) {
+        const nudge = mostNegative * -1;
+
+        sprites.forEach(s => (s.composedX += nudge));
+    }
+
+    return groups;
+}
+
 function mirrorSpritesToRight(sprites: ExtractedSprite[]): ExtractedSprite[] {
     const maxX = Math.max(...sprites.map(t => t.composedX)) + 16;
 
@@ -170,7 +189,7 @@ function mirrorSpritesToRight(sprites: ExtractedSprite[]): ExtractedSprite[] {
         .map(sprite => {
             return {
                 ...sprite,
-                spriteMemoryIndex: sprite.spriteMemoryIndex + 2000,
+                spriteMemoryIndex: sprite.spriteMemoryIndex,
                 composedX: 2 * maxX - (sprite.composedX + 16),
                 tiles: sprite.tiles.map(t => {
                     return {
@@ -192,7 +211,7 @@ function mirrorSpritesToLeft(sprites: ExtractedSprite[]): ExtractedSprite[] {
         .map(sprite => {
             return {
                 ...sprite,
-                spriteMemoryIndex: sprite.spriteMemoryIndex + 4000,
+                spriteMemoryIndex: sprite.spriteMemoryIndex,
                 composedX: minX - width + (maxX - (sprite.composedX + 16)),
                 tiles: sprite.tiles.map(t => {
                     return {
@@ -231,7 +250,7 @@ function extendGroupsViaMirroring(
     newLeftGroup.sprites.forEach(s => (s.group = newLeftGroup));
     newRightGroup.sprites.forEach(s => (s.group = newRightGroup));
 
-    return [...groups, newLeftGroup, newRightGroup];
+    return [newLeftGroup, newRightGroup];
 }
 
 export function reducer(state: AppState, action: Action): AppState {
@@ -465,23 +484,17 @@ export function reducer(state: AppState, action: Action): AppState {
         case "ExtendLayerViaMirror": {
             const { layer } = action as ExtendLayerViaMirrorAction;
 
-            if (layer.extendedViaMirror) {
-                return state;
-            }
+            const mirroredGroups = extendGroupsViaMirroring(
+                layer.groups,
+                state.pauseId
+            );
 
-            const layers = state.layers.map(l => {
-                if (l === layer) {
-                    return {
-                        ...l,
-                        groups: extendGroupsViaMirroring(
-                            l.groups,
-                            state.pauseId
-                        ),
-                        extendedViaMirror: true
-                    };
-                } else {
-                    return l;
-                }
+            pushInOutOfNegative(mirroredGroups);
+
+            const layers = state.layers.concat({
+                groups: mirroredGroups,
+                hidden: false,
+                extendedViaMirror: false
             });
 
             return {

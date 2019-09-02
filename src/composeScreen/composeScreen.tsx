@@ -121,11 +121,15 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
         ? neoGeoColorToCSS(getBackdropNeoGeoColor())
         : "transparent";
 
-    const maxX = Math.max(0, ...extractedSprites.map(es => es.composedX));
+    const maxX = Math.max(...extractedSprites.map(es => es.composedX));
     const width = Math.max(maxX + 48, 320);
 
-    const maxY = Math.max(0, ...extractedSprites.map(es => es.composedY));
-    const height = Math.max(maxY, 240);
+    const maxY = Math.max(
+        ...extractedSprites.map(es =>
+            Math.max(...es.tiles.map(t => t.composedY))
+        )
+    );
+    const height = Math.max(maxY + 16, 240);
 
     const style = {
         backgroundColor,
