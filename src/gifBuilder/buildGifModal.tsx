@@ -37,8 +37,7 @@ export const BuildGifModal: React.FunctionComponent<BuildGifModalProps> = ({
 
             createGif(
                 extractedSpriteGroups,
-                640,
-                480,
+                state.crop,
                 delay,
                 (
                     canvas: HTMLCanvasElement,

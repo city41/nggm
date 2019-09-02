@@ -1,4 +1,9 @@
-import { ExtractedSpriteGroup, ExtractedSprite, ExtractedTile } from "./types";
+import {
+    Crop,
+    ExtractedSpriteGroup,
+    ExtractedSprite,
+    ExtractedTile
+} from "./types";
 import { renderTileToCanvas } from "./renderTileToCanvas";
 
 function getDimensions(
@@ -46,12 +51,39 @@ function flip(
     return newCanvas;
 }
 
+function cropCanvas(
+    fullCanvas: HTMLCanvasElement,
+    crop: Crop
+): HTMLCanvasElement {
+    const cropWidth = crop[1].x - crop[0].x;
+    const cropHeight = crop[1].y - crop[0].y;
+
+    const croppedCanvas = document.createElement("canvas");
+    croppedCanvas.width = cropWidth;
+    croppedCanvas.height = cropHeight;
+
+    const croppedCanvasContext = croppedCanvas.getContext("2d")!;
+
+    croppedCanvasContext.drawImage(
+        fullCanvas,
+        crop[0].x,
+        crop[0].y,
+        cropWidth,
+        cropHeight,
+        0,
+        0,
+        cropWidth,
+        cropHeight
+    );
+
+    return croppedCanvas;
+}
+
 // TODO: account for when sprites didn't compose right up to (0,0)
 export function spriteGroupToCanvas(
     spriteGroups: ExtractedSpriteGroup[],
     animationCounter = 0,
-    width?: number,
-    height?: number
+    crop?: Crop
 ): HTMLCanvasElement {
     const sprites = spriteGroups.reduce<ExtractedSprite[]>(
         (b, sg) => b.concat(sg.sprites),
@@ -61,8 +93,8 @@ export function spriteGroupToCanvas(
     const dimensions = getDimensions(sprites);
 
     const canvas = document.createElement("canvas");
-    canvas.width = width || dimensions.width;
-    canvas.height = height || dimensions.height;
+    canvas.width = dimensions.width;
+    canvas.height = dimensions.height;
 
     const context = canvas.getContext("2d");
 
@@ -98,5 +130,9 @@ export function spriteGroupToCanvas(
         });
     });
 
-    return canvas;
+    if (crop) {
+        return cropCanvas(canvas, crop);
+    } else {
+        return canvas;
+    }
 }

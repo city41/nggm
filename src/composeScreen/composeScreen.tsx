@@ -6,10 +6,17 @@ import {
     getBackdropNeoGeoColor,
     neoGeoColorToCSS
 } from "../palette/neoGeoPalette";
-import { useAppState, extractSpriteAction, HANDLE_NEGATIVES } from "../state";
+import {
+    useAppState,
+    extractSpriteAction,
+    HANDLE_NEGATIVES,
+    setCropAction,
+    CLEAR_CROP
+} from "../state";
 import { Layer, ExtractedSprite } from "../state/types";
 import { BuildGifModal } from "../gifBuilder/buildGifModal";
 import { Layers } from "./layers";
+import { CropRect } from "./cropRect";
 
 import styles from "./composeScreen.module.css";
 
@@ -28,6 +35,15 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
     const [showBuildGifModal, setShowBuildGifModal] = useState(false);
     const [state, dispatch] = useAppState();
     const [divRef, setDivRef] = useState<null | HTMLDivElement>(null);
+    const [isCropping, setIsCropping] = useState(false);
+    const [upperLeftCrop, setUpperLeftCrop] = useState<null | {
+        x: number;
+        y: number;
+    }>(null);
+    const [lowerRightCrop, setLowerRightCrop] = useState<null | {
+        x: number;
+        y: number;
+    }>(null);
 
     useEffect(() => {
         if (runPreview) {
@@ -63,6 +79,9 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
 
                 dispatch(extractSpriteAction(spriteIndex, composedX, pauseId));
             }
+        },
+        canDrop() {
+            return !isCropping;
         }
     });
 
@@ -94,6 +113,7 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
             data={extractedSprite}
             autoAnimate={runPreview}
             animationCounter={animationCounter.animation}
+            canDrag={!isCropping}
         />
     ));
 
@@ -102,10 +122,15 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
         : "transparent";
 
     const maxX = Math.max(0, ...extractedSprites.map(es => es.composedX));
+    const width = Math.max(maxX + 48, 320);
+
+    const maxY = Math.max(0, ...extractedSprites.map(es => es.composedY));
+    const height = Math.max(maxY, 240);
 
     const style = {
         backgroundColor,
-        width: Math.max(maxX + 48, 320)
+        width,
+        height
     };
 
     const finalClassName = classnames(styles.root, className);
@@ -118,6 +143,27 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
             />
             <div className={finalClassName}>
                 <div className={styles.toolbar}>
+                    <button
+                        disabled={isCropping}
+                        onClick={() => {
+                            setIsCropping(true);
+                            dispatch(CLEAR_CROP);
+                            setUpperLeftCrop(null);
+                            setLowerRightCrop(null);
+                        }}
+                    >
+                        crop
+                    </button>
+                    <button
+                        disabled={!state.crop}
+                        onClick={() => {
+                            dispatch(CLEAR_CROP);
+                            setUpperLeftCrop(null);
+                            setLowerRightCrop(null);
+                        }}
+                    >
+                        clear crop
+                    </button>
                     <button onClick={() => setRunPreview(!runPreview)}>
                         {runPreview ? "stop" : "preview"}
                     </button>
@@ -138,7 +184,68 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
                     }}
                     style={style}
                 >
+                    {isCropping && (
+                        <div
+                            className={styles.captureLayer}
+                            onMouseDown={(
+                                e: React.MouseEvent<HTMLDivElement>
+                            ) => {
+                                if (isCropping) {
+                                    const rect = (e.target as HTMLDivElement).getBoundingClientRect() as DOMRect;
+
+                                    const rawX = e.clientX - rect.x;
+                                    const rawY = e.clientY - rect.y;
+
+                                    const x = Math.floor(rawX / 16) * 16;
+                                    const y = Math.floor(rawY / 16) * 16;
+
+                                    setUpperLeftCrop({ x, y });
+                                }
+                            }}
+                            onMouseMove={e => {
+                                if (isCropping && upperLeftCrop) {
+                                    const rect = (e.target as HTMLDivElement).getBoundingClientRect() as DOMRect;
+
+                                    const rawX = e.clientX - rect.x;
+                                    const rawY = e.clientY - rect.y;
+
+                                    const x = Math.floor(rawX / 16) * 16;
+                                    const y = Math.floor(rawY / 16) * 16;
+
+                                    setLowerRightCrop({ x, y });
+                                }
+                            }}
+                            onMouseUp={e => {
+                                if (
+                                    isCropping &&
+                                    upperLeftCrop &&
+                                    lowerRightCrop
+                                ) {
+                                    dispatch(
+                                        setCropAction([
+                                            upperLeftCrop,
+                                            lowerRightCrop
+                                        ])
+                                    );
+                                    setIsCropping(false);
+                                }
+                            }}
+                        />
+                    )}
                     {sprites}
+                    {!!(
+                        (isCropping && upperLeftCrop && lowerRightCrop) ||
+                        state.crop
+                    ) && (
+                        <CropRect
+                            className={styles.cropRect}
+                            crop={
+                                state.crop || [upperLeftCrop!, lowerRightCrop!]
+                            }
+                            totalWidth={width}
+                            totalHeight={height}
+                        />
+                    )}
                 </div>
                 <button
                     className={styles.handleNegatives}

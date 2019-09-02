@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import {
     AppState,
+    Crop,
     Layer,
     ExtractedSpriteGroup,
     ExtractedSprite,
@@ -26,39 +27,46 @@ export interface Action {
         | "NewLayer"
         | "DeleteLayer"
         | "ToggleVisibilityOfLayer"
-        | "SetFocusedLayer";
+        | "SetFocusedLayer"
+        | "SetCrop"
+        | "ClearCrop";
 }
 
-export interface ExtractSpriteAction {
+export interface ExtractSpriteAction extends Action {
     type: "ExtractSprite";
     spriteMemoryIndex: number;
     composedX: number;
     pauseId?: number;
 }
 
-export interface DeleteGroupAction {
+export interface DeleteGroupAction extends Action {
     type: "DeleteGroup";
     group: ExtractedSpriteGroup;
 }
 
-export interface ToggleVisibilityOfGroupAction {
+export interface ToggleVisibilityOfGroupAction extends Action {
     type: "ToggleVisibilityOfGroup";
     group: ExtractedSpriteGroup;
 }
 
-export interface DeleteLayerAction {
+export interface DeleteLayerAction extends Action {
     type: "DeleteLayer";
     layer: Layer;
 }
 
-export interface ToggleVisibilityOfLayerAction {
+export interface ToggleVisibilityOfLayerAction extends Action {
     type: "ToggleVisibilityOfLayer";
     layer: Layer;
 }
 
-export interface SetFocusedLayerAction {
+export interface SetFocusedLayerAction extends Action {
     type: "SetFocusedLayer";
     layer: Layer;
+}
+
+export interface SetCropAction extends Action {
+    type: "SetCrop";
+    crop: Crop;
 }
 
 export const initialState: AppState = {
@@ -66,7 +74,8 @@ export const initialState: AppState = {
     isPaused: false,
     pauseId: 0,
     layers: [],
-    focusedLayerIndex: -1
+    focusedLayerIndex: -1,
+    crop: undefined
 };
 
 function assertUnreachable(_: never): never {
@@ -355,6 +364,22 @@ export function reducer(state: AppState, action: Action): AppState {
                 focusedLayerIndex: state.layers.indexOf(layer)
             };
         }
+
+        case "SetCrop": {
+            const { crop } = action as SetCropAction;
+
+            return {
+                ...state,
+                crop
+            };
+        }
+
+        case "ClearCrop": {
+            return {
+                ...state,
+                crop: undefined
+            };
+        }
     }
 
     return assertUnreachable(action.type);
@@ -448,3 +473,14 @@ export function setFocusedLayerAction(layer: Layer): SetFocusedLayerAction {
         layer
     };
 }
+
+export function setCropAction(crop: Crop): SetCropAction {
+    return {
+        type: "SetCrop",
+        crop
+    };
+}
+
+export const CLEAR_CROP: Action = {
+    type: "ClearCrop"
+};

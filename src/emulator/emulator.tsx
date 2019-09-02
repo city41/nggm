@@ -83,7 +83,12 @@ export const Emulator: React.FunctionComponent<EmulatorProps> = props => {
         window.HEAP32[(argv >> 2) + 2] = 0;
 
         dispatch(START_EMULATION);
-        window.Module._run_rom(2, argv);
+
+        try {
+            window.Module._run_rom(2, argv);
+        } catch (e) {
+            console.log("_run_rom threw");
+        }
     }
 
     let debugButton = null;

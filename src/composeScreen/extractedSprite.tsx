@@ -9,12 +9,14 @@ interface ExtractedSpriteProps {
     data: ExtractedSpriteData;
     autoAnimate?: boolean;
     animationCounter?: number;
+    canDrag: boolean;
 }
 
 export const ExtractedSprite: React.FunctionComponent<ExtractedSpriteProps> = ({
     data,
     autoAnimate,
-    animationCounter
+    animationCounter,
+    canDrag
 }) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, dragRef] = useDrag({
@@ -22,6 +24,9 @@ export const ExtractedSprite: React.FunctionComponent<ExtractedSpriteProps> = ({
             spriteIndex: data.spriteMemoryIndex,
             pauseId: data.group.pauseId,
             type: "Sprite"
+        },
+        canDrag() {
+            return canDrag;
         }
     });
 

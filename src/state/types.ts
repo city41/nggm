@@ -108,6 +108,21 @@ export interface ExtractedSpriteGroup {
     hidden: boolean;
 }
 
+export interface Layer {
+    /**
+     * The sprite groups that make up this layer. Within a layer, sprite groups from the same pauseId
+     * are moved together
+     */
+    groups: ExtractedSpriteGroup[];
+
+    /**
+     * Whether this entire layer is hidden
+     */
+    hidden: boolean;
+}
+
+export type Crop = [{ x: number; y: number }, { x: number; y: number }];
+
 export interface AppState {
     /**
      * indicates emulation has started, it may have since been paused
@@ -143,17 +158,10 @@ export interface AppState {
      * set to -1 to make no layer focused
      */
     focusedLayerIndex: number;
-}
-
-export interface Layer {
-    /**
-     * The sprite groups that make up this layer. Within a layer, sprite groups from the same pauseId
-     * are moved together
-     */
-    groups: ExtractedSpriteGroup[];
 
     /**
-     * Whether this entire layer is hidden
+     * A crop for the compose screen. When the gif is built, only
+     * the tiles inside the crop boundaries are considered
      */
-    hidden: boolean;
+    crop?: Crop;
 }

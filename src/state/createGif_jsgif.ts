@@ -1,4 +1,4 @@
-import { ExtractedSpriteGroup } from "./types";
+import { Crop, ExtractedSpriteGroup } from "./types";
 // @ts-ignore
 import { GIFEncoder } from "./jsgif/GIFEncoder";
 import { spriteGroupToCanvas } from "./spriteGroupToCanvas";
@@ -9,8 +9,7 @@ const FOREVER = 0;
 
 export function createGif(
     spriteGroups: ExtractedSpriteGroup[],
-    width: number,
-    height: number,
+    crop: Crop | undefined,
     delay: number,
     onFrame: (
         canvas: HTMLCanvasElement,
@@ -43,8 +42,7 @@ export function createGif(
         const frameCanvas = spriteGroupToCanvas(
             spriteGroups,
             animationCounter,
-            width,
-            height
+            crop
         );
         encoder.addFrame(frameCanvas.getContext("2d")!);
 
