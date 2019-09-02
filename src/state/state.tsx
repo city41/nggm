@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import {
     AppState,
+    Layer,
     ExtractedSpriteGroup,
     ExtractedSprite,
     ExtractedTile
@@ -21,7 +22,10 @@ export interface Action {
         | "ExtractSprite"
         | "HandleNegatives"
         | "DeleteGroup"
-        | "ToggleVisibilityOfGroup";
+        | "ToggleVisibilityOfGroup"
+        | "NewLayer"
+        | "DeleteLayer"
+        | "ToggleVisibilityOfLayer";
 }
 
 export interface ExtractSpriteAction {
@@ -39,6 +43,16 @@ export interface DeleteGroupAction {
 export interface ToggleVisibilityOfGroupAction {
     type: "ToggleVisibilityOfGroup";
     group: ExtractedSpriteGroup;
+}
+
+export interface DeleteLayerAction {
+    type: "DeleteLayer";
+    layer: Layer;
+}
+
+export interface ToggleVisibilityOfLayerAction {
+    type: "ToggleVisibilityOfLayer";
+    layer: Layer;
 }
 
 export const initialState: AppState = {
@@ -288,6 +302,42 @@ export function reducer(state: AppState, action: Action): AppState {
                 layers
             };
         }
+
+        case "NewLayer": {
+            return {
+                ...state,
+                layers: state.layers.concat({ groups: [], hidden: false })
+            };
+        }
+
+        case "DeleteLayer": {
+            const { layer } = action as DeleteLayerAction;
+
+            return {
+                ...state,
+                layers: state.layers.filter(l => l !== layer)
+            };
+        }
+
+        case "ToggleVisibilityOfLayer": {
+            const { layer } = action as DeleteLayerAction;
+
+            const layers = state.layers.map(l => {
+                if (l === layer) {
+                    return {
+                        ...l,
+                        hidden: !l.hidden
+                    };
+                } else {
+                    return l;
+                }
+            });
+
+            return {
+                ...state,
+                layers
+            };
+        }
     }
 
     return assertUnreachable(action.type);
@@ -352,5 +402,25 @@ export function toggleVisiblityOfGroupAction(
     return {
         type: "ToggleVisibilityOfGroup",
         group
+    };
+}
+
+export const NEW_LAYER: Action = {
+    type: "NewLayer"
+};
+
+export function deleteLayerAction(layer: Layer): DeleteLayerAction {
+    return {
+        type: "DeleteLayer",
+        layer
+    };
+}
+
+export function toggleVisiblityOfLayerAction(
+    layer: Layer
+): ToggleVisibilityOfLayerAction {
+    return {
+        type: "ToggleVisibilityOfLayer",
+        layer
     };
 }

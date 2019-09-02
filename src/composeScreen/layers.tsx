@@ -3,29 +3,28 @@ import classnames from "classnames";
 import {
     useAppState,
     deleteGroupAction,
-    toggleVisiblityOfGroupAction
+    toggleVisiblityOfGroupAction,
+    NEW_LAYER,
+    deleteLayerAction,
+    toggleVisiblityOfLayerAction
 } from "../state";
 import { Layer as LayerData, ExtractedSpriteGroup } from "../state/types";
 
 import styles from "./layers.module.css";
 
 interface GroupProps {
-    className?: string;
     group: ExtractedSpriteGroup;
     onDelete: () => void;
     onToggleVisibility: () => void;
 }
 
 const Group: React.FunctionComponent<GroupProps> = ({
-    className,
     group,
     onDelete,
     onToggleVisibility
 }) => {
-    const classes = classnames(className);
-
     return (
-        <div className={classes}>
+        <div className={styles.group}>
             {group.sprites[0].spriteMemoryIndex}{" "}
             <button onClick={() => onDelete()}>delete</button>
             <button onClick={() => onToggleVisibility()}>
@@ -39,10 +38,14 @@ interface LayerProps {
     layer: LayerData;
     onGroupDelete: (group: ExtractedSpriteGroup) => void;
     onGroupToggleVisibility: (group: ExtractedSpriteGroup) => void;
+    onDelete: () => void;
+    onToggleVisibility: () => void;
 }
 
 const Layer: React.FunctionComponent<LayerProps> = ({
     layer,
+    onDelete,
+    onToggleVisibility,
     onGroupDelete,
     onGroupToggleVisibility
 }) => {
@@ -55,8 +58,14 @@ const Layer: React.FunctionComponent<LayerProps> = ({
         />
     ));
     return (
-        <div>
-            <div>layer</div>
+        <div className={styles.layer}>
+            <div>
+                layer
+                <button onClick={() => onDelete()}>delete</button>
+                <button onClick={() => onToggleVisibility()}>
+                    {layer.hidden ? "show" : "hide"}
+                </button>
+            </div>
             {groups}
         </div>
     );
@@ -75,6 +84,10 @@ export const Layers: React.FunctionComponent<LayersProps> = ({ className }) => {
         <Layer
             key={i}
             layer={layer}
+            onDelete={() => dispatch(deleteLayerAction(layer))}
+            onToggleVisibility={() =>
+                dispatch(toggleVisiblityOfLayerAction(layer))
+            }
             onGroupDelete={group => dispatch(deleteGroupAction(group))}
             onGroupToggleVisibility={group =>
                 dispatch(toggleVisiblityOfGroupAction(group))
@@ -82,5 +95,10 @@ export const Layers: React.FunctionComponent<LayersProps> = ({ className }) => {
         />
     ));
 
-    return <div className={classes}>{layers}</div>;
+    return (
+        <div className={classes}>
+            <button onClick={() => dispatch(NEW_LAYER)}>new layer</button>
+            {layers}
+        </div>
+    );
 };
