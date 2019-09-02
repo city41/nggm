@@ -65,7 +65,8 @@ export const initialState: AppState = {
     hasStarted: false,
     isPaused: false,
     pauseId: 0,
-    layers: []
+    layers: [],
+    focusedLayerIndex: -1
 };
 
 function assertUnreachable(_: never): never {
@@ -172,12 +173,13 @@ export function reducer(state: AppState, action: Action): AppState {
             } = action as ExtractSpriteAction;
 
             if (pauseId) {
-                const groups = state.layers.reduce<ExtractedSpriteGroup[]>(
-                    (b, layer) => b.concat(layer.groups),
-                    []
-                );
+                const layer = state.layers[state.focusedLayerIndex];
 
-                const currentSpriteGroup = groups.find(sg => {
+                if (!layer) {
+                    return state;
+                }
+
+                const currentSpriteGroup = layer.groups.find(sg => {
                     return (
                         sg.pauseId === pauseId &&
                         sg.sprites.some(
@@ -187,18 +189,14 @@ export function reducer(state: AppState, action: Action): AppState {
                 });
 
                 if (!currentSpriteGroup) {
-                    throw new Error(
-                        "Something is wrong, ExtractSprite action failed to find a matching currentSpriteGroup"
-                    );
+                    return state;
                 }
 
-                const relatedGroups = state.layers
-                    .find(l => l.groups.indexOf(currentSpriteGroup) > -1)!
-                    .groups.filter(group => group !== currentSpriteGroup);
+                moveRelatedGroups(currentSpriteGroup, layer.groups, composedX);
 
-                moveRelatedGroups(currentSpriteGroup, relatedGroups, composedX);
-
-                return state;
+                return {
+                    ...state
+                };
             } else {
                 const newSpriteGroup = extractSpriteGroup(
                     spriteMemoryIndex,
@@ -206,12 +204,11 @@ export function reducer(state: AppState, action: Action): AppState {
                     state.pauseId
                 );
 
-                const layer = state.layers[state.focusedLayerIndex || -1] ||
+                const layer = state.layers[state.focusedLayerIndex] ||
                     state.layers[state.layers.length - 1] || {
                         groups: [newSpriteGroup],
                         hidden: false
                     };
-
                 const oldSpriteGroups = layer.groups.filter(
                     esg =>
                         esg.pauseId !== newSpriteGroup.pauseId ||
@@ -243,7 +240,9 @@ export function reducer(state: AppState, action: Action): AppState {
 
                 return {
                     ...state,
-                    layers
+                    layers,
+                    focusedLayerIndex:
+                        layers.length === 1 ? 0 : state.focusedLayerIndex
                 };
             }
 
@@ -313,7 +312,8 @@ export function reducer(state: AppState, action: Action): AppState {
         case "NewLayer": {
             return {
                 ...state,
-                layers: state.layers.concat({ groups: [], hidden: false })
+                layers: state.layers.concat({ groups: [], hidden: false }),
+                focusedLayerIndex: state.layers.length
             };
         }
 
