@@ -67,7 +67,10 @@ export const Emulator: React.FunctionComponent<EmulatorProps> = props => {
         }
 
         await addFileToVirtualFS(file);
-        setGameName(file.name.replace(".zip", ""));
+
+        const gameName = file.name.replace(".zip", "");
+
+        startGame(gameName);
     }
 
     function startGame(overrideGameName?: string) {
@@ -105,7 +108,6 @@ export const Emulator: React.FunctionComponent<EmulatorProps> = props => {
                 <input type="file" onChange={loadROMFile} />
             </div>
             {debugButton}
-            <button onClick={() => startGame()}>start emulation</button>
             <button disabled={!state.hasStarted} onClick={togglePause}>
                 {state.isPaused ? "resume" : "pause"}
             </button>
