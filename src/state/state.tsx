@@ -5,12 +5,21 @@ import React, {
     Dispatch,
     FunctionComponent
 } from "react";
-import { AppState, ExtractedSpriteGroup } from "./types";
+import {
+    AppState,
+    ExtractedSpriteGroup,
+    ExtractedSprite,
+    ExtractedTile
+} from "./types";
 import { extractSpriteGroup } from "./extractSpriteGroup";
 import { isEqual } from "lodash";
 
 export interface Action {
-    type: "StartEmulation" | "TogglePause" | "ExtractSprite";
+    type:
+        | "StartEmulation"
+        | "TogglePause"
+        | "ExtractSprite"
+        | "HandleNegatives";
 }
 
 export interface ExtractSpriteAction {
@@ -81,6 +90,28 @@ function moveRelatedGroups(
             s.composedX += xDiff;
         });
     });
+}
+
+function pushDownOutOfNegative(
+    groups: ExtractedSpriteGroup[]
+): ExtractedSpriteGroup[] {
+    const tiles = groups.reduce<ExtractedTile[]>((ts, sg) => {
+        const tiles = sg.sprites.reduce<ExtractedTile[]>((sts, s) => {
+            return sts.concat(s.tiles);
+        }, []);
+
+        return ts.concat(tiles);
+    }, []);
+
+    const mostNegative = Math.min(...tiles.map(t => t.composedY));
+
+    if (mostNegative < 0) {
+        const nudge = mostNegative * -1;
+
+        tiles.forEach(t => (t.composedY += nudge));
+    }
+
+    return groups;
 }
 
 export function reducer(state: AppState, action: Action): AppState {
@@ -154,6 +185,13 @@ export function reducer(state: AppState, action: Action): AppState {
                     extractedSpriteGroups: [...oldSpriteGroups, newSpriteGroup]
                 };
             }
+        case "HandleNegatives":
+            return {
+                ...state,
+                extractedSpriteGroups: pushDownOutOfNegative(
+                    state.extractedSpriteGroups
+                )
+            };
     }
 
     return assertUnreachable(action.type);
@@ -198,3 +236,7 @@ export function extractSpriteAction(
         pauseId
     };
 }
+
+export const HANDLE_NEGATIVES: Action = {
+    type: "HandleNegatives"
+};

@@ -6,7 +6,7 @@ export const BuildImage: React.FunctionComponent = () => {
     const [dataUrl, setDataUrl] = useState<null | string>(null);
     const [state] = useAppState();
     const [width, setWidth] = useState("640");
-    const [height, setHeight] = useState("256");
+    const [height, setHeight] = useState("384");
 
     return (
         <div>

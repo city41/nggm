@@ -6,7 +6,7 @@ import {
     getBackdropNeoGeoColor,
     neoGeoColorToCSS
 } from "../palette/neoGeoPalette";
-import { useAppState, extractSpriteAction } from "../state";
+import { useAppState, extractSpriteAction, HANDLE_NEGATIVES } from "../state";
 import { ExtractedSprite } from "../state/types";
 
 import styles from "./composeScreen.module.css";
@@ -110,6 +110,9 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
             >
                 {sprites}
             </div>
+            <button onClick={() => dispatch(HANDLE_NEGATIVES)}>
+                handle negatives
+            </button>
         </div>
     );
 };
