@@ -19,7 +19,9 @@ export interface Action {
         | "StartEmulation"
         | "TogglePause"
         | "ExtractSprite"
-        | "HandleNegatives";
+        | "HandleNegatives"
+        | "DeleteGroup"
+        | "ToggleVisibilityOfGroup";
 }
 
 export interface ExtractSpriteAction {
@@ -27,6 +29,16 @@ export interface ExtractSpriteAction {
     spriteMemoryIndex: number;
     composedX: number;
     pauseId?: number;
+}
+
+export interface DeleteGroupAction {
+    type: "DeleteGroup";
+    group: ExtractedSpriteGroup;
+}
+
+export interface ToggleVisibilityOfGroupAction {
+    type: "ToggleVisibilityOfGroup";
+    group: ExtractedSpriteGroup;
 }
 
 export const initialState: AppState = {
@@ -192,6 +204,35 @@ export function reducer(state: AppState, action: Action): AppState {
                     state.extractedSpriteGroups
                 )
             };
+        case "DeleteGroup": {
+            const { group } = action as DeleteGroupAction;
+
+            return {
+                ...state,
+                extractedSpriteGroups: state.extractedSpriteGroups.filter(
+                    g => g !== group
+                )
+            };
+        }
+        case "ToggleVisibilityOfGroup": {
+            const { group } = action as ToggleVisibilityOfGroupAction;
+
+            const groups = state.extractedSpriteGroups.map(g => {
+                if (g === group) {
+                    return {
+                        ...g,
+                        hidden: !g.hidden
+                    };
+                } else {
+                    return g;
+                }
+            });
+
+            return {
+                ...state,
+                extractedSpriteGroups: groups
+            };
+        }
     }
 
     return assertUnreachable(action.type);
@@ -240,3 +281,21 @@ export function extractSpriteAction(
 export const HANDLE_NEGATIVES: Action = {
     type: "HandleNegatives"
 };
+
+export function deleteGroupAction(
+    group: ExtractedSpriteGroup
+): DeleteGroupAction {
+    return {
+        type: "DeleteGroup",
+        group
+    };
+}
+
+export function toggleVisiblityOfGroupAction(
+    group: ExtractedSpriteGroup
+): ToggleVisibilityOfGroupAction {
+    return {
+        type: "ToggleVisibilityOfGroup",
+        group
+    };
+}

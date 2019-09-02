@@ -99,6 +99,13 @@ export interface ExtractedSpriteGroup {
      * The sprites that make up the group
      */
     sprites: ExtractedSprite[];
+
+    /**
+     * Whether the group is currently not being displayed in
+     * the compose window. This is just cosmetic and to make composing easier, if a gif is built,
+     * this group will be a part of it
+     */
+    hidden: boolean;
 }
 
 export interface AppState {

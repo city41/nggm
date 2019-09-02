@@ -9,6 +9,7 @@ import {
 import { useAppState, extractSpriteAction, HANDLE_NEGATIVES } from "../state";
 import { ExtractedSprite } from "../state/types";
 import { BuildGifModal } from "../gifBuilder/buildGifModal";
+import { Layers } from "./layers";
 
 import styles from "./composeScreen.module.css";
 
@@ -68,7 +69,11 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
     const extractedSprites = state.extractedSpriteGroups.reduce<
         ExtractedSprite[]
     >((b, esg) => {
-        return b.concat(esg.sprites);
+        if (esg.hidden) {
+            return b;
+        } else {
+            return b.concat(esg.sprites);
+        }
     }, []);
 
     const sprites = extractedSprites.map(extractedSprite => (
@@ -99,19 +104,22 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
                 isOpen={showBuildGifModal}
                 onRequestClose={() => setShowBuildGifModal(false)}
             />
-            <div>
-                <button onClick={() => setRunPreview(!runPreview)}>
-                    {runPreview ? "stop" : "preview"}
-                </button>
-                <button onClick={() => setShowBuildGifModal(true)}>
-                    build gif
-                </button>
-                <div>
-                    {animationCounter.animation} (
-                    {animationCounter.rafFrameCountdown})
+            <div className={finalClassName}>
+                <div className={styles.toolbar}>
+                    <button onClick={() => setRunPreview(!runPreview)}>
+                        {runPreview ? "stop" : "preview"}
+                    </button>
+                    <button onClick={() => setShowBuildGifModal(true)}>
+                        build gif
+                    </button>
+                    <div>
+                        {animationCounter.animation} (
+                        {animationCounter.rafFrameCountdown})
+                    </div>
                 </div>
+                <Layers className={styles.layers} />
                 <div
-                    className={finalClassName}
+                    className={styles.bg}
                     ref={div => {
                         setDivRef(div);
                         dropRef(div);
@@ -120,7 +128,10 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
                 >
                     {sprites}
                 </div>
-                <button onClick={() => dispatch(HANDLE_NEGATIVES)}>
+                <button
+                    className={styles.handleNegatives}
+                    onClick={() => dispatch(HANDLE_NEGATIVES)}
+                >
                     handle negatives
                 </button>
             </div>

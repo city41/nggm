@@ -64,7 +64,8 @@ export function extractSpriteGroup(
 
     const group: ExtractedSpriteGroup = {
         pauseId,
-        sprites: sprites as ExtractedSprite[]
+        sprites: sprites as ExtractedSprite[],
+        hidden: false
     };
 
     sprites.forEach(s => ((s as ExtractedSprite).group = group));
