@@ -7,7 +7,7 @@ import {
     neoGeoColorToCSS
 } from "../palette/neoGeoPalette";
 import { useAppState, extractSpriteAction, HANDLE_NEGATIVES } from "../state";
-import { ExtractedSprite } from "../state/types";
+import { Layer, ExtractedSprite } from "../state/types";
 import { BuildGifModal } from "../gifBuilder/buildGifModal";
 import { Layers } from "./layers";
 
@@ -66,15 +66,27 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
         }
     });
 
-    const extractedSprites = state.extractedSpriteGroups.reduce<
-        ExtractedSprite[]
-    >((b, esg) => {
-        if (esg.hidden) {
-            return b;
-        } else {
-            return b.concat(esg.sprites);
-        }
-    }, []);
+    const extractedSprites = state.layers.reduce<ExtractedSprite[]>(
+        (b, layer) => {
+            if (layer.hidden) {
+                return b;
+            } else {
+                const sprites = layer.groups.reduce<ExtractedSprite[]>(
+                    (b, group) => {
+                        if (group.hidden) {
+                            return b;
+                        } else {
+                            return b.concat(group.sprites);
+                        }
+                    },
+                    []
+                );
+
+                return b.concat(sprites);
+            }
+        },
+        []
+    );
 
     const sprites = extractedSprites.map(extractedSprite => (
         <ExtractedSpriteCmp

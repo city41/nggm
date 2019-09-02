@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Modal from "react-modal";
 import { createGif } from "../state/createGif_jsgif";
 import { useAppState } from "../state";
+import { ExtractedSpriteGroup } from "../state/types";
 
 type FrameStatus = { frame: number; totalFrames: number };
 
@@ -27,8 +28,15 @@ export const BuildGifModal: React.FunctionComponent<BuildGifModalProps> = ({
     useEffect(() => {
         if (isOpen) {
             const delay = window.Module._get_neogeo_frame_counter_speed() * 16;
+
+            const extractedSpriteGroups = state.layers.reduce<
+                ExtractedSpriteGroup[]
+            >((b, layer) => {
+                return b.concat(layer.groups);
+            }, []);
+
             createGif(
-                state.extractedSpriteGroups,
+                extractedSpriteGroups,
                 640,
                 480,
                 delay,

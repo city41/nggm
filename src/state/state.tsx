@@ -45,7 +45,7 @@ export const initialState: AppState = {
     hasStarted: false,
     isPaused: false,
     pauseId: 0,
-    extractedSpriteGroups: []
+    layers: []
 };
 
 function assertUnreachable(_: never): never {
@@ -104,6 +104,7 @@ function moveRelatedGroups(
     });
 }
 
+// TODO: make this create new groups and not mutate to support undo/redo in future
 function pushDownOutOfNegative(
     groups: ExtractedSpriteGroup[]
 ): ExtractedSpriteGroup[] {
@@ -133,6 +134,7 @@ export function reducer(state: AppState, action: Action): AppState {
                 ...state,
                 hasStarted: true
             };
+
         case "TogglePause":
             const nowPaused = !state.isPaused;
             return {
@@ -140,6 +142,8 @@ export function reducer(state: AppState, action: Action): AppState {
                 isPaused: nowPaused,
                 pauseId: nowPaused ? state.pauseId + 1 : state.pauseId
             };
+
+        // TODO: make this handler not mutate, to support undo/redo in the future
         case "ExtractSprite":
             const {
                 spriteMemoryIndex,
@@ -148,16 +152,19 @@ export function reducer(state: AppState, action: Action): AppState {
             } = action as ExtractSpriteAction;
 
             if (pauseId) {
-                const currentSpriteGroup = state.extractedSpriteGroups.find(
-                    sg => {
-                        return (
-                            sg.pauseId === pauseId &&
-                            sg.sprites.some(
-                                s => s.spriteMemoryIndex === spriteMemoryIndex
-                            )
-                        );
-                    }
+                const groups = state.layers.reduce<ExtractedSpriteGroup[]>(
+                    (b, layer) => b.concat(layer.groups),
+                    []
                 );
+
+                const currentSpriteGroup = groups.find(sg => {
+                    return (
+                        sg.pauseId === pauseId &&
+                        sg.sprites.some(
+                            s => s.spriteMemoryIndex === spriteMemoryIndex
+                        )
+                    );
+                });
 
                 if (!currentSpriteGroup) {
                     throw new Error(
@@ -165,16 +172,13 @@ export function reducer(state: AppState, action: Action): AppState {
                     );
                 }
 
-                moveRelatedGroups(
-                    currentSpriteGroup,
-                    state.extractedSpriteGroups,
-                    composedX
-                );
+                const relatedGroups = state.layers
+                    .find(l => l.groups.indexOf(currentSpriteGroup) > -1)!
+                    .groups.filter(group => group !== currentSpriteGroup);
 
-                return {
-                    ...state,
-                    extractedSpriteGroups: state.extractedSpriteGroups
-                };
+                moveRelatedGroups(currentSpriteGroup, relatedGroups, composedX);
+
+                return state;
             } else {
                 const newSpriteGroup = extractSpriteGroup(
                     spriteMemoryIndex,
@@ -182,55 +186,106 @@ export function reducer(state: AppState, action: Action): AppState {
                     state.pauseId
                 );
 
-                const oldSpriteGroups = state.extractedSpriteGroups.filter(
+                const layer = state.layers[state.layers.length - 1] || {
+                    groups: [newSpriteGroup],
+                    hidden: false
+                };
+
+                const oldSpriteGroups = layer.groups.filter(
                     esg =>
                         esg.pauseId !== newSpriteGroup.pauseId ||
                         !haveSameSprites(esg, newSpriteGroup)
                 );
+
+                // TODO: have this method not mutate to support undo/redo in the future
                 positionSpriteGroupInRelationToExistingGroups(
                     newSpriteGroup,
                     oldSpriteGroups
                 );
 
+                let layers;
+
+                if (state.layers.length === 0) {
+                    layers = [layer];
+                } else {
+                    layers = state.layers.map(l => {
+                        if (l === layer) {
+                            return {
+                                ...layer,
+                                groups: [...layer.groups, newSpriteGroup]
+                            };
+                        } else {
+                            return l;
+                        }
+                    });
+                }
+
                 return {
                     ...state,
-                    extractedSpriteGroups: [...oldSpriteGroups, newSpriteGroup]
+                    layers
                 };
             }
+
         case "HandleNegatives":
+            const layers = state.layers.map(layer => {
+                return {
+                    ...layer,
+                    groups: pushDownOutOfNegative(layer.groups)
+                };
+            });
+
             return {
                 ...state,
-                extractedSpriteGroups: pushDownOutOfNegative(
-                    state.extractedSpriteGroups
-                )
+                layers
             };
+
         case "DeleteGroup": {
             const { group } = action as DeleteGroupAction;
 
-            return {
-                ...state,
-                extractedSpriteGroups: state.extractedSpriteGroups.filter(
-                    g => g !== group
-                )
-            };
-        }
-        case "ToggleVisibilityOfGroup": {
-            const { group } = action as ToggleVisibilityOfGroupAction;
-
-            const groups = state.extractedSpriteGroups.map(g => {
-                if (g === group) {
+            const layers = state.layers.map(layer => {
+                if (layer.groups.indexOf(group) > -1) {
+                    const groups = layer.groups.filter(g => g !== group);
                     return {
-                        ...g,
-                        hidden: !g.hidden
+                        ...layer,
+                        groups
                     };
                 } else {
-                    return g;
+                    return layer;
                 }
             });
 
             return {
                 ...state,
-                extractedSpriteGroups: groups
+                layers
+            };
+        }
+        case "ToggleVisibilityOfGroup": {
+            const { group } = action as ToggleVisibilityOfGroupAction;
+
+            const layers = state.layers.map(layer => {
+                if (layer.groups.indexOf(group) > -1) {
+                    const groups = layer.groups.map(g => {
+                        if (g === group) {
+                            return {
+                                ...g,
+                                hidden: !g.hidden
+                            };
+                        } else {
+                            return g;
+                        }
+                    });
+                    return {
+                        ...layer,
+                        groups
+                    };
+                } else {
+                    return layer;
+                }
+            });
+
+            return {
+                ...state,
+                layers
             };
         }
     }

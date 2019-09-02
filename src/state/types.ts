@@ -131,8 +131,21 @@ export interface AppState {
     pauseId: number;
 
     /**
-     * These are sprite groups that have been "severed" from the Neo Geo and preserved.
+     * These are layers of sprite groups that have been "severed" from the Neo Geo and preserved.
      * They can be safely interacted with at any time
      */
-    extractedSpriteGroups: ExtractedSpriteGroup[];
+    layers: Layer[];
+}
+
+export interface Layer {
+    /**
+     * The sprite groups that make up this layer. Within a layer, sprite groups from the same pauseId
+     * are moved together
+     */
+    groups: ExtractedSpriteGroup[];
+
+    /**
+     * Whether this entire layer is hidden
+     */
+    hidden: boolean;
 }
