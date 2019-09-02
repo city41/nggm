@@ -119,6 +119,12 @@ export interface Layer {
      * Whether this entire layer is hidden
      */
     hidden: boolean;
+
+    /**
+     * indicates if this layer has been extended via mirroring.
+     * This is just a flag, to prevent extending more than once
+     */
+    extendedViaMirror: boolean;
 }
 
 export type Crop = [{ x: number; y: number }, { x: number; y: number }];

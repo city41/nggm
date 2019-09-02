@@ -29,7 +29,8 @@ export interface Action {
         | "ToggleVisibilityOfLayer"
         | "SetFocusedLayer"
         | "SetCrop"
-        | "ClearCrop";
+        | "ClearCrop"
+        | "ExtendLayerViaMirror";
 }
 
 export interface ExtractSpriteAction extends Action {
@@ -67,6 +68,11 @@ export interface SetFocusedLayerAction extends Action {
 export interface SetCropAction extends Action {
     type: "SetCrop";
     crop: Crop;
+}
+
+export interface ExtendLayerViaMirrorAction extends Action {
+    type: "ExtendLayerViaMirror";
+    layer: Layer;
 }
 
 export const initialState: AppState = {
@@ -155,6 +161,77 @@ function pushDownOutOfNegative(
     }
 
     return groups;
+}
+
+function mirrorSpritesToRight(sprites: ExtractedSprite[]): ExtractedSprite[] {
+    const maxX = Math.max(...sprites.map(t => t.composedX)) + 16;
+
+    return sprites
+        .map(sprite => {
+            return {
+                ...sprite,
+                spriteMemoryIndex: sprite.spriteMemoryIndex + 2000,
+                composedX: 2 * maxX - (sprite.composedX + 16),
+                tiles: sprite.tiles.map(t => {
+                    return {
+                        ...t,
+                        horizontalFlip: !t.horizontalFlip
+                    };
+                })
+            };
+        })
+        .reverse();
+}
+
+function mirrorSpritesToLeft(sprites: ExtractedSprite[]): ExtractedSprite[] {
+    const minX = Math.min(...sprites.map(t => t.composedX));
+    const maxX = Math.max(...sprites.map(t => t.composedX)) + 16;
+    const width = maxX - minX;
+
+    return sprites
+        .map(sprite => {
+            return {
+                ...sprite,
+                spriteMemoryIndex: sprite.spriteMemoryIndex + 4000,
+                composedX: minX - width + (maxX - (sprite.composedX + 16)),
+                tiles: sprite.tiles.map(t => {
+                    return {
+                        ...t,
+                        horizontalFlip: !t.horizontalFlip
+                    };
+                })
+            };
+        })
+        .reverse();
+}
+
+function extendGroupsViaMirroring(
+    groups: ExtractedSpriteGroup[],
+    pauseId: number
+): ExtractedSpriteGroup[] {
+    const sprites = groups.reduce<ExtractedSprite[]>((ss, group) => {
+        return ss.concat(group.sprites);
+    }, []);
+
+    const rightMirror = mirrorSpritesToRight(sprites);
+    const leftMirror = mirrorSpritesToLeft(sprites);
+
+    const newLeftGroup = {
+        pauseId,
+        hidden: false,
+        sprites: leftMirror
+    };
+
+    const newRightGroup = {
+        pauseId,
+        hidden: false,
+        sprites: rightMirror
+    };
+
+    newLeftGroup.sprites.forEach(s => (s.group = newLeftGroup));
+    newRightGroup.sprites.forEach(s => (s.group = newRightGroup));
+
+    return [...groups, newLeftGroup, newRightGroup];
 }
 
 export function reducer(state: AppState, action: Action): AppState {
@@ -321,7 +398,11 @@ export function reducer(state: AppState, action: Action): AppState {
         case "NewLayer": {
             return {
                 ...state,
-                layers: state.layers.concat({ groups: [], hidden: false }),
+                layers: state.layers.concat({
+                    groups: [],
+                    hidden: false,
+                    extendedViaMirror: false
+                }),
                 focusedLayerIndex: state.layers.length
             };
         }
@@ -378,6 +459,34 @@ export function reducer(state: AppState, action: Action): AppState {
             return {
                 ...state,
                 crop: undefined
+            };
+        }
+
+        case "ExtendLayerViaMirror": {
+            const { layer } = action as ExtendLayerViaMirrorAction;
+
+            if (layer.extendedViaMirror) {
+                return state;
+            }
+
+            const layers = state.layers.map(l => {
+                if (l === layer) {
+                    return {
+                        ...l,
+                        groups: extendGroupsViaMirroring(
+                            l.groups,
+                            state.pauseId
+                        ),
+                        extendedViaMirror: true
+                    };
+                } else {
+                    return l;
+                }
+            });
+
+            return {
+                ...state,
+                layers
             };
         }
     }
@@ -484,3 +593,12 @@ export function setCropAction(crop: Crop): SetCropAction {
 export const CLEAR_CROP: Action = {
     type: "ClearCrop"
 };
+
+export function extendLayerViaMirrorAction(
+    layer: Layer
+): ExtendLayerViaMirrorAction {
+    return {
+        type: "ExtendLayerViaMirror",
+        layer
+    };
+}

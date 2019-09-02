@@ -7,7 +7,8 @@ import {
     NEW_LAYER,
     deleteLayerAction,
     toggleVisiblityOfLayerAction,
-    setFocusedLayerAction
+    setFocusedLayerAction,
+    extendLayerViaMirrorAction
 } from "../state";
 import { Layer as LayerData, ExtractedSpriteGroup } from "../state/types";
 
@@ -42,6 +43,7 @@ interface LayerProps {
     onDelete: () => void;
     onToggleVisibility: () => void;
     onClick: () => void;
+    onExtendViaMirror: () => void;
     focused?: boolean;
 }
 
@@ -52,6 +54,7 @@ const Layer: React.FunctionComponent<LayerProps> = ({
     onGroupDelete,
     onGroupToggleVisibility,
     onClick,
+    onExtendViaMirror,
     focused
 }) => {
     const groups = layer.groups.map((group, i) => (
@@ -74,6 +77,12 @@ const Layer: React.FunctionComponent<LayerProps> = ({
                 <button onClick={() => onDelete()}>delete</button>
                 <button onClick={() => onToggleVisibility()}>
                     {layer.hidden ? "show" : "hide"}
+                </button>
+                <button
+                    disabled={layer.extendedViaMirror}
+                    onClick={() => onExtendViaMirror()}
+                >
+                    extend via mirror
                 </button>
             </div>
             {groups}
@@ -103,6 +112,9 @@ export const Layers: React.FunctionComponent<LayersProps> = ({ className }) => {
             onGroupDelete={group => dispatch(deleteGroupAction(group))}
             onGroupToggleVisibility={group =>
                 dispatch(toggleVisiblityOfGroupAction(group))
+            }
+            onExtendViaMirror={() =>
+                dispatch(extendLayerViaMirrorAction(layer))
             }
         />
     ));
