@@ -141,9 +141,11 @@ function moveRelatedGroups(
 }
 
 // TODO: make this create new groups and not mutate to support undo/redo in future
-function pushDownOutOfNegative(
-    groups: ExtractedSpriteGroup[]
-): ExtractedSpriteGroup[] {
+function pushDownOutOfNegative(layers: Layer[]): Layer[] {
+    const groups = layers.reduce<ExtractedSpriteGroup[]>((gs, l) => {
+        return gs.concat(l.groups);
+    }, []);
+
     const tiles = groups.reduce<ExtractedTile[]>((ts, sg) => {
         const tiles = sg.sprites.reduce<ExtractedTile[]>((sts, s) => {
             return sts.concat(s.tiles);
@@ -160,13 +162,15 @@ function pushDownOutOfNegative(
         tiles.forEach(t => (t.composedY += nudge));
     }
 
-    return groups;
+    return layers;
 }
 
 // TODO: make this create new groups and not mutate to support undo/redo in future
-function pushInOutOfNegative(
-    groups: ExtractedSpriteGroup[]
-): ExtractedSpriteGroup[] {
+function pushInOutOfNegative(layers: Layer[]): Layer[] {
+    const groups = layers.reduce<ExtractedSpriteGroup[]>((gs, l) => {
+        return gs.concat(l.groups);
+    }, []);
+
     const sprites = groups.reduce<ExtractedSprite[]>((ss, sg) => {
         return ss.concat(sg.sprites);
     }, []);
@@ -179,7 +183,7 @@ function pushInOutOfNegative(
         sprites.forEach(s => (s.composedX += nudge));
     }
 
-    return groups;
+    return layers;
 }
 
 function mirrorSpritesToRight(sprites: ExtractedSprite[]): ExtractedSprite[] {
@@ -352,16 +356,9 @@ export function reducer(state: AppState, action: Action): AppState {
             }
 
         case "HandleNegatives":
-            const layers = state.layers.map(layer => {
-                return {
-                    ...layer,
-                    groups: pushDownOutOfNegative(layer.groups)
-                };
-            });
-
             return {
                 ...state,
-                layers
+                layers: pushDownOutOfNegative(state.layers)
             };
 
         case "DeleteGroup": {
@@ -489,13 +486,13 @@ export function reducer(state: AppState, action: Action): AppState {
                 state.pauseId
             );
 
-            pushInOutOfNegative(mirroredGroups);
-
-            const layers = state.layers.concat({
+            let layers = state.layers.concat({
                 groups: mirroredGroups,
                 hidden: false,
                 extendedViaMirror: false
             });
+
+            layers = pushInOutOfNegative(layers);
 
             return {
                 ...state,

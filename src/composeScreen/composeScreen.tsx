@@ -129,7 +129,7 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
             Math.max(...es.tiles.map(t => t.composedY))
         )
     );
-    const height = Math.max(maxY + 16, 240);
+    const height = Math.max(maxY + 48, 240);
 
     const style = {
         backgroundColor,

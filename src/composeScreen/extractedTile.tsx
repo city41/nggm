@@ -35,6 +35,7 @@ export class ExtractedTile extends React.PureComponent<ExtractedTileProps> {
 
         return (
             <canvas
+                data-tileIndex={tileIndex}
                 className={styles.root}
                 ref={r => r && renderCanvas(r)}
                 style={inlineStyle}

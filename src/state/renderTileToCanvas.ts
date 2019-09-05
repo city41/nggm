@@ -41,8 +41,8 @@ export function renderTileToCanvas(
             const leftPixelColorIndex = (pixelPair >> 4) & 0xf;
             const rightPixelColorIndex = pixelPair & 0xf;
 
-            const leftPixel = rgbPalette[leftPixelColorIndex];
-            const rightPixel = rgbPalette[rightPixelColorIndex];
+            let leftPixel = rgbPalette[leftPixelColorIndex];
+            let rightPixel = rgbPalette[rightPixelColorIndex];
 
             for (let i = 0; i < leftPixel.length; ++i) {
                 imageData.data[(y * 16 + x * 2) * 4 + i] = leftPixel[i];

@@ -5,7 +5,7 @@ import { useAppState } from "../state";
 
 import styles from "./spriteTray.module.css";
 
-const TOTAL_SPRITE_COUNT = 381;
+const TOTAL_SPRITE_COUNT = 440;
 
 function arrayFrom(minValue: number, maxValue: number) {
     const count = maxValue - minValue + 1;
