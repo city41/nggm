@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import classnames from "classnames";
-import { useAppState, START_EMULATION, TOGGLE_PAUSE } from "../state";
+import { useAppState } from "../state";
 
 import styles from "./emulator.module.css";
 
@@ -46,7 +46,7 @@ export const Emulator: React.FunctionComponent<EmulatorProps> = props => {
             window.Module.pauseMainLoop();
         }
 
-        dispatch(TOGGLE_PAUSE);
+        dispatch({ type: "TogglePause" });
     }
 
     async function loadBiosFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -82,7 +82,7 @@ export const Emulator: React.FunctionComponent<EmulatorProps> = props => {
         );
         window.HEAP32[(argv >> 2) + 2] = 0;
 
-        dispatch(START_EMULATION);
+        dispatch({ type: "StartEmulation" });
 
         try {
             window.Module._run_rom(2, argv);

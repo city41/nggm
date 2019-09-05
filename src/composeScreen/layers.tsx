@@ -1,15 +1,6 @@
 import React from "react";
 import classnames from "classnames";
-import {
-    useAppState,
-    deleteGroupAction,
-    toggleVisiblityOfGroupAction,
-    NEW_LAYER,
-    deleteLayerAction,
-    toggleVisiblityOfLayerAction,
-    setFocusedLayerAction,
-    extendLayerViaMirrorAction
-} from "../state";
+import { useAppState } from "../state";
 import { Layer as LayerData, ExtractedSpriteGroup } from "../state/types";
 
 import styles from "./layers.module.css";
@@ -104,24 +95,26 @@ export const Layers: React.FunctionComponent<LayersProps> = ({ className }) => {
             key={i}
             layer={layer}
             focused={i === state.focusedLayerIndex}
-            onClick={() => dispatch(setFocusedLayerAction(layer))}
-            onDelete={() => dispatch(deleteLayerAction(layer))}
+            onClick={() => dispatch({ type: "SetFocusedLayer", layer })}
+            onDelete={() => dispatch({ type: "DeleteLayer", layer })}
             onToggleVisibility={() =>
-                dispatch(toggleVisiblityOfLayerAction(layer))
+                dispatch({ type: "ToggleVisibilityOfLayer", layer })
             }
-            onGroupDelete={group => dispatch(deleteGroupAction(group))}
+            onGroupDelete={group => dispatch({ type: "DeleteGroup", group })}
             onGroupToggleVisibility={group =>
-                dispatch(toggleVisiblityOfGroupAction(group))
+                dispatch({ type: "ToggleVisibilityOfGroup", group })
             }
             onExtendViaMirror={() =>
-                dispatch(extendLayerViaMirrorAction(layer))
+                dispatch({ type: "ExtendLayerViaMirror", layer })
             }
         />
     ));
 
     return (
         <div className={classes}>
-            <button onClick={() => dispatch(NEW_LAYER)}>new layer</button>
+            <button onClick={() => dispatch({ type: "NewLayer" })}>
+                new layer
+            </button>
             {layers}
         </div>
     );

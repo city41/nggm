@@ -35,6 +35,7 @@ type Action =
     | { type: "ToggleVisibilityOfLayer"; layer: Layer }
     | { type: "SetFocusedLayer"; layer: Layer }
     | { type: "SetCrop"; crop: Crop }
+    | { type: "ClearCrop" }
     | { type: "ExtendLayerViaMirror"; layer: Layer };
 
 export const initialState: AppState = {
@@ -80,6 +81,10 @@ function positionSpriteGroupInRelationToExistingGroups(
     );
 }
 
+/**
+ * When a sprite group has been moved to a new position in the compose window,
+ * find all other sprite groups in the same pauseId and move them the same amount
+ */
 function moveRelatedGroups(
     focusedGroup: ExtractedSpriteGroup,
     allGroups: ExtractedSpriteGroup[],
@@ -87,18 +92,24 @@ function moveRelatedGroups(
 ) {
     const xDiff = newComposedX - focusedGroup.sprites[0].composedX;
 
-    const sameGroup = allGroups.filter(
+    const groupsFromSamePauseId = allGroups.filter(
         sg => sg.pauseId === focusedGroup.pauseId
     );
 
-    sameGroup.forEach(group => {
+    groupsFromSamePauseId.forEach(group => {
         group.sprites.forEach(s => {
             s.composedX += xDiff;
         });
     });
 }
 
-// TODO: make this create new groups and not mutate to support undo/redo in future
+/**
+ * When the compose window ends up with sprites that are up in the negative region,
+ * this method causes all sprites to move down such that no sprites have a
+ * negative y coordinate
+ *
+ *TODO: make this create new groups and not mutate to support undo/redo in future
+ */
 function pushDownOutOfNegative(layers: Layer[]): Layer[] {
     const groups = layers.reduce<ExtractedSpriteGroup[]>((gs, l) => {
         return gs.concat(l.groups);
@@ -123,7 +134,13 @@ function pushDownOutOfNegative(layers: Layer[]): Layer[] {
     return layers;
 }
 
-// TODO: make this create new groups and not mutate to support undo/redo in future
+/**
+ * When sprites end up with negative x coordinates (most commonly after
+ * extending a layer via mirroring), this method will push all sprites to the right
+ * such that no sprite has a negative x coordinate
+ *
+ * TODO: make this create new groups and not mutate to support undo/redo in future
+ */
 function pushInOutOfNegative(layers: Layer[]): Layer[] {
     const groups = layers.reduce<ExtractedSpriteGroup[]>((gs, l) => {
         return gs.concat(l.groups);
@@ -144,6 +161,10 @@ function pushInOutOfNegative(layers: Layer[]): Layer[] {
     return layers;
 }
 
+/**
+ * Given a set of sprites, creates a mirror copy of them that is on the right side.
+ * The mirroring is always on the y axis
+ */
 function mirrorSpritesToRight(sprites: ExtractedSprite[]): ExtractedSprite[] {
     const maxX = Math.max(...sprites.map(t => t.composedX)) + 16;
 
@@ -164,6 +185,10 @@ function mirrorSpritesToRight(sprites: ExtractedSprite[]): ExtractedSprite[] {
         .reverse();
 }
 
+/**
+ * Given a set of sprites, creates a mirror copy of them that is on the left side.
+ * The mirroring is always on the y axis
+ */
 function mirrorSpritesToLeft(sprites: ExtractedSprite[]): ExtractedSprite[] {
     const minX = Math.min(...sprites.map(t => t.composedX));
     const maxX = Math.max(...sprites.map(t => t.composedX)) + 16;
@@ -186,6 +211,10 @@ function mirrorSpritesToLeft(sprites: ExtractedSprite[]): ExtractedSprite[] {
         .reverse();
 }
 
+/**
+ * Given a set of groups, mirrors them on both sides. The mirrored sprites
+ * get lumped into a right and left group
+ */
 function extendGroupsViaMirroring(
     groups: ExtractedSpriteGroup[],
     pauseId: number

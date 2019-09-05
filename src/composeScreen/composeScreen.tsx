@@ -6,13 +6,7 @@ import {
     getBackdropNeoGeoColor,
     neoGeoColorToCSS
 } from "../palette/neoGeoPalette";
-import {
-    useAppState,
-    extractSpriteAction,
-    HANDLE_NEGATIVES,
-    setCropAction,
-    CLEAR_CROP
-} from "../state";
+import { useAppState } from "../state";
 import { Layer, ExtractedSprite } from "../state/types";
 import { BuildGifModal } from "../gifBuilder/buildGifModal";
 import { Layers } from "./layers";
@@ -74,10 +68,15 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
                     divRef.getBoundingClientRect().left;
 
                 const composedX = Math.floor(x / 16) * 16;
-                const spriteIndex = item.spriteIndex;
+                const spriteMemoryIndex = item.spriteIndex;
                 const pauseId = item.pauseId;
 
-                dispatch(extractSpriteAction(spriteIndex, composedX, pauseId));
+                dispatch({
+                    type: "ExtractSprite",
+                    spriteMemoryIndex,
+                    composedX,
+                    pauseId
+                });
             }
         },
         canDrop() {
@@ -151,7 +150,7 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
                         disabled={isCropping}
                         onClick={() => {
                             setIsCropping(true);
-                            dispatch(CLEAR_CROP);
+                            dispatch({ type: "ClearCrop" });
                             setUpperLeftCrop(null);
                             setLowerRightCrop(null);
                         }}
@@ -161,7 +160,7 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
                     <button
                         disabled={!state.crop}
                         onClick={() => {
-                            dispatch(CLEAR_CROP);
+                            dispatch({ type: "ClearCrop" });
                             setUpperLeftCrop(null);
                             setLowerRightCrop(null);
                         }}
@@ -225,12 +224,10 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
                                     upperLeftCrop &&
                                     lowerRightCrop
                                 ) {
-                                    dispatch(
-                                        setCropAction([
-                                            upperLeftCrop,
-                                            lowerRightCrop
-                                        ])
-                                    );
+                                    dispatch({
+                                        type: "SetCrop",
+                                        crop: [upperLeftCrop, lowerRightCrop]
+                                    });
                                     setIsCropping(false);
                                 }
                             }}
@@ -253,7 +250,7 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
                 </div>
                 <button
                     className={styles.handleNegatives}
-                    onClick={() => dispatch(HANDLE_NEGATIVES)}
+                    onClick={() => dispatch({ type: "HandleNegatives" })}
                 >
                     handle negatives
                 </button>
