@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import Modal from "react-modal";
-import { createGif } from "../state/createGif_jsgif";
+import { createGif } from "../state/createGif";
 import { useAppState } from "../state";
 import { ExtractedSpriteGroup } from "../state/types";
 
