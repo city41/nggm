@@ -16,64 +16,26 @@ import {
 import { extractSpriteGroup } from "./extractSpriteGroup";
 import { isEqual } from "lodash";
 
-export interface Action {
-    type:
-        | "StartEmulation"
-        | "TogglePause"
-        | "ExtractSprite"
-        | "HandleNegatives"
-        | "DeleteGroup"
-        | "ToggleVisibilityOfGroup"
-        | "NewLayer"
-        | "DeleteLayer"
-        | "ToggleVisibilityOfLayer"
-        | "SetFocusedLayer"
-        | "SetCrop"
-        | "ClearCrop"
-        | "ExtendLayerViaMirror";
-}
-
-export interface ExtractSpriteAction extends Action {
-    type: "ExtractSprite";
-    spriteMemoryIndex: number;
-    composedX: number;
-    pauseId?: number;
-}
-
-export interface DeleteGroupAction extends Action {
-    type: "DeleteGroup";
-    group: ExtractedSpriteGroup;
-}
-
-export interface ToggleVisibilityOfGroupAction extends Action {
-    type: "ToggleVisibilityOfGroup";
-    group: ExtractedSpriteGroup;
-}
-
-export interface DeleteLayerAction extends Action {
-    type: "DeleteLayer";
-    layer: Layer;
-}
-
-export interface ToggleVisibilityOfLayerAction extends Action {
-    type: "ToggleVisibilityOfLayer";
-    layer: Layer;
-}
-
-export interface SetFocusedLayerAction extends Action {
-    type: "SetFocusedLayer";
-    layer: Layer;
-}
-
-export interface SetCropAction extends Action {
-    type: "SetCrop";
-    crop: Crop;
-}
-
-export interface ExtendLayerViaMirrorAction extends Action {
-    type: "ExtendLayerViaMirror";
-    layer: Layer;
-}
+type Action =
+    | { type: "StartEmulation" }
+    | { type: "TogglePause" }
+    | {
+          type: "ExtractSprite";
+          spriteMemoryIndex: number;
+          composedX: number;
+          pauseId?: number;
+      }
+    | {
+          type: "HandleNegatives";
+      }
+    | { type: "DeleteGroup"; group: ExtractedSpriteGroup }
+    | { type: "ToggleVisibilityOfGroup"; group: ExtractedSpriteGroup }
+    | { type: "NewLayer" }
+    | { type: "DeleteLayer"; layer: Layer }
+    | { type: "ToggleVisibilityOfLayer"; layer: Layer }
+    | { type: "SetFocusedLayer"; layer: Layer }
+    | { type: "SetCrop"; crop: Crop }
+    | { type: "ExtendLayerViaMirror"; layer: Layer };
 
 export const initialState: AppState = {
     hasStarted: false,
@@ -83,10 +45,6 @@ export const initialState: AppState = {
     focusedLayerIndex: -1,
     crop: undefined
 };
-
-function assertUnreachable(_: never): never {
-    throw new Error("Non exhaustive switch statement");
-}
 
 function haveSameSprites(a: ExtractedSpriteGroup, b: ExtractedSpriteGroup) {
     const aIndices = a.sprites.map(es => es.spriteMemoryIndex).sort();
@@ -275,11 +233,7 @@ export function reducer(state: AppState, action: Action): AppState {
 
         // TODO: make this handler not mutate, to support undo/redo in the future
         case "ExtractSprite":
-            const {
-                spriteMemoryIndex,
-                composedX,
-                pauseId
-            } = action as ExtractSpriteAction;
+            const { spriteMemoryIndex, composedX, pauseId } = action;
 
             if (pauseId) {
                 const layer = state.layers[state.focusedLayerIndex];
@@ -362,7 +316,7 @@ export function reducer(state: AppState, action: Action): AppState {
             };
 
         case "DeleteGroup": {
-            const { group } = action as DeleteGroupAction;
+            const { group } = action;
 
             const layers = state.layers.map(layer => {
                 if (layer.groups.indexOf(group) > -1) {
@@ -382,7 +336,7 @@ export function reducer(state: AppState, action: Action): AppState {
             };
         }
         case "ToggleVisibilityOfGroup": {
-            const { group } = action as ToggleVisibilityOfGroupAction;
+            const { group } = action;
 
             const layers = state.layers.map(layer => {
                 if (layer.groups.indexOf(group) > -1) {
@@ -424,7 +378,7 @@ export function reducer(state: AppState, action: Action): AppState {
         }
 
         case "DeleteLayer": {
-            const { layer } = action as DeleteLayerAction;
+            const { layer } = action;
 
             return {
                 ...state,
@@ -434,7 +388,7 @@ export function reducer(state: AppState, action: Action): AppState {
         }
 
         case "ToggleVisibilityOfLayer": {
-            const { layer } = action as DeleteLayerAction;
+            const { layer } = action;
 
             const layers = state.layers.map(l => {
                 if (l === layer) {
@@ -454,7 +408,7 @@ export function reducer(state: AppState, action: Action): AppState {
         }
 
         case "SetFocusedLayer": {
-            const { layer } = action as SetFocusedLayerAction;
+            const { layer } = action;
 
             return {
                 ...state,
@@ -463,7 +417,7 @@ export function reducer(state: AppState, action: Action): AppState {
         }
 
         case "SetCrop": {
-            const { crop } = action as SetCropAction;
+            const { crop } = action;
 
             return {
                 ...state,
@@ -479,7 +433,7 @@ export function reducer(state: AppState, action: Action): AppState {
         }
 
         case "ExtendLayerViaMirror": {
-            const { layer } = action as ExtendLayerViaMirrorAction;
+            const { layer } = action;
 
             const mirroredGroups = extendGroupsViaMirroring(
                 layer.groups,
@@ -500,8 +454,6 @@ export function reducer(state: AppState, action: Action): AppState {
             };
         }
     }
-
-    return assertUnreachable(action.type);
 }
 
 const stateContext = createContext(initialState);
@@ -521,94 +473,4 @@ export const Provider: FunctionComponent = ({ children }) => {
 
 export function useAppState(): [AppState, Dispatch<Action>] {
     return [useContext(stateContext), useContext(dispatchContext)];
-}
-
-export const TOGGLE_PAUSE: Action = {
-    type: "TogglePause"
-};
-
-export const START_EMULATION: Action = {
-    type: "StartEmulation"
-};
-
-export function extractSpriteAction(
-    spriteMemoryIndex: number,
-    composedX: number,
-    pauseId: number
-): ExtractSpriteAction {
-    return {
-        type: "ExtractSprite",
-        spriteMemoryIndex,
-        composedX,
-        pauseId
-    };
-}
-
-export const HANDLE_NEGATIVES: Action = {
-    type: "HandleNegatives"
-};
-
-export function deleteGroupAction(
-    group: ExtractedSpriteGroup
-): DeleteGroupAction {
-    return {
-        type: "DeleteGroup",
-        group
-    };
-}
-
-export function toggleVisiblityOfGroupAction(
-    group: ExtractedSpriteGroup
-): ToggleVisibilityOfGroupAction {
-    return {
-        type: "ToggleVisibilityOfGroup",
-        group
-    };
-}
-
-export const NEW_LAYER: Action = {
-    type: "NewLayer"
-};
-
-export function deleteLayerAction(layer: Layer): DeleteLayerAction {
-    return {
-        type: "DeleteLayer",
-        layer
-    };
-}
-
-export function toggleVisiblityOfLayerAction(
-    layer: Layer
-): ToggleVisibilityOfLayerAction {
-    return {
-        type: "ToggleVisibilityOfLayer",
-        layer
-    };
-}
-
-export function setFocusedLayerAction(layer: Layer): SetFocusedLayerAction {
-    return {
-        type: "SetFocusedLayer",
-        layer
-    };
-}
-
-export function setCropAction(crop: Crop): SetCropAction {
-    return {
-        type: "SetCrop",
-        crop
-    };
-}
-
-export const CLEAR_CROP: Action = {
-    type: "ClearCrop"
-};
-
-export function extendLayerViaMirrorAction(
-    layer: Layer
-): ExtendLayerViaMirrorAction {
-    return {
-        type: "ExtendLayerViaMirror",
-        layer
-    };
 }
