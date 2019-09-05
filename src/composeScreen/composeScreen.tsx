@@ -71,12 +71,20 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
                 const spriteMemoryIndex = item.spriteMemoryIndex;
                 const pauseId = item.pauseId;
 
-                dispatch({
-                    type: "ExtractSprite",
-                    spriteMemoryIndex,
-                    composedX,
-                    pauseId
-                });
+                if (pauseId) {
+                    dispatch({
+                        type: "MoveSprite",
+                        spriteMemoryIndex,
+                        newComposedX: composedX,
+                        pauseId
+                    });
+                } else {
+                    dispatch({
+                        type: "ExtractSprite",
+                        spriteMemoryIndex,
+                        composedX
+                    });
+                }
             }
         },
         canDrop() {
@@ -113,6 +121,7 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
             autoAnimate={runPreview}
             animationCounter={animationCounter.animation}
             canDrag={!isCropping}
+            outlineTiles={state.outlineExtractedTiles}
         />
     ));
 

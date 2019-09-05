@@ -170,4 +170,10 @@ export interface AppState {
      * the tiles inside the crop boundaries are considered
      */
     crop?: Crop;
+
+    /**
+     * Whether to show an outline around extracted tiles. Helps show
+     * the real bounds of a sprite group
+     */
+    outlineExtractedTiles: boolean;
 }

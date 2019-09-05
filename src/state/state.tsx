@@ -23,7 +23,12 @@ type Action =
           type: "ExtractSprite";
           spriteMemoryIndex: number;
           composedX: number;
-          pauseId?: number;
+      }
+    | {
+          type: "MoveSprite";
+          spriteMemoryIndex: number;
+          newComposedX: number;
+          pauseId: number;
       }
     | {
           type: "HandleNegatives";
@@ -36,7 +41,8 @@ type Action =
     | { type: "SetFocusedLayer"; layer: Layer }
     | { type: "SetCrop"; crop: Crop }
     | { type: "ClearCrop" }
-    | { type: "ExtendLayerViaMirror"; layer: Layer };
+    | { type: "ExtendLayerViaMirror"; layer: Layer }
+    | { type: "ToggleOutlineExtractedTiles" };
 
 export const initialState: AppState = {
     hasStarted: false,
@@ -44,7 +50,8 @@ export const initialState: AppState = {
     pauseId: 0,
     layers: [],
     focusedLayerIndex: -1,
-    crop: undefined
+    crop: undefined,
+    outlineExtractedTiles: true
 };
 
 function haveSameSprites(a: ExtractedSpriteGroup, b: ExtractedSpriteGroup) {
@@ -261,82 +268,86 @@ export function reducer(state: AppState, action: Action): AppState {
             };
 
         // TODO: make this handler not mutate, to support undo/redo in the future
-        case "ExtractSprite":
-            const { spriteMemoryIndex, composedX, pauseId } = action;
+        case "MoveSprite": {
+            const { spriteMemoryIndex, newComposedX, pauseId } = action;
 
-            if (pauseId) {
-                const layer = state.layers[state.focusedLayerIndex];
+            const layer = state.layers[state.focusedLayerIndex];
 
-                if (!layer) {
-                    return state;
-                }
-
-                const currentSpriteGroup = layer.groups.find(sg => {
-                    return (
-                        sg.pauseId === pauseId &&
-                        sg.sprites.some(
-                            s => s.spriteMemoryIndex === spriteMemoryIndex
-                        )
-                    );
-                });
-
-                if (!currentSpriteGroup) {
-                    return state;
-                }
-
-                moveRelatedGroups(currentSpriteGroup, layer.groups, composedX);
-
-                return {
-                    ...state
-                };
-            } else {
-                const newSpriteGroup = extractSpriteGroup(
-                    spriteMemoryIndex,
-                    composedX,
-                    state.pauseId
-                );
-
-                const layer = state.layers[state.focusedLayerIndex] ||
-                    state.layers[state.layers.length - 1] || {
-                        groups: [newSpriteGroup],
-                        hidden: false
-                    };
-                const oldSpriteGroups = layer.groups.filter(
-                    esg =>
-                        esg.pauseId !== newSpriteGroup.pauseId ||
-                        !haveSameSprites(esg, newSpriteGroup)
-                );
-
-                // TODO: have this method not mutate to support undo/redo in the future
-                positionSpriteGroupInRelationToExistingGroups(
-                    newSpriteGroup,
-                    oldSpriteGroups
-                );
-
-                let layers;
-
-                if (state.layers.length === 0) {
-                    layers = [layer];
-                } else {
-                    layers = state.layers.map(l => {
-                        if (l === layer) {
-                            return {
-                                ...layer,
-                                groups: [...layer.groups, newSpriteGroup]
-                            };
-                        } else {
-                            return l;
-                        }
-                    });
-                }
-
-                return {
-                    ...state,
-                    layers,
-                    focusedLayerIndex:
-                        layers.length === 1 ? 0 : state.focusedLayerIndex
-                };
+            if (!layer) {
+                return state;
             }
+
+            const currentSpriteGroup = layer.groups.find(sg => {
+                return (
+                    sg.pauseId === pauseId &&
+                    sg.sprites.some(
+                        s => s.spriteMemoryIndex === spriteMemoryIndex
+                    )
+                );
+            });
+
+            if (!currentSpriteGroup) {
+                return state;
+            }
+
+            moveRelatedGroups(currentSpriteGroup, layer.groups, newComposedX);
+
+            return {
+                ...state
+            };
+        }
+
+        // TODO: make this handler not mutate, to support undo/redo in the future
+        case "ExtractSprite": {
+            const { spriteMemoryIndex, composedX } = action;
+
+            const newSpriteGroup = extractSpriteGroup(
+                spriteMemoryIndex,
+                composedX,
+                state.pauseId
+            );
+
+            const layer = state.layers[state.focusedLayerIndex] ||
+                state.layers[state.layers.length - 1] || {
+                    groups: [newSpriteGroup],
+                    hidden: false
+                };
+            const oldSpriteGroups = layer.groups.filter(
+                esg =>
+                    esg.pauseId !== newSpriteGroup.pauseId ||
+                    !haveSameSprites(esg, newSpriteGroup)
+            );
+
+            // TODO: have this method not mutate to support undo/redo in the future
+            positionSpriteGroupInRelationToExistingGroups(
+                newSpriteGroup,
+                oldSpriteGroups
+            );
+
+            let layers;
+
+            if (state.layers.length === 0) {
+                layers = [layer];
+            } else {
+                layers = state.layers.map(l => {
+                    if (l === layer) {
+                        return {
+                            ...layer,
+                            groups: [...layer.groups, newSpriteGroup]
+                        };
+                    } else {
+                        return l;
+                    }
+                });
+            }
+
+            return {
+                ...state,
+                layers,
+                focusedLayerIndex:
+                    layers.length === 1 ? 0 : state.focusedLayerIndex
+            };
+        }
 
         case "HandleNegatives":
             return {
@@ -480,6 +491,13 @@ export function reducer(state: AppState, action: Action): AppState {
             return {
                 ...state,
                 layers
+            };
+        }
+
+        case "ToggleOutlineExtractedTiles": {
+            return {
+                ...state,
+                outlineExtractedTiles: !state.outlineExtractedTiles
             };
         }
     }

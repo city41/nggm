@@ -10,13 +10,15 @@ interface ExtractedSpriteProps {
     autoAnimate?: boolean;
     animationCounter?: number;
     canDrag: boolean;
+    outlineTiles?: boolean;
 }
 
 export const ExtractedSprite: React.FunctionComponent<ExtractedSpriteProps> = ({
     data,
     autoAnimate,
     animationCounter,
-    canDrag
+    canDrag,
+    outlineTiles
 }) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, dragRef] = useDrag({
@@ -55,6 +57,7 @@ export const ExtractedSprite: React.FunctionComponent<ExtractedSpriteProps> = ({
                 rgbPalette={tileData.rgbPalette}
                 horizontalFlip={tileData.horizontalFlip}
                 verticalFlip={tileData.verticalFlip}
+                outlined={outlineTiles}
             />
         );
     });
