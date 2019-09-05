@@ -8,7 +8,7 @@ import styles from "./sprite.module.css";
 
 interface SpriteProps {
     className?: string;
-    spriteIndex: number;
+    spriteMemoryIndex: number;
     positioned: boolean;
     overrideX?: number;
     honorTileSize: boolean;
@@ -20,17 +20,17 @@ interface PreviewProps {
 
 export const Sprite: React.FunctionComponent<SpriteProps> = ({
     className,
-    spriteIndex,
+    spriteMemoryIndex,
     positioned,
     overrideX,
     honorTileSize
 }) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, dragRef] = useDrag({
-        item: { spriteIndex, type: "Sprite" }
+        item: { spriteMemoryIndex, type: "Sprite" }
     });
 
-    const spriteData = getSpriteData(spriteIndex, honorTileSize);
+    const spriteData = getSpriteData(spriteMemoryIndex, honorTileSize);
 
     if (spriteData.tiles.length === 0) {
         return null;
@@ -52,7 +52,7 @@ export const Sprite: React.FunctionComponent<SpriteProps> = ({
         top: spriteData.y,
         left: typeof overrideX === "number" ? overrideX : spriteData.x,
         gridTemplateRows: `repeat(${spriteData.tiles.length}, 16px)`,
-        zIndex: spriteIndex
+        zIndex: spriteMemoryIndex
     };
 
     const spriteClassName = classnames(styles.sprite, className, {

@@ -42,7 +42,7 @@ export const SpriteTray: React.FunctionComponent<SpriteTrayProps> = ({
                     .map((_, i) => (
                         <SpriteEntry
                             key={i}
-                            spriteIndex={i}
+                            spriteMemoryIndex={i}
                             render={state.isPaused}
                             hideIfEmpty
                             onClick={e => {

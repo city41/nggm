@@ -21,7 +21,7 @@ export const ExtractedSprite: React.FunctionComponent<ExtractedSpriteProps> = ({
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, dragRef] = useDrag({
         item: {
-            spriteIndex: data.spriteMemoryIndex,
+            spriteMemoryIndex: data.spriteMemoryIndex,
             pauseId: data.group.pauseId,
             type: "Sprite"
         },

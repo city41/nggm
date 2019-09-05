@@ -7,7 +7,7 @@ import styles from "./spriteEntry.module.css";
 
 interface SpriteEntryProps {
     className?: string;
-    spriteIndex: number;
+    spriteMemoryIndex: number;
     render?: boolean;
     hideIfEmpty: boolean;
     focused?: boolean;
@@ -17,7 +17,7 @@ interface SpriteEntryProps {
 
 export const SpriteEntry: React.FunctionComponent<SpriteEntryProps> = ({
     className,
-    spriteIndex,
+    spriteMemoryIndex,
     render,
     hideIfEmpty,
     focused,
@@ -25,18 +25,19 @@ export const SpriteEntry: React.FunctionComponent<SpriteEntryProps> = ({
     onClick
 }) => {
     const classes = classnames(styles.root, className, {
-        [styles.hide]: render && hideIfEmpty && isSpriteEmpty(spriteIndex),
+        [styles.hide]:
+            render && hideIfEmpty && isSpriteEmpty(spriteMemoryIndex),
         [styles.focused]: focused
     });
 
     return (
         <div className={classes} onClick={onClick}>
-            <div className={styles.index}>{spriteIndex}</div>
+            <div className={styles.index}>{spriteMemoryIndex}</div>
             <div className={styles.spriteContainer}>
                 {render && (
                     <Sprite
                         className={styles.sprite}
-                        spriteIndex={spriteIndex}
+                        spriteMemoryIndex={spriteMemoryIndex}
                         positioned={false}
                         honorTileSize={honorTileSize}
                     />

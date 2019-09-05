@@ -68,7 +68,7 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
                     divRef.getBoundingClientRect().left;
 
                 const composedX = Math.floor(x / 16) * 16;
-                const spriteMemoryIndex = item.spriteIndex;
+                const spriteMemoryIndex = item.spriteMemoryIndex;
                 const pauseId = item.pauseId;
 
                 dispatch({

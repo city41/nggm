@@ -34,12 +34,12 @@ interface SpriteData {
 }
 
 function getTileData(
-    spriteIndex: number,
+    spriteMemoryIndex: number,
     spriteSize: number,
     tileYs: number[]
 ): TileData[] {
     const tileRamAddr = window.Module._get_tile_ram_addr();
-    const spriteOffset = SCB1_SPRITE_SIZE_BYTES * spriteIndex;
+    const spriteOffset = SCB1_SPRITE_SIZE_BYTES * spriteMemoryIndex;
 
     const spriteData: number[] = [];
 
@@ -115,16 +115,16 @@ function transformY(rawY: number, yScale: number, spriteSize: number): number {
 }
 
 function getYSpriteSizeSticky(
-    spriteIndex: number
+    spriteMemoryIndex: number
 ): { y: number; tileYs: number[]; spriteSize: number; sticky: boolean } {
-    if (spriteIndex < 0) {
+    if (spriteMemoryIndex < 0) {
         throw new Error("getYSpriteSizeSticky: sprite index under zero!");
     }
 
     const tileRamAddr = window.Module._get_tile_ram_addr();
     const scb3StartAddr = tileRamAddr + SCB3_BYTE_OFFSET;
 
-    const spriteScb3Addr = scb3StartAddr + spriteIndex * 2;
+    const spriteScb3Addr = scb3StartAddr + spriteMemoryIndex * 2;
 
     const scb3Word =
         window.HEAPU8[spriteScb3Addr] |
@@ -134,11 +134,12 @@ function getYSpriteSizeSticky(
 
     if (sticky) {
         return {
-            ...getYSpriteSizeSticky(spriteIndex - 1),
+            ...getYSpriteSizeSticky(spriteMemoryIndex - 1),
             sticky
         };
     } else {
-        const yScale = getScale(spriteIndex, { ignoreSticky: true }).yScale;
+        const yScale = getScale(spriteMemoryIndex, { ignoreSticky: true })
+            .yScale;
         const spriteSize = scb3Word & 0x3f;
         const rawY = scb3Word >> 7;
 
@@ -153,23 +154,23 @@ function getYSpriteSizeSticky(
     }
 }
 
-function getX(spriteIndex: number): number {
-    if (spriteIndex < 0) {
+function getX(spriteMemoryIndex: number): number {
+    if (spriteMemoryIndex < 0) {
         throw new Error("getX: sprite index under zero!");
     }
 
-    const sticky = getYSpriteSizeSticky(spriteIndex).sticky;
+    const sticky = getYSpriteSizeSticky(spriteMemoryIndex).sticky;
 
     let x;
 
     if (sticky) {
-        const xScale = getScale(spriteIndex).xScale;
-        x = getX(spriteIndex - 1) + xScale;
+        const xScale = getScale(spriteMemoryIndex).xScale;
+        x = getX(spriteMemoryIndex - 1) + xScale;
     } else {
         const tileRamAddr = window.Module._get_tile_ram_addr();
         const scb4StartAddr = tileRamAddr + SCB4_BYTE_OFFSET;
 
-        const spriteScb4Addr = scb4StartAddr + spriteIndex * 2;
+        const spriteScb4Addr = scb4StartAddr + spriteMemoryIndex * 2;
 
         const scb4Word =
             window.HEAPU8[spriteScb4Addr] |
@@ -186,24 +187,24 @@ function getX(spriteIndex: number): number {
 }
 
 function getScale(
-    spriteIndex: number,
+    spriteMemoryIndex: number,
     options?: { ignoreSticky: boolean }
 ): { yScale: number; xScale: number } {
-    if (spriteIndex < 0) {
+    if (spriteMemoryIndex < 0) {
         throw new Error("getScale: sprite index under zero!");
     }
 
     if (!options || !options.ignoreSticky) {
-        const sticky = getYSpriteSizeSticky(spriteIndex).sticky;
+        const sticky = getYSpriteSizeSticky(spriteMemoryIndex).sticky;
 
         if (sticky) {
-            return getScale(spriteIndex - 1);
+            return getScale(spriteMemoryIndex - 1);
         }
     }
 
     const tileRamAddr = window.Module._get_tile_ram_addr();
     const scb2StartAddr = tileRamAddr + SCB2_BYTE_OFFSET;
-    const spriteScb2Addr = scb2StartAddr + spriteIndex * 2;
+    const spriteScb2Addr = scb2StartAddr + spriteMemoryIndex * 2;
 
     const scb2Word =
         window.HEAPU8[spriteScb2Addr] |
@@ -216,24 +217,26 @@ function getScale(
 }
 
 export function getSpriteData(
-    spriteIndex: number,
+    spriteMemoryIndex: number,
     honorTileSize: boolean
 ): SpriteData {
-    const { sticky, y, tileYs, spriteSize } = getYSpriteSizeSticky(spriteIndex);
+    const { sticky, y, tileYs, spriteSize } = getYSpriteSizeSticky(
+        spriteMemoryIndex
+    );
 
     return {
         tiles: getTileData(
-            spriteIndex,
+            spriteMemoryIndex,
             honorTileSize ? spriteSize : 32,
             tileYs
         ),
-        x: getX(spriteIndex),
+        x: getX(spriteMemoryIndex),
         sticky,
         y,
         spriteSize
     };
 }
 
-export function isSpriteEmpty(spriteIndex: number): boolean {
-    return getYSpriteSizeSticky(spriteIndex).spriteSize === 0;
+export function isSpriteEmpty(spriteMemoryIndex: number): boolean {
+    return getYSpriteSizeSticky(spriteMemoryIndex).spriteSize === 0;
 }
