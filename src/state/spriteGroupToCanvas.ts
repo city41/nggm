@@ -5,17 +5,13 @@ import {
     ExtractedTile
 } from "./types";
 import { renderTileToCanvas } from "./renderTileToCanvas";
+import { getMaxX, getMaxY } from "./spriteUtil";
 
 function getDimensions(
     sprites: ExtractedSprite[]
 ): { width: number; height: number } {
-    const maxX = Math.max(...sprites.map(s => s.composedX)) + 16;
-
-    const tiles = sprites.reduce<ExtractedTile[]>((building, sprite) => {
-        return building.concat(sprite.tiles);
-    }, []);
-
-    const maxY = Math.max(...tiles.map(t => t.composedY)) + 16;
+    const maxX = getMaxX(sprites) + 16;
+    const maxY = getMaxY(sprites) + 16;
 
     return {
         width: maxX,

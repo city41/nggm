@@ -11,6 +11,7 @@ import { Layer, ExtractedSprite } from "../state/types";
 import { BuildGifModal } from "../gifBuilder/buildGifModal";
 import { Layers } from "./layers";
 import { CropRect } from "./cropRect";
+import { getMaxX, getMaxY } from "../state/spriteUtil";
 
 import styles from "./composeScreen.module.css";
 
@@ -129,14 +130,10 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
         ? neoGeoColorToCSS(getBackdropNeoGeoColor())
         : "transparent";
 
-    const maxX = Math.max(...extractedSprites.map(es => es.composedX));
+    const maxX = getMaxX(extractedSprites);
     const width = Math.max(maxX + 48, 320);
 
-    const maxY = Math.max(
-        ...extractedSprites.map(es =>
-            Math.max(...es.tiles.map(t => t.composedY))
-        )
-    );
+    const maxY = getMaxY(extractedSprites);
     const height = Math.max(maxY + 48, 240);
 
     const style = {
