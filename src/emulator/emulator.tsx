@@ -36,7 +36,7 @@ async function addFileToVirtualFS(file: File) {
 }
 
 export const Emulator: React.FunctionComponent<EmulatorProps> = props => {
-    const [state, dispatch] = useAppState();
+    const { state, dispatch } = useAppState();
     const [gameName, setGameName] = useState("");
 
     function togglePause() {

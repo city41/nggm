@@ -20,7 +20,7 @@ interface SpriteTrayProps {
 export const SpriteTray: React.FunctionComponent<SpriteTrayProps> = ({
     className
 }) => {
-    const [state] = useAppState();
+    const { state } = useAppState();
     const [focusedIndices, setFocusedIndices] = useState<number[]>([]);
     const [shiftStartIndex, setShiftStartIndex] = useState<null | number>(null);
 

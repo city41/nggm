@@ -28,7 +28,7 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
     });
     const [runPreview, setRunPreview] = useState(false);
     const [showBuildGifModal, setShowBuildGifModal] = useState(false);
-    const [state, dispatch] = useAppState();
+    const { state, dispatch } = useAppState();
     const [divRef, setDivRef] = useState<null | HTMLDivElement>(null);
     const [isCropping, setIsCropping] = useState(false);
     const [upperLeftCrop, setUpperLeftCrop] = useState<null | {

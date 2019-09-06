@@ -83,7 +83,7 @@ interface LayersProps {
 }
 
 export const Layers: React.FunctionComponent<LayersProps> = ({ className }) => {
-    const [state, dispatch] = useAppState();
+    const { state, dispatch } = useAppState();
 
     const classes = classnames(styles.root, className);
 

@@ -21,7 +21,7 @@ export const BuildGifModal: React.FunctionComponent<BuildGifModalProps> = ({
     isOpen,
     onRequestClose
 }) => {
-    const [state] = useAppState();
+    const { state } = useAppState();
     const containerRef = useRef<null | HTMLDivElement>(null);
     const [frameStatus, setFrameStatus] = useState<null | FrameStatus>(null);
 
