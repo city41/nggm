@@ -1,3 +1,6 @@
+import { getTileIndexedColorData } from "./renderTileToCanvas";
+import { memoize } from "lodash";
+
 // ALERT!
 // vram addresses in the neo geo are word wide, not byte wide!
 // TODO: can probably just use HEAPU16 and make this all much simpler
@@ -216,20 +219,52 @@ function getScale(
     return { yScale, xScale };
 }
 
+function isTileEmpty(tile: TileData): boolean {
+    const tileIndexData = getTileIndexedColorData(tile.tileIndex);
+
+    return tileIndexData.every(i => i === 0);
+}
+
+function trimEmptyTiles(tiles: TileData[]): TileData[] {
+    let numEmptyTiles = 0;
+
+    while (numEmptyTiles < tiles.length && isTileEmpty(tiles[numEmptyTiles])) {
+        ++numEmptyTiles;
+    }
+
+    const diffY = numEmptyTiles * 16;
+
+    const remainingTiles = tiles.slice(numEmptyTiles);
+
+    return remainingTiles.map(tile => {
+        return {
+            ...tile,
+            y: tile.y - diffY
+        };
+    });
+}
+
+type GetSpriteDataOptions = { removeEmptyTiles: boolean };
+
 export function getSpriteData(
     spriteMemoryIndex: number,
-    honorTileSize: boolean
+    honorTileSize: boolean,
+    options?: Partial<GetSpriteDataOptions>
 ): SpriteData {
     const { sticky, y, tileYs, spriteSize } = getYSpriteSizeSticky(
         spriteMemoryIndex
     );
 
+    const tiles = getTileData(
+        spriteMemoryIndex,
+        honorTileSize ? spriteSize : 32,
+        tileYs
+    );
+
+    const removeEmptyTiles = options && options.removeEmptyTiles;
+
     return {
-        tiles: getTileData(
-            spriteMemoryIndex,
-            honorTileSize ? spriteSize : 32,
-            tileYs
-        ),
+        tiles: removeEmptyTiles ? trimEmptyTiles(tiles) : tiles,
         x: getX(spriteMemoryIndex),
         sticky,
         y,

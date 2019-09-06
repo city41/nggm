@@ -30,7 +30,9 @@ export const Sprite: React.FunctionComponent<SpriteProps> = ({
         item: { spriteMemoryIndex, type: "Sprite" }
     });
 
-    const spriteData = getSpriteData(spriteMemoryIndex, honorTileSize);
+    const spriteData = getSpriteData(spriteMemoryIndex, honorTileSize, {
+        removeEmptyTiles: true
+    });
 
     if (spriteData.tiles.length === 0) {
         return null;
