@@ -137,58 +137,123 @@ export function moveGroups(
  * When the compose window ends up with sprites that are up in the negative region,
  * this method causes all sprites to move down such that no sprites have a
  * negative y coordinate
- *
- *TODO: make this create new groups and not mutate to support undo/redo in future
  */
 export function pushDownOutOfNegative(layers: Layer[]): Layer[] {
-    const groups = layers.reduce<ExtractedSpriteGroup[]>((gs, l) => {
-        return gs.concat(l.groups);
-    }, []);
+    const tiles = getAllTilesFromLayers(layers);
+    const minY = getMinY(tiles);
 
-    const tiles = groups.reduce<ExtractedTile[]>((ts, sg) => {
-        const tiles = sg.sprites.reduce<ExtractedTile[]>((sts, s) => {
-            return sts.concat(s.tiles);
-        }, []);
-
-        return ts.concat(tiles);
-    }, []);
-
-    const mostNegative = getMinY(tiles);
-
-    if (mostNegative < 0) {
-        const nudge = mostNegative * -1;
-
-        tiles.forEach(t => (t.composedY += nudge));
+    if (minY >= 0) {
+        return layers;
     }
 
-    return layers;
+    return layers.map(layer => {
+        return {
+            ...layer,
+            groups: moveGroupsY(layer.groups, minY * -1)
+        };
+    });
+}
+
+function getAllTilesFromLayers(layers: Layer[]): ExtractedTile[] {
+    const sprites = getAllSpritesFromLayers(layers);
+
+    return sprites.reduce<ExtractedTile[]>((tiles, sprite) => {
+        return tiles.concat(sprite.tiles);
+    }, []);
+}
+
+function getAllSpritesFromLayers(layers: Layer[]): ExtractedSprite[] {
+    return layers.reduce<ExtractedSprite[]>((sprites, layer) => {
+        return sprites.concat(getAllSpritesFromGroups(layer.groups));
+    }, []);
+}
+
+function getAllSpritesFromGroups(
+    groups: ExtractedSpriteGroup[]
+): ExtractedSprite[] {
+    return groups.reduce<ExtractedSprite[]>((sprites, group) => {
+        return sprites.concat(group.sprites);
+    }, []);
+}
+
+function getAllTilesFromGroups(
+    groups: ExtractedSpriteGroup[]
+): ExtractedTile[] {
+    return groups.reduce<ExtractedTile[]>((tiles, group) => {
+        return tiles.concat(getAllTilesFromSprites(group.sprites));
+    }, []);
+}
+
+function getAllTilesFromSprites(sprites: ExtractedSprite[]): ExtractedTile[] {
+    return sprites.reduce<ExtractedTile[]>((tiles, sprite) => {
+        return tiles.concat(sprite.tiles);
+    }, []);
+}
+
+function moveGroupsY(
+    groups: ExtractedSpriteGroup[],
+    deltaY: number
+): ExtractedSpriteGroup[] {
+    return groups.map(group => {
+        return {
+            ...group,
+            sprites: moveSpritesY(group.sprites, deltaY)
+        };
+    });
+}
+
+function moveSpritesY(
+    sprites: ExtractedSprite[],
+    deltaY: number
+): ExtractedSprite[] {
+    return sprites.map(sprite => {
+        return {
+            ...sprite,
+            tiles: moveTiles(sprite.tiles, deltaY)
+        };
+    });
+}
+
+function moveTiles(tiles: ExtractedTile[], deltaY: number): ExtractedTile[] {
+    return tiles.map(tile => {
+        return {
+            ...tile,
+            composedY: tile.composedY + deltaY
+        };
+    });
 }
 
 /**
  * When sprites end up with negative x coordinates (most commonly after
  * extending a layer via mirroring), this method will push all sprites to the right
  * such that no sprite has a negative x coordinate
- *
- * TODO: make this create new groups and not mutate to support undo/redo in future
  */
 export function pushInOutOfNegative(layers: Layer[]): Layer[] {
-    const groups = layers.reduce<ExtractedSpriteGroup[]>((gs, l) => {
-        return gs.concat(l.groups);
-    }, []);
+    const sprites = getAllSpritesFromLayers(layers);
+    const minX = getMinX(sprites);
 
-    const sprites = groups.reduce<ExtractedSprite[]>((ss, sg) => {
-        return ss.concat(sg.sprites);
-    }, []);
-
-    const mostNegative = getMinX(sprites);
-
-    if (mostNegative < 0) {
-        const nudge = mostNegative * -1;
-
-        sprites.forEach(s => (s.composedX += nudge));
+    if (minX >= 0) {
+        return layers;
     }
 
-    return layers;
+    return layers.map(layer => {
+        return {
+            ...layer,
+            groups: moveGroupsX(layer.groups, minX * -1)
+        };
+    });
+}
+
+function moveGroupsX(
+    groups: ExtractedSpriteGroup[],
+    deltaX: number
+): ExtractedSpriteGroup[] {
+    return groups.map(group => {
+        return {
+            ...group,
+            sprites: moveSprites(group.sprites, deltaX)
+        };
+    });
 }
 
 /**
