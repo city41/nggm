@@ -17,9 +17,7 @@ import {
 import { extractSpriteGroup } from "./extractSpriteGroup";
 import { without } from "lodash";
 
-export type Action =
-    | { type: "StartEmulation" }
-    | { type: "TogglePause" }
+export type UndoableAction =
     | {
           type: "ExtractSprite";
           spriteMemoryIndex: number;
@@ -46,9 +44,6 @@ export type Action =
     | { type: "ToggleOutlineExtractedTiles" };
 
 export const initialState: AppState = {
-    hasStarted: false,
-    isPaused: false,
-    pauseId: 0,
     layers: [],
     focusedLayerIndex: -1,
     crop: undefined,
@@ -68,29 +63,19 @@ function update<T>(obj: T, collection: T[], updates: Partial<T>) {
     });
 }
 
-export function reducer(state: AppState, action: Action): AppState {
+export function reducer(
+    state: AppState,
+    action: UndoableAction,
+    pauseId: number
+): AppState {
     switch (action.type) {
-        case "StartEmulation":
-            return {
-                ...state,
-                hasStarted: true
-            };
-
-        case "TogglePause":
-            const nowPaused = !state.isPaused;
-            return {
-                ...state,
-                isPaused: nowPaused,
-                pauseId: nowPaused ? state.pauseId + 1 : state.pauseId
-            };
-
         case "ExtractSprite": {
             const { spriteMemoryIndex, composedX } = action;
 
             let newSpriteGroup = extractSpriteGroup(
                 spriteMemoryIndex,
                 composedX,
-                state.pauseId
+                pauseId
             );
 
             const layer = state.layers[state.focusedLayerIndex] ||
@@ -278,7 +263,7 @@ export function reducer(state: AppState, action: Action): AppState {
 
             const mirroredGroups = extendGroupsViaMirroring(
                 layer.groups,
-                state.pauseId
+                pauseId
             );
 
             let layers = state.layers.concat({

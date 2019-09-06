@@ -125,27 +125,6 @@ export type Crop = [{ x: number; y: number }, { x: number; y: number }];
 
 export interface AppState {
     /**
-     * indicates emulation has started, it may have since been paused
-     */
-    hasStarted: boolean;
-
-    /**
-     * true if the emulator has paused, false if is either running
-     * or has yet to start. It is only safe to access Neo Geo memory
-     * during a pause. In general the UI should largely "shut down" when
-     * this value is false
-     */
-    isPaused: boolean;
-
-    /**
-     * Indicates which pause session we are currently on.
-     * If this value increments, the user has unpaused then repaused
-     * the emulation. At that point, it is no longer safe to assume
-     * Neo Geo memory has not changed
-     */
-    pauseId: number;
-
-    /**
      * These are layers of sprite groups that have been "severed" from the Neo Geo and preserved.
      * They can be safely interacted with at any time
      */

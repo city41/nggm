@@ -1,23 +1,56 @@
 import { Reducer } from "react";
 import { AppState } from "./types";
-import { Action } from "./state";
+import { UndoableAction } from "./state";
 
-export type TimelineAction = Action | { type: "undo" } | { type: "redo" };
+export type TimelineAction =
+    | UndoableAction
+    | { type: "StartEmulation" }
+    | { type: "TogglePause" }
+    | { type: "undo" }
+    | { type: "redo" };
 
 export type TimelineState = {
     past: AppState[];
     present: AppState;
     future: AppState[];
+
+    /**
+     * indicates emulation has started, it may have since been paused
+     */
+    hasStarted: boolean;
+
+    /**
+     * true if the emulator has paused, false if is either running
+     * or has yet to start. It is only safe to access Neo Geo memory
+     * during a pause. In general the UI should largely "shut down" when
+     * this value is false
+     */
+    isPaused: boolean;
+
+    /**
+     * Indicates which pause session we are currently on.
+     * If this value increments, the user has unpaused then repaused
+     * the emulation. At that point, it is no longer safe to assume
+     * Neo Geo memory has not changed
+     */
+    pauseId: number;
 };
 
 export function getTimelineReducer(
     initialAppState: AppState,
-    reducer: Reducer<AppState, Action>
+    reducer: (
+        state: AppState,
+        action: UndoableAction,
+        pauseId: number
+    ) => AppState
 ) {
     const initialState: TimelineState = {
         past: [],
         present: initialAppState,
-        future: []
+        future: [],
+        hasStarted: false,
+        isPaused: false,
+        pauseId: 0
     };
 
     function proxyReducer(
@@ -27,6 +60,20 @@ export function getTimelineReducer(
         let newState;
 
         switch (action.type) {
+            case "StartEmulation":
+                return {
+                    ...state,
+                    hasStarted: true
+                };
+
+            case "TogglePause":
+                const nowPaused = !state.isPaused;
+                return {
+                    ...state,
+                    isPaused: nowPaused,
+                    pauseId: nowPaused ? state.pauseId + 1 : state.pauseId
+                };
+
             case "undo": {
                 const pastCopy = [...state.past];
                 const newPresent = pastCopy.pop();
@@ -36,6 +83,7 @@ export function getTimelineReducer(
                 }
 
                 newState = {
+                    ...state,
                     past: pastCopy,
                     present: newPresent,
                     future: [...state.future, state.present]
@@ -51,6 +99,7 @@ export function getTimelineReducer(
                 }
 
                 newState = {
+                    ...state,
                     past: [...state.past, state.present],
                     present: newPresent,
                     future: futureCopy
@@ -61,13 +110,16 @@ export function getTimelineReducer(
                 newState = {
                     ...state,
                     past: [...state.past, state.present],
-                    present: reducer(state.present, action as Action)
+                    present: reducer(
+                        state.present,
+                        action as UndoableAction,
+                        state.pauseId
+                    )
                 };
                 break;
             }
         }
 
-        console.log("STATE", JSON.stringify(newState, null, 2));
         return newState;
     }
 

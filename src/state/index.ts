@@ -1,10 +1,11 @@
 import { useContext, Dispatch } from "react";
 import { AppState } from "./types";
-import { TimelineAction } from "./timeline";
+import { TimelineAction, TimelineState } from "./timeline";
 import { stateContext, dispatchContext } from "./provider";
 
 export function useAppState(): {
-    state: AppState;
+    state: AppState &
+        Pick<TimelineState, "isPaused" | "hasStarted" | "pauseId">;
     dispatch: Dispatch<TimelineAction>;
     undo: Function;
     redo: Function;
@@ -12,10 +13,17 @@ export function useAppState(): {
     canRedo: boolean;
 } {
     const dispatch = useContext(dispatchContext);
-    const state = useContext(stateContext);
+    const rawState = useContext(stateContext);
+
+    const state = {
+        ...rawState.present,
+        isPaused: rawState.isPaused,
+        hasStarted: rawState.hasStarted,
+        pauseId: rawState.pauseId
+    };
 
     return {
-        state: state.present,
+        state,
         dispatch,
         undo() {
             dispatch({ type: "undo" });
@@ -23,7 +31,7 @@ export function useAppState(): {
         redo() {
             dispatch({ type: "redo" });
         },
-        canUndo: state.past.length > 0,
-        canRedo: state.future.length > 0
+        canUndo: rawState.past.length > 0,
+        canRedo: rawState.future.length > 0
     };
 }

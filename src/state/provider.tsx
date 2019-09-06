@@ -5,7 +5,6 @@ import React, {
     useReducer
 } from "react";
 import {
-    Action,
     initialState as appInitialState,
     reducer as appReducer
 } from "./state";
