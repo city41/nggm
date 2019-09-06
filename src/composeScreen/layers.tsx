@@ -1,9 +1,28 @@
-import React from "react";
+import React, { useState } from "react";
 import classnames from "classnames";
 import { useAppState } from "../state";
-import { Layer as LayerData, ExtractedSpriteGroup } from "../state/types";
+import {
+    Layer as LayerData,
+    ExtractedSpriteGroup,
+    ExtractedSprite
+} from "../state/types";
 
 import styles from "./layers.module.css";
+
+interface SpriteProps {
+    sprite: ExtractedSprite;
+    onDelete: () => void;
+}
+
+const Sprite: React.FunctionComponent<SpriteProps> = ({ sprite, onDelete }) => {
+    return (
+        <div className={styles.sprite}>
+            {" "}
+            {sprite.spriteMemoryIndex}{" "}
+            <button onClick={() => onDelete()}>delete</button>
+        </div>
+    );
+};
 
 interface GroupProps {
     group: ExtractedSpriteGroup;
@@ -16,13 +35,39 @@ const Group: React.FunctionComponent<GroupProps> = ({
     onDelete,
     onToggleVisibility
 }) => {
+    const { dispatch } = useAppState();
+    const [showSprites, setShowSprites] = useState(false);
+
+    let sprites = null;
+
+    if (showSprites) {
+        sprites = group.sprites.map((sprite, i) => (
+            <Sprite
+                key={i}
+                sprite={sprite}
+                onDelete={() =>
+                    dispatch({
+                        type: "RemoveSpriteFromExtractedGroup",
+                        group,
+                        sprite
+                    })
+                }
+            />
+        ));
+    }
+
     return (
         <div className={styles.group}>
+            {" "}
             {group.sprites[0].spriteMemoryIndex}{" "}
             <button onClick={() => onDelete()}>delete</button>
             <button onClick={() => onToggleVisibility()}>
                 {group.hidden ? "show" : "hide"}
             </button>
+            <button onClick={() => setShowSprites(!showSprites)}>
+                sprites
+            </button>
+            <div>{sprites}</div>
         </div>
     );
 };

@@ -123,9 +123,14 @@ function moveSprites(
 
 export function moveGroups(
     groups: ExtractedSpriteGroup[],
-    diffX: number
+    diffX: number,
+    pauseId: number
 ): ExtractedSpriteGroup[] {
     return groups.map(group => {
+        if (group.pauseId !== pauseId) {
+            return group;
+        }
+
         return {
             ...group,
             sprites: moveSprites(group.sprites, diffX)

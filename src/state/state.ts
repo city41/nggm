@@ -1,11 +1,10 @@
-import React, {
-    createContext,
-    useContext,
-    useReducer,
-    Dispatch,
-    FunctionComponent
-} from "react";
-import { AppState, Crop, Layer, ExtractedSpriteGroup } from "./types";
+import {
+    AppState,
+    Crop,
+    Layer,
+    ExtractedSpriteGroup,
+    ExtractedSprite
+} from "./types";
 import {
     extendGroupsViaMirroring,
     haveSameSprites,
@@ -41,7 +40,12 @@ export type UndoableAction =
     | { type: "SetCrop"; crop: Crop }
     | { type: "ClearCrop" }
     | { type: "ExtendLayerViaMirror"; layer: Layer }
-    | { type: "ToggleOutlineExtractedTiles" };
+    | { type: "ToggleOutlineExtractedTiles" }
+    | {
+          type: "RemoveSpriteFromExtractedGroup";
+          group: ExtractedSpriteGroup;
+          sprite: ExtractedSprite;
+      };
 
 export const initialState: AppState = {
     layers: [],
@@ -137,7 +141,7 @@ export function reducer(
 
             const diffX =
                 newComposedX - currentSpriteGroup.sprites[0].composedX;
-            const movedGroups = moveGroups(layer.groups, diffX);
+            const movedGroups = moveGroups(layer.groups, diffX, pauseId);
 
             return {
                 ...state,
@@ -283,6 +287,31 @@ export function reducer(
             return {
                 ...state,
                 outlineExtractedTiles: !state.outlineExtractedTiles
+            };
+        }
+
+        case "RemoveSpriteFromExtractedGroup": {
+            const { group, sprite } = action;
+
+            const layer = state.layers.find(
+                layer => layer.groups.indexOf(group) > -1
+            );
+
+            if (!layer) {
+                throw new Error(
+                    "RemoveSpriteFromExtractedGroup: cant find layer for group"
+                );
+            }
+
+            const groups = update(group, layer.groups, {
+                sprites: without(group.sprites, sprite)
+            });
+
+            const layers = update(layer, state.layers, { groups });
+
+            return {
+                ...state,
+                layers
             };
         }
     }

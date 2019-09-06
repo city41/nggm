@@ -20,7 +20,7 @@ export const App: React.FunctionComponent = () => {
                             <ComposeScreen />
                         </Space.Fill>
                     </Space.TopResizable>
-                    <Space.Fill>
+                    <Space.Fill scrollable>
                         <SpriteTray />
                     </Space.Fill>
                 </Space.ViewPort>
