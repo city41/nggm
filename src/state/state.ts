@@ -17,7 +17,7 @@ import {
 import { extractSpriteGroup } from "./extractSpriteGroup";
 import { without } from "lodash";
 
-type Action =
+export type Action =
     | { type: "StartEmulation" }
     | { type: "TogglePause" }
     | {
@@ -301,23 +301,4 @@ export function reducer(state: AppState, action: Action): AppState {
             };
         }
     }
-}
-
-const stateContext = createContext(initialState);
-const dispatchContext = createContext((() => 0) as Dispatch<Action>);
-
-export const Provider: FunctionComponent = ({ children }) => {
-    const [state, dispatch] = useReducer(reducer, initialState);
-
-    return (
-        <dispatchContext.Provider value={dispatch}>
-            <stateContext.Provider value={state}>
-                {children}
-            </stateContext.Provider>
-        </dispatchContext.Provider>
-    );
-};
-
-export function useAppState(): [AppState, Dispatch<Action>] {
-    return [useContext(stateContext), useContext(dispatchContext)];
 }

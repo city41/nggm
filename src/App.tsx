@@ -2,7 +2,7 @@ import React from "react";
 import * as Space from "react-spaces";
 import { DndProvider } from "react-dnd";
 import HTML5Backend from "react-dnd-html5-backend";
-import { Provider as AppStateProvider } from "./state";
+import { Provider as AppStateProvider } from "./state/provider";
 import { Emulator } from "./emulator";
 import { SpriteTray } from "./spriteTray";
 import { ComposeScreen } from "./composeScreen";
