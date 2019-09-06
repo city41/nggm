@@ -53,7 +53,7 @@ export const initialState: AppState = {
     layers: [],
     focusedLayerIndex: -1,
     crop: undefined,
-    outlineExtractedTiles: true
+    outlineExtractedTiles: false
 };
 
 function update<T>(obj: T, collection: T[], updates: Partial<T>) {
