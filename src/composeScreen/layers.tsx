@@ -64,6 +64,11 @@ const Group: React.FunctionComponent<GroupProps> = ({
             <button onClick={() => onToggleVisibility()}>
                 {group.hidden ? "show" : "hide"}
             </button>
+            <button
+                onClick={() => dispatch({ type: "RotateGroupDown", group })}
+            >
+                rotate
+            </button>
             <button onClick={() => setShowSprites(!showSprites)}>
                 sprites
             </button>

@@ -3,7 +3,8 @@ import {
     Crop,
     Layer,
     ExtractedSpriteGroup,
-    ExtractedSprite
+    ExtractedSprite,
+    ExtractedTile
 } from "./types";
 import {
     extendGroupsViaMirroring,
@@ -45,7 +46,8 @@ export type UndoableAction =
           type: "RemoveSpriteFromExtractedGroup";
           group: ExtractedSpriteGroup;
           sprite: ExtractedSprite;
-      };
+      }
+    | { type: "RotateGroupDown"; group: ExtractedSpriteGroup };
 
 export const initialState: AppState = {
     layers: [],
@@ -64,6 +66,39 @@ function update<T>(obj: T, collection: T[], updates: Partial<T>) {
         } else {
             return o;
         }
+    });
+}
+
+function rotateTilesUp(tiles: ExtractedTile[]): ExtractedTile[] {
+    if (tiles.length === 0) {
+        return tiles;
+    }
+
+    const firstTileY = tiles[0].composedY;
+
+    let newTiles = [];
+
+    for (let i = 0; i < tiles.length - 1; ++i) {
+        newTiles.push({
+            ...tiles[i],
+            composedY: tiles[i + 1].composedY
+        });
+    }
+
+    newTiles.push({
+        ...tiles[tiles.length - 1],
+        composedY: firstTileY
+    });
+
+    return newTiles;
+}
+
+function rotateSpritesUp(sprites: ExtractedSprite[]): ExtractedSprite[] {
+    return sprites.map(sprite => {
+        return {
+            ...sprite,
+            tiles: rotateTilesUp(sprite.tiles)
+        };
     });
 }
 
@@ -306,6 +341,30 @@ export function reducer(
             const groups = update(group, layer.groups, {
                 sprites: without(group.sprites, sprite)
             });
+
+            const layers = update(layer, state.layers, { groups });
+
+            return {
+                ...state,
+                layers
+            };
+        }
+
+        case "RotateGroupDown": {
+            const { group } = action;
+            const layer = state.layers.find(
+                layer => layer.groups.indexOf(group) > -1
+            );
+
+            if (!layer) {
+                throw new Error(
+                    "RotateGroupDown: failed to find layer for group"
+                );
+            }
+
+            const sprites = rotateSpritesUp(group.sprites);
+
+            const groups = update(group, layer.groups, { sprites });
 
             const layers = update(layer, state.layers, { groups });
 
