@@ -219,8 +219,7 @@ export function reducer(state: AppState, action: Action): AppState {
                 ...state,
                 layers: state.layers.concat({
                     groups: [],
-                    hidden: false,
-                    extendedViaMirror: false
+                    hidden: false
                 }),
                 focusedLayerIndex: state.layers.length
             };
@@ -284,8 +283,7 @@ export function reducer(state: AppState, action: Action): AppState {
 
             let layers = state.layers.concat({
                 groups: mirroredGroups,
-                hidden: false,
-                extendedViaMirror: false
+                hidden: false
             });
 
             layers = pushInOutOfNegative(layers);

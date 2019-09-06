@@ -69,10 +69,7 @@ const Layer: React.FunctionComponent<LayerProps> = ({
                 <button onClick={() => onToggleVisibility()}>
                     {layer.hidden ? "show" : "hide"}
                 </button>
-                <button
-                    disabled={layer.extendedViaMirror}
-                    onClick={() => onExtendViaMirror()}
-                >
+                <button onClick={() => onExtendViaMirror()}>
                     extend via mirror
                 </button>
             </div>
