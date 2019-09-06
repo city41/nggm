@@ -28,7 +28,7 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
     });
     const [runPreview, setRunPreview] = useState(false);
     const [showBuildGifModal, setShowBuildGifModal] = useState(false);
-    const { state, dispatch } = useAppState();
+    const { state, dispatch, undo, redo, canUndo, canRedo } = useAppState();
     const [divRef, setDivRef] = useState<null | HTMLDivElement>(null);
     const [isCropping, setIsCropping] = useState(false);
     const [upperLeftCrop, setUpperLeftCrop] = useState<null | {
@@ -178,6 +178,12 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
                     </button>
                     <button onClick={() => setShowBuildGifModal(true)}>
                         build gif
+                    </button>
+                    <button disabled={!canUndo} onClick={() => undo()}>
+                        undo
+                    </button>
+                    <button disabled={!canRedo} onClick={() => redo()}>
+                        redo
                     </button>
                     <div>
                         {animationCounter.animation} (

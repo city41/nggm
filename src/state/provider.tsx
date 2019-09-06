@@ -4,10 +4,22 @@ import React, {
     FunctionComponent,
     useReducer
 } from "react";
-import { Action, initialState, reducer } from "./state";
+import {
+    Action,
+    initialState as appInitialState,
+    reducer as appReducer
+} from "./state";
+import { getTimelineReducer, TimelineAction } from "./timeline";
+
+const { initialState, reducer } = getTimelineReducer(
+    appInitialState,
+    appReducer
+);
 
 export const stateContext = createContext(initialState);
-export const dispatchContext = createContext((() => 0) as Dispatch<Action>);
+export const dispatchContext = createContext((() => 0) as Dispatch<
+    TimelineAction
+>);
 
 export const Provider: FunctionComponent = ({ children }) => {
     const [state, dispatch] = useReducer(reducer, initialState);
