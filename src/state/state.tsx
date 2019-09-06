@@ -9,12 +9,13 @@ import { AppState, Crop, Layer, ExtractedSpriteGroup } from "./types";
 import {
     extendGroupsViaMirroring,
     haveSameSprites,
-    moveRelatedGroups,
+    moveGroups,
     positionSpriteGroupInRelationToExistingGroups,
     pushDownOutOfNegative,
     pushInOutOfNegative
 } from "./spriteUtil";
 import { extractSpriteGroup } from "./extractSpriteGroup";
+import { without } from "lodash";
 
 type Action =
     | { type: "StartEmulation" }
@@ -54,6 +55,19 @@ export const initialState: AppState = {
     outlineExtractedTiles: true
 };
 
+function update<T>(obj: T, collection: T[], updates: Partial<T>) {
+    return collection.map(o => {
+        if (o === obj) {
+            return {
+                ...obj,
+                ...updates
+            };
+        } else {
+            return o;
+        }
+    });
+}
+
 export function reducer(state: AppState, action: Action): AppState {
     switch (action.type) {
         case "StartEmulation":
@@ -70,7 +84,50 @@ export function reducer(state: AppState, action: Action): AppState {
                 pauseId: nowPaused ? state.pauseId + 1 : state.pauseId
             };
 
-        // TODO: make this handler not mutate, to support undo/redo in the future
+        case "ExtractSprite": {
+            const { spriteMemoryIndex, composedX } = action;
+
+            let newSpriteGroup = extractSpriteGroup(
+                spriteMemoryIndex,
+                composedX,
+                state.pauseId
+            );
+
+            const layer = state.layers[state.focusedLayerIndex] ||
+                state.layers[state.layers.length - 1] || {
+                    groups: [newSpriteGroup],
+                    hidden: false
+                };
+
+            const oldSpriteGroups = layer.groups.filter(
+                esg =>
+                    esg.pauseId !== newSpriteGroup.pauseId ||
+                    !haveSameSprites(esg, newSpriteGroup)
+            );
+
+            newSpriteGroup = positionSpriteGroupInRelationToExistingGroups(
+                newSpriteGroup,
+                oldSpriteGroups
+            );
+
+            let layers;
+
+            if (state.layers.length === 0) {
+                layers = [layer];
+            } else {
+                layers = update(layer, state.layers, {
+                    groups: [...layer.groups, newSpriteGroup]
+                });
+            }
+
+            return {
+                ...state,
+                layers,
+                focusedLayerIndex:
+                    layers.length === 1 ? 0 : state.focusedLayerIndex
+            };
+        }
+
         case "MoveSprite": {
             const { spriteMemoryIndex, newComposedX, pauseId } = action;
 
@@ -93,62 +150,15 @@ export function reducer(state: AppState, action: Action): AppState {
                 return state;
             }
 
-            moveRelatedGroups(currentSpriteGroup, layer.groups, newComposedX);
-
-            return {
-                ...state
-            };
-        }
-
-        // TODO: make this handler not mutate, to support undo/redo in the future
-        case "ExtractSprite": {
-            const { spriteMemoryIndex, composedX } = action;
-
-            const newSpriteGroup = extractSpriteGroup(
-                spriteMemoryIndex,
-                composedX,
-                state.pauseId
-            );
-
-            const layer = state.layers[state.focusedLayerIndex] ||
-                state.layers[state.layers.length - 1] || {
-                    groups: [newSpriteGroup],
-                    hidden: false
-                };
-            const oldSpriteGroups = layer.groups.filter(
-                esg =>
-                    esg.pauseId !== newSpriteGroup.pauseId ||
-                    !haveSameSprites(esg, newSpriteGroup)
-            );
-
-            // TODO: have this method not mutate to support undo/redo in the future
-            positionSpriteGroupInRelationToExistingGroups(
-                newSpriteGroup,
-                oldSpriteGroups
-            );
-
-            let layers;
-
-            if (state.layers.length === 0) {
-                layers = [layer];
-            } else {
-                layers = state.layers.map(l => {
-                    if (l === layer) {
-                        return {
-                            ...layer,
-                            groups: [...layer.groups, newSpriteGroup]
-                        };
-                    } else {
-                        return l;
-                    }
-                });
-            }
+            const diffX =
+                newComposedX - currentSpriteGroup.sprites[0].composedX;
+            const movedGroups = moveGroups(layer.groups, diffX);
 
             return {
                 ...state,
-                layers,
-                focusedLayerIndex:
-                    layers.length === 1 ? 0 : state.focusedLayerIndex
+                layers: update(layer, state.layers, {
+                    groups: movedGroups
+                })
             };
         }
 
@@ -160,18 +170,18 @@ export function reducer(state: AppState, action: Action): AppState {
 
         case "DeleteGroup": {
             const { group } = action;
+            const layer = state.layers.find(
+                layer => layer.groups.indexOf(group) > -1
+            );
 
-            const layers = state.layers.map(layer => {
-                if (layer.groups.indexOf(group) > -1) {
-                    const groups = layer.groups.filter(g => g !== group);
-                    return {
-                        ...layer,
-                        groups
-                    };
-                } else {
-                    return layer;
-                }
-            });
+            if (!layer) {
+                throw new Error(
+                    "DeleteGroup: can't find the layer this group belongs to"
+                );
+            }
+
+            const groups = without(layer.groups, group);
+            const layers = update(layer, state.layers, { groups });
 
             return {
                 ...state,
@@ -181,25 +191,21 @@ export function reducer(state: AppState, action: Action): AppState {
         case "ToggleVisibilityOfGroup": {
             const { group } = action;
 
-            const layers = state.layers.map(layer => {
-                if (layer.groups.indexOf(group) > -1) {
-                    const groups = layer.groups.map(g => {
-                        if (g === group) {
-                            return {
-                                ...g,
-                                hidden: !g.hidden
-                            };
-                        } else {
-                            return g;
-                        }
-                    });
-                    return {
-                        ...layer,
-                        groups
-                    };
-                } else {
-                    return layer;
-                }
+            const layer = state.layers.find(
+                layer => layer.groups.indexOf(group) > -1
+            );
+
+            if (!layer) {
+                throw new Error(
+                    "ToggleVisibilityOfGroup: failed to find the layer that owns this group"
+                );
+            }
+
+            const newGroups = update(group, layer.groups, {
+                hidden: !group.hidden
+            });
+            const layers = update(layer, state.layers, {
+                groups: newGroups
             });
 
             return {
@@ -233,15 +239,8 @@ export function reducer(state: AppState, action: Action): AppState {
         case "ToggleVisibilityOfLayer": {
             const { layer } = action;
 
-            const layers = state.layers.map(l => {
-                if (l === layer) {
-                    return {
-                        ...l,
-                        hidden: !l.hidden
-                    };
-                } else {
-                    return l;
-                }
+            const layers = update(layer, state.layers, {
+                hidden: !layer.hidden
             });
 
             return {

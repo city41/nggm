@@ -88,47 +88,48 @@ export function haveSameSprites(
  *
  * example: Samurai Shodown title screen. User drags in background, then drags in "Samurai" sprite, the "Samurai"
  * sprite will position itself properly on top of the background
- *
- * TODO: don't mutate the parameters, return new objects instead
  */
 export function positionSpriteGroupInRelationToExistingGroups(
     newGroup: ExtractedSpriteGroup,
     oldGroups: ExtractedSpriteGroup[]
-) {
+): ExtractedSpriteGroup {
     const sameGroup = oldGroups.find(og => og.pauseId === newGroup.pauseId);
 
     // first sprite from this pauseId? Then there is nothing to position
     if (!sameGroup) {
-        return;
+        return newGroup;
     }
 
-    const screenToComposeDiffX =
-        sameGroup.sprites[0].composedX - sameGroup.sprites[0].screenX;
+    const diffX = sameGroup.sprites[0].composedX - sameGroup.sprites[0].screenX;
 
-    newGroup.sprites.forEach(
-        s => (s.composedX = s.screenX + screenToComposeDiffX)
-    );
+    return {
+        ...newGroup,
+        sprites: moveSprites(newGroup.sprites, diffX, "screenX")
+    };
 }
 
-/**
- * When a sprite group has been moved to a new position in the compose window,
- * find all other sprite groups in the same pauseId and move them the same amount
- */
-export function moveRelatedGroups(
-    focusedGroup: ExtractedSpriteGroup,
-    allGroups: ExtractedSpriteGroup[],
-    newComposedX: number
-) {
-    const xDiff = newComposedX - focusedGroup.sprites[0].composedX;
+function moveSprites(
+    sprites: ExtractedSprite[],
+    diffX: number,
+    baseX: "composedX" | "screenX" = "composedX"
+): ExtractedSprite[] {
+    return sprites.map(sprite => {
+        return {
+            ...sprite,
+            composedX: sprite[baseX] + diffX
+        };
+    });
+}
 
-    const groupsFromSamePauseId = allGroups.filter(
-        sg => sg.pauseId === focusedGroup.pauseId
-    );
-
-    groupsFromSamePauseId.forEach(group => {
-        group.sprites.forEach(s => {
-            s.composedX += xDiff;
-        });
+export function moveGroups(
+    groups: ExtractedSpriteGroup[],
+    diffX: number
+): ExtractedSpriteGroup[] {
+    return groups.map(group => {
+        return {
+            ...group,
+            sprites: moveSprites(group.sprites, diffX)
+        };
     });
 }
 
