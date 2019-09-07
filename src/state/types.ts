@@ -42,10 +42,9 @@ export interface ExtractedTile {
  */
 export interface ExtractedSprite {
     /**
-     * The group this sprite belongs to
+     * the pauseId this sprite was extracted in
      */
-    group: ExtractedSpriteGroup;
-
+    pauseId: number;
     /**
      * offset into video RAM where this sprite came from.
      *

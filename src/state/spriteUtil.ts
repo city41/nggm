@@ -338,8 +338,5 @@ export function extendGroupsViaMirroring(
         sprites: rightMirror
     };
 
-    newLeftGroup.sprites.forEach(s => (s.group = newLeftGroup));
-    newRightGroup.sprites.forEach(s => (s.group = newRightGroup));
-
     return [newLeftGroup, newRightGroup];
 }

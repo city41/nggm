@@ -24,7 +24,7 @@ export const ExtractedSprite: React.FunctionComponent<ExtractedSpriteProps> = ({
     const [_, dragRef] = useDrag({
         item: {
             spriteMemoryIndex: data.spriteMemoryIndex,
-            pauseId: data.group.pauseId,
+            pauseId: data.pauseId,
             type: "Sprite"
         },
         canDrag() {

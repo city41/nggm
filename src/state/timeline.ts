@@ -120,6 +120,7 @@ export function getTimelineReducer(
             }
         }
 
+        console.log("newState", JSON.stringify(newState, null, 2));
         return newState;
     }
 

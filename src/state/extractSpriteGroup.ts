@@ -39,8 +39,6 @@ function getSpriteGroup(spriteMemoryIndex: number): number[] {
     return spriteMemoryIndices;
 }
 
-type ExtractedSpriteMinusGroup = Omit<ExtractedSprite, "group">;
-
 export function extractSpriteGroup(
     spriteMemoryIndex: number,
     composedX: number,
@@ -48,27 +46,24 @@ export function extractSpriteGroup(
 ): ExtractedSpriteGroup {
     const allSpriteMemoryIndices = getSpriteGroup(spriteMemoryIndex);
 
-    const sprites: ExtractedSpriteMinusGroup[] = allSpriteMemoryIndices.map(
-        (smi, i) => {
-            const spriteData = getSpriteData(smi, true);
-            return {
-                spriteMemoryIndex: smi,
-                tiles: spriteData.tiles.map(convertTileDataToExtractedTile),
-                screenX: spriteData.x,
-                screenY: spriteData.y,
-                composedX: composedX + i * 16,
-                composedY: spriteData.y
-            };
-        }
-    );
+    const sprites: ExtractedSprite[] = allSpriteMemoryIndices.map((smi, i) => {
+        const spriteData = getSpriteData(smi, true);
+        return {
+            pauseId,
+            spriteMemoryIndex: smi,
+            tiles: spriteData.tiles.map(convertTileDataToExtractedTile),
+            screenX: spriteData.x,
+            screenY: spriteData.y,
+            composedX: composedX + i * 16,
+            composedY: spriteData.y
+        };
+    });
 
     const group: ExtractedSpriteGroup = {
         pauseId,
-        sprites: sprites as ExtractedSprite[],
+        sprites,
         hidden: false
     };
-
-    sprites.forEach(s => ((s as ExtractedSprite).group = group));
 
     return group;
 }
