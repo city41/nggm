@@ -92,8 +92,11 @@ export function layersToCanvas(
 
     layers.forEach(layer => {
         const layerSprites = getAllSpritesFromLayers([layer]);
+        const sortedSprites = [...layerSprites].sort(
+            (a, b) => a.spriteMemoryIndex - b.spriteMemoryIndex
+        );
 
-        layerSprites.forEach(sprite => {
+        sortedSprites.forEach(sprite => {
             sprite.tiles.forEach(tile => {
                 let tileCanvas = document.createElement("canvas");
 
