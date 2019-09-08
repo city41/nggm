@@ -11,6 +11,7 @@ interface ExtractedSpriteProps {
     animationCounter?: number;
     canDrag: boolean;
     outlineTiles?: boolean;
+    setYToZero?: boolean;
 }
 
 export const ExtractedSprite: React.FunctionComponent<ExtractedSpriteProps> = ({
@@ -18,7 +19,8 @@ export const ExtractedSprite: React.FunctionComponent<ExtractedSpriteProps> = ({
     autoAnimate,
     animationCounter,
     canDrag,
-    outlineTiles
+    outlineTiles,
+    setYToZero
 }) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, dragRef] = useDrag({
@@ -63,7 +65,7 @@ export const ExtractedSprite: React.FunctionComponent<ExtractedSpriteProps> = ({
     });
 
     const style = {
-        top: data.composedY,
+        top: setYToZero ? 0 : data.composedY,
         left: data.composedX,
         gridTemplateRows: `repeat(${data.tiles.length}, 16px)`,
         zIndex: data.spriteMemoryIndex

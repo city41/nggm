@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { useDragLayer } from "react-dnd";
-import { getSpriteData } from "./state/spriteData";
-import { Sprite } from "./spriteTray/sprite";
+import { SpriteGroupDragPreview } from "./SpriteGroupDragPreview";
 
 import styles from "./dragPreviewLayer.module.css";
 
 export const DragPreviewLayer: React.FunctionComponent = () => {
+    const previewRef = useRef<null | HTMLDivElement>(null);
+
     const { itemType, isDragging, item, currentOffset } = useDragLayer(
         monitor => {
             if (monitor.isDragging()) {
@@ -21,24 +22,24 @@ export const DragPreviewLayer: React.FunctionComponent = () => {
         }
     );
 
+    useEffect(() => {
+        if (previewRef && previewRef.current && currentOffset) {
+            previewRef.current.style.position = "fixed";
+            previewRef.current.style.top = "fixed";
+            previewRef.current.style.top = currentOffset.y + 1 + "px";
+            previewRef.current.style.left = currentOffset.x + 1 + "px";
+            previewRef.current.style.zIndex = "1000";
+        }
+    });
+
     if (!isDragging || !currentOffset || itemType !== "Sprite") {
         return null;
     }
 
-    const style = {
-        position: "fixed",
-        top: currentOffset.y + 1,
-        left: currentOffset.x + 1,
-        width: 100,
-        height: 100,
-        zIndex: 1000
-    } as const;
-
-    const spriteData = getSpriteData(item.spriteMemoryIndex);
-
     return (
-        <div style={style}>
-            <Sprite spriteData={spriteData} />
-        </div>
+        <SpriteGroupDragPreview
+            seedSpriteMemoryIndex={item.spriteMemoryIndex}
+            innerRef={previewRef}
+        />
     );
 };
