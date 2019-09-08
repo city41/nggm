@@ -6,11 +6,13 @@ import { Provider as AppStateProvider } from "./state/provider";
 import { Emulator } from "./emulator";
 import { SpriteTray } from "./spriteTray";
 import { ComposeScreen } from "./composeScreen";
+import { DragPreviewLayer } from "./dragPreviewLayer";
 
 export const App: React.FunctionComponent = () => {
     return (
         <AppStateProvider>
             <DndProvider backend={HTML5Backend}>
+                <DragPreviewLayer />
                 <Space.ViewPort>
                     <Space.TopResizable size="50%">
                         <Space.LeftResizable size="30%">

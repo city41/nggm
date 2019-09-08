@@ -1,6 +1,5 @@
 import React from "react";
 import classnames from "classnames";
-import { useDrag } from "react-dnd";
 import { Tile } from "./tile";
 import { SpriteData } from "../state/spriteData";
 
@@ -20,11 +19,6 @@ export const Sprite: React.FunctionComponent<SpriteProps> = ({
     spriteData
 }) => {
     const { spriteMemoryIndex } = spriteData;
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [_, dragRef] = useDrag({
-        item: { spriteMemoryIndex, type: "Sprite" }
-    });
 
     if (spriteData.tiles.length === 0) {
         return null;
@@ -47,7 +41,7 @@ export const Sprite: React.FunctionComponent<SpriteProps> = ({
     };
 
     return (
-        <div className={styles.sprite} ref={dragRef} style={style}>
+        <div className={styles.sprite} style={style}>
             {tiles}
         </div>
     );

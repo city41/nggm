@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import classnames from "classnames";
+import { useDrag } from "react-dnd";
+import { getEmptyImage } from "react-dnd-html5-backend";
 import { SpriteEntry } from "./spriteEntry";
 import { useAppState } from "../state";
 import { getSpriteData, SpriteData } from "../state/spriteData";
@@ -75,8 +77,38 @@ export const SpriteTray: React.FunctionComponent<SpriteTrayProps> = ({
         />
     ));
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [_, dragRef, preview] = useDrag({
+        item: { type: "Sprite" },
+        begin(monitor: any) {
+            if (divRef) {
+                const x =
+                    monitor.getClientOffset().x -
+                    divRef.getBoundingClientRect().left;
+
+                const index = Math.floor(x / 8);
+
+                return {
+                    spriteMemoryIndex: spriteDatas[index].spriteMemoryIndex,
+                    type: "Sprite"
+                };
+            }
+        }
+    });
+    const [divRef, setDivRef] = useState<null | HTMLDivElement>(null);
+
+    useEffect(() => {
+        preview(getEmptyImage(), { captureDraggingState: true });
+    }, []);
+
     return (
-        <div className={classes}>
+        <div
+            className={classes}
+            ref={div => {
+                setDivRef(div);
+                dragRef(div);
+            }}
+        >
             <div
                 key={state.pauseId}
                 className={styles.spriteEntries}
