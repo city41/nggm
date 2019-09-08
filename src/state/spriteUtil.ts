@@ -159,7 +159,7 @@ export function pushDownOutOfNegative(layers: Layer[]): Layer[] {
     });
 }
 
-function getAllTilesFromLayers(layers: Layer[]): ExtractedTile[] {
+export function getAllTilesFromLayers(layers: Layer[]): ExtractedTile[] {
     const sprites = getAllSpritesFromLayers(layers);
 
     return sprites.reduce<ExtractedTile[]>((tiles, sprite) => {

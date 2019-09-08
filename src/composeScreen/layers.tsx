@@ -64,11 +64,6 @@ const Group: React.FunctionComponent<GroupProps> = ({
             <button onClick={() => onToggleVisibility()}>
                 {group.hidden ? "show" : "hide"}
             </button>
-            <button
-                onClick={() => dispatch({ type: "RotateGroupDown", group })}
-            >
-                rotate
-            </button>
             <button onClick={() => setShowSprites(!showSprites)}>
                 sprites
             </button>
@@ -98,6 +93,8 @@ const Layer: React.FunctionComponent<LayerProps> = ({
     onExtendViaMirror,
     focused
 }) => {
+    const { dispatch } = useAppState();
+
     const groups = layer.groups.map((group, i) => (
         <Group
             key={i}
@@ -118,6 +115,11 @@ const Layer: React.FunctionComponent<LayerProps> = ({
                 <button onClick={() => onDelete()}>delete</button>
                 <button onClick={() => onToggleVisibility()}>
                     {layer.hidden ? "show" : "hide"}
+                </button>
+                <button
+                    onClick={() => dispatch({ type: "RotateLayer", layer })}
+                >
+                    rotate
                 </button>
                 <button onClick={() => onExtendViaMirror()}>
                     extend via mirror

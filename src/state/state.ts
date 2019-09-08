@@ -12,7 +12,10 @@ import {
     moveGroups,
     positionSpriteGroupInRelationToExistingGroups,
     pushDownOutOfNegative,
-    pushInOutOfNegative
+    pushInOutOfNegative,
+    getAllTilesFromLayers,
+    getMinY,
+    getMaxY
 } from "./spriteUtil";
 import { extractSpriteGroup } from "./extractSpriteGroup";
 import { without } from "lodash";
@@ -47,7 +50,7 @@ export type UndoableAction =
           group: ExtractedSpriteGroup;
           sprite: ExtractedSprite;
       }
-    | { type: "RotateGroupDown"; group: ExtractedSpriteGroup };
+    | { type: "RotateLayer"; layer: Layer };
 
 export const initialState: AppState = {
     layers: [],
@@ -69,37 +72,85 @@ function update<T>(obj: T, collection: T[], updates: Partial<T>) {
     });
 }
 
-function rotateTilesUp(tiles: ExtractedTile[]): ExtractedTile[] {
+function rotateTiles(
+    tiles: ExtractedTile[],
+    minY: number,
+    maxY: number
+): ExtractedTile[] {
     if (tiles.length === 0) {
         return tiles;
     }
 
-    const firstTileY = tiles[0].composedY;
+    return tiles.map(tile => {
+        // if the tile is beyond maxY, then it is not on a 16px boundary.
+        // so when it wraps to the top, need to offset it from minY to maintain
+        // its position
+        const needsToWrap = tile.composedY >= maxY;
+        const wrapOffset = tile.composedY - maxY;
 
-    let newTiles = [];
+        const newY = needsToWrap ? minY + wrapOffset : tile.composedY + 16;
 
-    for (let i = 0; i < tiles.length - 1; ++i) {
-        newTiles.push({
-            ...tiles[i],
-            composedY: tiles[i + 1].composedY
-        });
-    }
-
-    newTiles.push({
-        ...tiles[tiles.length - 1],
-        composedY: firstTileY
+        return {
+            ...tile,
+            composedY: newY
+        };
     });
-
-    return newTiles;
 }
 
-function rotateSpritesUp(sprites: ExtractedSprite[]): ExtractedSprite[] {
+function rotateSprites(
+    sprites: ExtractedSprite[],
+    minY: number,
+    maxY: number
+): ExtractedSprite[] {
     return sprites.map(sprite => {
         return {
             ...sprite,
-            tiles: rotateTilesUp(sprite.tiles)
+            tiles: rotateTiles(sprite.tiles, minY, maxY)
         };
     });
+}
+
+function rotateLayer(layer: Layer): Layer {
+    const tiles = getAllTilesFromLayers([layer]);
+
+    // when wrapping, we only want to wrap on a 16 pixel boundary.
+    // To accomplish that, find min/max tiles that are on the boundary. Tiles that are off the boundary
+    // (typically small sprites on top of a background sprite), let them hang over when wrapping
+    const minY = tiles.reduce((minY, tile) => {
+        if (tile.composedY < minY && tile.composedY % 16 === 0) {
+            return tile.composedY;
+        } else {
+            return minY;
+        }
+    }, Infinity);
+
+    if (minY === Infinity) {
+        return layer;
+    }
+
+    const maxY = tiles.reduce((maxY, tile) => {
+        if (tile.composedY > maxY && tile.composedY % 16 === 0) {
+            return tile.composedY;
+        } else {
+            return maxY;
+        }
+    }, -Infinity);
+
+    if (maxY === -Infinity) {
+        return layer;
+    }
+
+    const groups = layer.groups.map(group => {
+        return {
+            ...group,
+            sprites: rotateSprites(group.sprites, minY, maxY)
+        };
+    });
+
+    return {
+        ...layer,
+        groups
+    };
 }
 
 export function reducer(
@@ -364,23 +415,10 @@ export function reducer(
             };
         }
 
-        case "RotateGroupDown": {
-            const { group } = action;
-            const layer = state.layers.find(
-                layer => layer.groups.indexOf(group) > -1
-            );
+        case "RotateLayer": {
+            const { layer } = action;
 
-            if (!layer) {
-                throw new Error(
-                    "RotateGroupDown: failed to find layer for group"
-                );
-            }
-
-            const sprites = rotateSpritesUp(group.sprites);
-
-            const groups = update(group, layer.groups, { sprites });
-
-            const layers = update(layer, state.layers, { groups });
+            const layers = update(layer, state.layers, rotateLayer(layer));
 
             return {
                 ...state,
