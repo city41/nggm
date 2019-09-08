@@ -1,3 +1,4 @@
-.positioned {
-    position: absolute;
+.canvas {
+    width: 8px;
+    height: 8px;
 }

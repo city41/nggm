@@ -1,9 +1,5 @@
 .sprite {
-    width: 16px;
+    width: 8px;
     display: grid;
-    grid-template-columns: 16px;
-}
-
-.positioned {
-    position: absolute;
+    grid-template-columns: 8px;
 }

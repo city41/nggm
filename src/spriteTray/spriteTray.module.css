@@ -1,9 +1,6 @@
 .root {
     width: 100%;
     height: 100%;
-
-    display: grid;
-    grid-template-columns: 1fr max-content;
 }
 
 .locked {
@@ -11,8 +8,6 @@
 }
 
 .spriteEntries {
-    grid-row: 1;
-    grid-column: 1;
     display: grid;
     overflow-x: auto;
     overflow-y: hidden;

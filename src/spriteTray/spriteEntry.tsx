@@ -38,7 +38,6 @@ export const SpriteEntry: React.FunctionComponent<SpriteEntryProps> = ({
                     <Sprite
                         className={styles.sprite}
                         spriteMemoryIndex={spriteMemoryIndex}
-                        positioned={false}
                         honorTileSize={honorTileSize}
                     />
                 )}

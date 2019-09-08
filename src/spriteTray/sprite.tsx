@@ -9,8 +9,6 @@ import styles from "./sprite.module.css";
 interface SpriteProps {
     className?: string;
     spriteMemoryIndex: number;
-    positioned: boolean;
-    overrideX?: number;
     honorTileSize: boolean;
 }
 
@@ -21,8 +19,6 @@ interface PreviewProps {
 export const Sprite: React.FunctionComponent<SpriteProps> = ({
     className,
     spriteMemoryIndex,
-    positioned,
-    overrideX,
     honorTileSize
 }) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -41,8 +37,7 @@ export const Sprite: React.FunctionComponent<SpriteProps> = ({
     const tiles = spriteData.tiles.map((tileData, i) => (
         <Tile
             key={i}
-            positioned={positioned}
-            y={tileData.y - spriteData.y}
+            y={tileData.y}
             tileIndex={tileData.tileIndex}
             paletteIndex={tileData.paletteIndex}
             horizontalFlip={tileData.horizontalFlip}
@@ -51,18 +46,12 @@ export const Sprite: React.FunctionComponent<SpriteProps> = ({
     ));
 
     const style = {
-        top: spriteData.y,
-        left: typeof overrideX === "number" ? overrideX : spriteData.x,
-        gridTemplateRows: `repeat(${spriteData.tiles.length}, 16px)`,
+        gridTemplateRows: `repeat(${spriteData.tiles.length}, 8px)`,
         zIndex: spriteMemoryIndex
     };
 
-    const spriteClassName = classnames(styles.sprite, className, {
-        [styles.positioned]: positioned
-    });
-
     return (
-        <div ref={dragRef} className={spriteClassName} style={style}>
+        <div className={styles.sprite} ref={dragRef} style={style}>
             {tiles}
         </div>
     );

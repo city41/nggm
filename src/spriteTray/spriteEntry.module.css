@@ -1,8 +1,8 @@
 .root {
     height: 100%;
     background-color: #aaa;
-    width: 12px;
-    border-right: 1px dotted rgba(255, 255, 255, 0.5);
+    width: 8px;
+    outline: 1px dotted rgba(255, 255, 255, 0.4);
 
     display: flex;
     flex-direction: column;
@@ -14,7 +14,7 @@
 }
 
 .index {
-    font-size: 0.8rem;
+    font-size: 0.6rem;
     writing-mode: vertical-lr;
     height: 24px;
     padding-top: 8px;
@@ -28,8 +28,4 @@
 
 .spriteContainer {
     flex: 1;
-}
-
-.sprite {
-    transform: scale(0.75);
 }

@@ -14,7 +14,6 @@ interface TileProps {
     paletteIndex: number;
     horizontalFlip?: boolean;
     verticalFlip?: boolean;
-    positioned: boolean;
 }
 
 export class Tile extends React.PureComponent<TileProps> {
@@ -24,8 +23,7 @@ export class Tile extends React.PureComponent<TileProps> {
             tileIndex,
             paletteIndex,
             horizontalFlip,
-            verticalFlip,
-            positioned
+            verticalFlip
         } = this.props;
 
         function renderCanvas(canvas: HTMLCanvasElement) {
@@ -39,17 +37,12 @@ export class Tile extends React.PureComponent<TileProps> {
         const verticalScale = verticalFlip ? -1 : 1;
 
         const inlineStyle = {
-            transform: `scale(${horizontalScale},${verticalScale})`,
-            top: tileY
+            transform: `scale(${horizontalScale},${verticalScale})`
         };
-
-        const className = classnames({
-            [styles.positioned]: positioned
-        });
 
         return (
             <canvas
-                className={className}
+                className={styles.canvas}
                 ref={r => r && renderCanvas(r)}
                 style={inlineStyle}
             />
