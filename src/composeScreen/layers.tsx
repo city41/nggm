@@ -68,7 +68,8 @@ const Group: React.FunctionComponent<GroupProps> = ({
     return (
         <div className={styles.group}>
             {" "}
-            {group.sprites[0].spriteMemoryIndex}{" "}
+            {(group.sprites[0] && group.sprites[0].spriteMemoryIndex) ||
+                "empty"}{" "}
             <button onClick={() => onDelete()}>delete</button>
             <button onClick={() => onToggleVisibility()}>
                 {group.hidden ? "show" : "hide"}

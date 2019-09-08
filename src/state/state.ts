@@ -352,6 +352,11 @@ export function reducer(
         case "ExtendLayerViaMirror": {
             const { layer } = action;
 
+            // don't bother to mirror an empty layer
+            if (layer.groups.length === 0) {
+                return state;
+            }
+
             const mirroredGroups = extendGroupsViaMirroring(
                 layer.groups,
                 pauseId
