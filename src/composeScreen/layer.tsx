@@ -22,7 +22,7 @@ export const Layer: React.FunctionComponent<LayerProps> = ({
     canDrag,
     outlineTiles
 }) => {
-    const sprites = getAllSpritesFromLayers([layer]);
+    const sprites = getAllSpritesFromLayers([layer], { visibleOnly: true });
 
     const spriteCmps = sprites.map((extractedSprite, i) => (
         <ExtractedSpriteCmp

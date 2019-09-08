@@ -167,16 +167,23 @@ export function getAllTilesFromLayers(layers: Layer[]): ExtractedTile[] {
     }, []);
 }
 
-export function getAllSpritesFromLayers(layers: Layer[]): ExtractedSprite[] {
+export function getAllSpritesFromLayers(
+    layers: Layer[],
+    options?: { visibleOnly: boolean }
+): ExtractedSprite[] {
     return layers.reduce<ExtractedSprite[]>((sprites, layer) => {
-        return sprites.concat(getAllSpritesFromGroups(layer.groups));
+        return sprites.concat(getAllSpritesFromGroups(layer.groups, options));
     }, []);
 }
 
 function getAllSpritesFromGroups(
-    groups: ExtractedSpriteGroup[]
+    groups: ExtractedSpriteGroup[],
+    options?: { visibleOnly: boolean }
 ): ExtractedSprite[] {
     return groups.reduce<ExtractedSprite[]>((sprites, group) => {
+        if (options && options.visibleOnly && group.hidden) {
+            return sprites;
+        }
         return sprites.concat(group.sprites);
     }, []);
 }

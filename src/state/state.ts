@@ -111,8 +111,8 @@ function rotateSprites(
     });
 }
 
-function rotateLayer(layer: Layer): Layer {
-    const tiles = getAllTilesFromLayers([layer]);
+function rotateLayer(layer: Layer, allLayers: Layer[]): Layer {
+    const tiles = getAllTilesFromLayers(allLayers);
 
     // when wrapping, we only want to wrap on a 16 pixel boundary.
     // To accomplish that, find min/max tiles that are on the boundary. Tiles that are off the boundary
@@ -419,7 +419,11 @@ export function reducer(
         case "RotateLayer": {
             const { layer } = action;
 
-            const layers = update(layer, state.layers, rotateLayer(layer));
+            const layers = update(
+                layer,
+                state.layers,
+                rotateLayer(layer, state.layers)
+            );
 
             return {
                 ...state,
