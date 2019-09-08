@@ -28,7 +28,8 @@ export interface TileData {
     autoAnimation: 0 | 2 | 3;
 }
 
-interface SpriteData {
+export interface SpriteData {
+    spriteMemoryIndex: number;
     tiles: TileData[];
     x: number;
     y: number;
@@ -233,6 +234,7 @@ export function getSpriteData(spriteMemoryIndex: number): SpriteData {
     const tiles = getTileData(spriteMemoryIndex, spriteSize, tileYs);
 
     return {
+        spriteMemoryIndex,
         tiles,
         x: getX(spriteMemoryIndex),
         sticky,
