@@ -23,3 +23,15 @@
     outline: 1px solid rgba(255, 255, 255, 0.6);
     margin: 0 0 0 16px;
 }
+
+.buttonIcon {
+    cursor: pointer;
+}
+
+.label {
+    display: inline-block;
+    padding: 4px;
+    font-weight: bold;
+    background-color: var(--focal-color);
+    color: white;
+}

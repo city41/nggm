@@ -6,6 +6,16 @@ import {
     ExtractedSpriteGroup,
     ExtractedSprite
 } from "../state/types";
+import { IconButton } from "../components/iconButton";
+import {
+    IoIosAdd,
+    IoIosClose,
+    IoIosEye,
+    IoIosEyeOff,
+    IoIosReorder,
+    IoIosDownload,
+    IoIosPhoneLandscape
+} from "react-icons/io";
 
 import styles from "./layers.module.css";
 
@@ -13,7 +23,6 @@ interface SpriteProps {
     sprite: ExtractedSprite;
     onDelete: () => void;
 }
-
 const Sprite: React.FunctionComponent<SpriteProps> = ({ sprite, onDelete }) => {
     return (
         <div className={styles.sprite}>
@@ -113,18 +122,32 @@ const Layer: React.FunctionComponent<LayerProps> = ({
     return (
         <div className={classes} onClick={() => onClick()}>
             <div>
-                layer
-                <button onClick={() => onDelete()}>delete</button>
-                <button onClick={() => onToggleVisibility()}>
-                    {layer.hidden ? "show" : "hide"}
-                </button>
-                <button
+                <div className={styles.label}>L</div>
+                <IconButton
+                    icon={IoIosClose}
+                    title="Delete Layer"
+                    onClick={() => onDelete()}
+                />
+                <IconButton
+                    icon={layer.hidden ? IoIosEyeOff : IoIosEye}
+                    onClick={() => onToggleVisibility()}
+                    title={`Layer is ${layer.hidden ? "hidden" : "visible"}`}
+                />
+                <IconButton
+                    icon={IoIosReorder}
                     onClick={() => dispatch({ type: "RotateLayer", layer })}
-                >
-                    rotate
-                </button>
-                <button onClick={() => onExtendViaMirror()}>mirror</button>
-                <button onClick={() => onPushDown()}>push down</button>
+                    title="Rotate tiles"
+                />
+                <IconButton
+                    icon={IoIosPhoneLandscape}
+                    onClick={() => onExtendViaMirror()}
+                    title="Mirror"
+                />
+                <IconButton
+                    icon={IoIosDownload}
+                    onClick={() => onPushDown()}
+                    title="Push Down"
+                />
             </div>
             {groups}
         </div>
@@ -163,9 +186,12 @@ export const Layers: React.FunctionComponent<LayersProps> = ({ className }) => {
 
     return (
         <div className={classes}>
-            <button onClick={() => dispatch({ type: "NewLayer" })}>
-                new layer
-            </button>
+            <IconButton
+                className={styles.buttonIcon}
+                icon={IoIosAdd}
+                onClick={() => dispatch({ type: "NewLayer" })}
+                title="New Layer"
+            />
             {layers}
         </div>
     );
