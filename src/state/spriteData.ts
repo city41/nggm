@@ -225,46 +225,15 @@ function isTileEmpty(tile: TileData): boolean {
     return tileIndexData.every(i => i === 0);
 }
 
-function trimEmptyTiles(tiles: TileData[]): TileData[] {
-    let numEmptyTiles = 0;
-
-    while (numEmptyTiles < tiles.length && isTileEmpty(tiles[numEmptyTiles])) {
-        ++numEmptyTiles;
-    }
-
-    const diffY = numEmptyTiles * 16;
-
-    const remainingTiles = tiles.slice(numEmptyTiles);
-
-    return remainingTiles.map(tile => {
-        return {
-            ...tile,
-            y: tile.y - diffY
-        };
-    });
-}
-
-type GetSpriteDataOptions = { removeEmptyTiles: boolean };
-
-export function getSpriteData(
-    spriteMemoryIndex: number,
-    honorTileSize: boolean,
-    options?: Partial<GetSpriteDataOptions>
-): SpriteData {
+export function getSpriteData(spriteMemoryIndex: number): SpriteData {
     const { sticky, y, tileYs, spriteSize } = getYSpriteSizeSticky(
         spriteMemoryIndex
     );
 
-    const tiles = getTileData(
-        spriteMemoryIndex,
-        honorTileSize ? spriteSize : 32,
-        tileYs
-    );
-
-    const removeEmptyTiles = options && options.removeEmptyTiles;
+    const tiles = getTileData(spriteMemoryIndex, spriteSize, tileYs);
 
     return {
-        tiles: removeEmptyTiles ? trimEmptyTiles(tiles) : tiles,
+        tiles,
         x: getX(spriteMemoryIndex),
         sticky,
         y,

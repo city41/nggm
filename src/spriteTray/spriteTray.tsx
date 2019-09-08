@@ -77,7 +77,6 @@ export const SpriteTray: React.FunctionComponent<SpriteTrayProps> = ({
                                 }
                             }}
                             focused={focusedIndices.indexOf(i) > -1}
-                            honorTileSize
                         />
                     ))}
             </div>

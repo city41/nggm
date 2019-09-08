@@ -9,7 +9,6 @@ import styles from "./sprite.module.css";
 interface SpriteProps {
     className?: string;
     spriteMemoryIndex: number;
-    honorTileSize: boolean;
 }
 
 interface PreviewProps {
@@ -18,17 +17,14 @@ interface PreviewProps {
 
 export const Sprite: React.FunctionComponent<SpriteProps> = ({
     className,
-    spriteMemoryIndex,
-    honorTileSize
+    spriteMemoryIndex
 }) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, dragRef] = useDrag({
         item: { spriteMemoryIndex, type: "Sprite" }
     });
 
-    const spriteData = getSpriteData(spriteMemoryIndex, honorTileSize, {
-        removeEmptyTiles: true
-    });
+    const spriteData = getSpriteData(spriteMemoryIndex);
 
     if (spriteData.tiles.length === 0) {
         return null;

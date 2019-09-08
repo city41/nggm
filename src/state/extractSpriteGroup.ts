@@ -21,11 +21,11 @@ function convertTileDataToExtractedTile(tileData: TileData): ExtractedTile {
 function getSpriteGroup(spriteMemoryIndex: number): number[] {
     let rootSpriteIndex = spriteMemoryIndex;
 
-    let spriteData = getSpriteData(rootSpriteIndex, true);
+    let spriteData = getSpriteData(rootSpriteIndex);
 
     while (spriteData.sticky && rootSpriteIndex > 0) {
         rootSpriteIndex -= 1;
-        spriteData = getSpriteData(rootSpriteIndex, true);
+        spriteData = getSpriteData(rootSpriteIndex);
     }
 
     const spriteMemoryIndices = [];
@@ -33,7 +33,7 @@ function getSpriteGroup(spriteMemoryIndex: number): number[] {
     do {
         spriteMemoryIndices.push(rootSpriteIndex);
         rootSpriteIndex += 1;
-        spriteData = getSpriteData(rootSpriteIndex, true);
+        spriteData = getSpriteData(rootSpriteIndex);
     } while (spriteData.sticky);
 
     return spriteMemoryIndices;
@@ -47,7 +47,7 @@ export function extractSpriteGroup(
     const allSpriteMemoryIndices = getSpriteGroup(spriteMemoryIndex);
 
     const sprites: ExtractedSprite[] = allSpriteMemoryIndices.map((smi, i) => {
-        const spriteData = getSpriteData(smi, true);
+        const spriteData = getSpriteData(smi);
         return {
             pauseId,
             spriteMemoryIndex: smi,

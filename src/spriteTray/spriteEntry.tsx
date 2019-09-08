@@ -11,7 +11,6 @@ interface SpriteEntryProps {
     render?: boolean;
     hideIfEmpty: boolean;
     focused?: boolean;
-    honorTileSize: boolean;
     onClick: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
 
@@ -21,7 +20,6 @@ export const SpriteEntry: React.FunctionComponent<SpriteEntryProps> = ({
     render,
     hideIfEmpty,
     focused,
-    honorTileSize,
     onClick
 }) => {
     const classes = classnames(styles.root, className, {
@@ -38,7 +36,6 @@ export const SpriteEntry: React.FunctionComponent<SpriteEntryProps> = ({
                     <Sprite
                         className={styles.sprite}
                         spriteMemoryIndex={spriteMemoryIndex}
-                        honorTileSize={honorTileSize}
                     />
                 )}
             </div>
