@@ -29,14 +29,8 @@ export const BuildGifModal: React.FunctionComponent<BuildGifModalProps> = ({
         if (isOpen) {
             const delay = window.Module._get_neogeo_frame_counter_speed() * 16;
 
-            const extractedSpriteGroups = state.layers.reduce<
-                ExtractedSpriteGroup[]
-            >((b, layer) => {
-                return b.concat(layer.groups);
-            }, []);
-
             createGif(
-                extractedSpriteGroups,
+                state.layers,
                 state.crop,
                 delay,
                 (

@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from "react";
 import classnames from "classnames";
 import { useDrop } from "react-dnd";
-import { ExtractedSprite as ExtractedSpriteCmp } from "./extractedSprite";
 import {
     getBackdropNeoGeoColor,
     neoGeoColorToCSS
 } from "../palette/neoGeoPalette";
 import { useAppState } from "../state";
-import { Layer, ExtractedSprite } from "../state/types";
 import { BuildGifModal } from "../gifBuilder/buildGifModal";
 import { Layers } from "./layers";
+import { Layer as LayerCmp } from "./layer";
 import { CropRect } from "./cropRect";
-import { getMaxX, getMaxY } from "../state/spriteUtil";
+import { getMaxX, getMaxY, getAllSpritesFromLayers } from "../state/spriteUtil";
 
 import styles from "./composeScreen.module.css";
 
@@ -93,43 +92,29 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
         }
     });
 
-    const extractedSprites = state.layers.reduce<ExtractedSprite[]>(
-        (b, layer) => {
-            if (layer.hidden) {
-                return b;
-            } else {
-                const sprites = layer.groups.reduce<ExtractedSprite[]>(
-                    (b, group) => {
-                        if (group.hidden) {
-                            return b;
-                        } else {
-                            return b.concat(group.sprites);
-                        }
-                    },
-                    []
-                );
-
-                return b.concat(sprites);
-            }
-        },
-        []
-    );
-
-    const sprites = extractedSprites.map(extractedSprite => (
-        <ExtractedSpriteCmp
-            key={extractedSprite.spriteMemoryIndex}
-            data={extractedSprite}
-            autoAnimate={runPreview}
-            animationCounter={animationCounter.animation}
-            canDrag={!isCropping}
-            outlineTiles={state.outlineExtractedTiles}
-        />
-    ));
+    const layers = state.layers.map((layer, i) => {
+        if (layer.hidden) {
+            return null;
+        } else {
+            return (
+                <LayerCmp
+                    key={i}
+                    index={i}
+                    layer={layer}
+                    runPreview={runPreview}
+                    animationCounter={animationCounter.animation}
+                    canDrag={!isCropping}
+                    outlineTiles={state.outlineExtractedTiles}
+                />
+            );
+        }
+    });
 
     const backgroundColor = state.isPaused
         ? neoGeoColorToCSS(getBackdropNeoGeoColor())
         : "transparent";
 
+    const extractedSprites = getAllSpritesFromLayers(state.layers);
     const maxX = getMaxX(extractedSprites);
     const width = Math.max(maxX + 48, 320);
 
@@ -252,7 +237,7 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
                             }}
                         />
                     )}
-                    {sprites}
+                    {layers}
                     {!!(
                         (isCropping && upperLeftCrop && lowerRightCrop) ||
                         state.crop

@@ -1,14 +1,14 @@
-import { Crop, ExtractedSpriteGroup } from "./types";
+import { Crop, Layer, ExtractedSpriteGroup } from "./types";
 // @ts-ignore
 import { GIFEncoder } from "./jsgif/GIFEncoder";
-import { spriteGroupToCanvas } from "./spriteGroupToCanvas";
+import { layersToCanvas } from "./layersToCanvas";
 
 const TOTAL_FRAMES = 8;
 // loop set to zero means forever
 const FOREVER = 0;
 
 export function createGif(
-    spriteGroups: ExtractedSpriteGroup[],
+    layers: Layer[],
     crop: Crop | undefined,
     delay: number,
     onFrame: (
@@ -39,11 +39,7 @@ export function createGif(
     const addFrame = () => {
         const animationCounter = TOTAL_FRAMES - remainingFrames;
 
-        const frameCanvas = spriteGroupToCanvas(
-            spriteGroups,
-            animationCounter,
-            crop
-        );
+        const frameCanvas = layersToCanvas(layers, animationCounter, crop);
         encoder.addFrame(frameCanvas.getContext("2d")!);
 
         --remainingFrames;

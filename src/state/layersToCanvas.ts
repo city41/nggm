@@ -1,11 +1,12 @@
 import {
     Crop,
+    Layer,
     ExtractedSpriteGroup,
     ExtractedSprite,
     ExtractedTile
 } from "./types";
 import { renderTileToCanvas } from "./renderTileToCanvas";
-import { getMaxX, getMaxY } from "./spriteUtil";
+import { getMaxX, getMaxY, getAllSpritesFromLayers } from "./spriteUtil";
 
 function getDimensions(
     sprites: ExtractedSprite[]
@@ -40,7 +41,6 @@ function flip(
         context.scale(xScale, yScale);
 
         context.drawImage(canvas, 0, 0);
-
         context.restore();
     }
 
@@ -76,16 +76,12 @@ function cropCanvas(
 }
 
 // TODO: account for when sprites didn't compose right up to (0,0)
-export function spriteGroupToCanvas(
-    spriteGroups: ExtractedSpriteGroup[],
+export function layersToCanvas(
+    layers: Layer[],
     animationCounter = 0,
     crop?: Crop
 ): HTMLCanvasElement {
-    const sprites = spriteGroups.reduce<ExtractedSprite[]>(
-        (b, sg) => b.concat(sg.sprites),
-        []
-    );
-
+    const sprites = getAllSpritesFromLayers(layers);
     const dimensions = getDimensions(sprites);
 
     const canvas = document.createElement("canvas");
@@ -94,35 +90,39 @@ export function spriteGroupToCanvas(
 
     const context = canvas.getContext("2d");
 
-    const sortedSprites = [...sprites].sort(
-        (a, b) => a.spriteMemoryIndex - b.spriteMemoryIndex
-    );
+    layers.forEach(layer => {
+        const layerSprites = getAllSpritesFromLayers([layer]);
 
-    sortedSprites.forEach(sprite => {
-        sprite.tiles.forEach(tile => {
-            let tileCanvas = document.createElement("canvas");
+        layerSprites.forEach(sprite => {
+            sprite.tiles.forEach(tile => {
+                let tileCanvas = document.createElement("canvas");
 
-            let tileIndex = tile.tileIndex;
+                let tileIndex = tile.tileIndex;
 
-            if (tile.autoAnimation === 3) {
-                // 3 bit auto animation: the 4th bit is set, indicating this tile does 3bit auto animation
-                // that means take its tileIndex, and replace its bottom three bits with those of the animation counter
-                tileIndex =
-                    (tileIndex & ~7) + ((tileIndex + animationCounter) & 7);
-            }
-            if (tile.autoAnimation === 2) {
-                // 2 bit auto animation: like above but replace its bottom two bits
-                tileIndex =
-                    (tileIndex & ~3) + ((tileIndex + animationCounter) & 3);
-            }
+                if (tile.autoAnimation === 3) {
+                    // 3 bit auto animation: the 4th bit is set, indicating this tile does 3bit auto animation
+                    // that means take its tileIndex, and replace its bottom three bits with those of the animation counter
+                    tileIndex =
+                        (tileIndex & ~7) + ((tileIndex + animationCounter) & 7);
+                }
+                if (tile.autoAnimation === 2) {
+                    // 2 bit auto animation: like above but replace its bottom two bits
+                    tileIndex =
+                        (tileIndex & ~3) + ((tileIndex + animationCounter) & 3);
+                }
 
-            renderTileToCanvas(tileCanvas, tileIndex, tile.rgbPalette);
+                renderTileToCanvas(tileCanvas, tileIndex, tile.rgbPalette);
 
-            if (tile.horizontalFlip || tile.verticalFlip) {
-                tileCanvas = flip(tileCanvas, tile);
-            }
+                if (tile.horizontalFlip || tile.verticalFlip) {
+                    tileCanvas = flip(tileCanvas, tile);
+                }
 
-            context!.drawImage(tileCanvas, sprite.composedX, tile.composedY);
+                context!.drawImage(
+                    tileCanvas,
+                    sprite.composedX,
+                    tile.composedY
+                );
+            });
         });
     });
 

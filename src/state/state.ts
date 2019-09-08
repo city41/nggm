@@ -305,10 +305,24 @@ export function reducer(
                 pauseId
             );
 
-            let layers = state.layers.concat({
+            const newLayer = {
                 groups: mirroredGroups,
                 hidden: false
-            });
+            };
+
+            const originalLayerIndex = state.layers.indexOf(layer);
+
+            let layers;
+
+            if (originalLayerIndex === 0) {
+                layers = [newLayer, ...state.layers];
+            } else {
+                layers = [
+                    ...state.layers.slice(0, originalLayerIndex - 1),
+                    newLayer,
+                    ...state.layers.slice(originalLayerIndex - 1)
+                ];
+            }
 
             layers = pushInOutOfNegative(layers);
 

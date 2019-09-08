@@ -167,7 +167,7 @@ function getAllTilesFromLayers(layers: Layer[]): ExtractedTile[] {
     }, []);
 }
 
-function getAllSpritesFromLayers(layers: Layer[]): ExtractedSprite[] {
+export function getAllSpritesFromLayers(layers: Layer[]): ExtractedSprite[] {
     return layers.reduce<ExtractedSprite[]>((sprites, layer) => {
         return sprites.concat(getAllSpritesFromGroups(layer.groups));
     }, []);
