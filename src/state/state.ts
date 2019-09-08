@@ -50,7 +50,8 @@ export type UndoableAction =
           group: ExtractedSpriteGroup;
           sprite: ExtractedSprite;
       }
-    | { type: "RotateLayer"; layer: Layer };
+    | { type: "RotateLayer"; layer: Layer }
+    | { type: "PushDownLayer"; layer: Layer };
 
 export const initialState: AppState = {
     layers: [],
@@ -419,6 +420,19 @@ export function reducer(
             const { layer } = action;
 
             const layers = update(layer, state.layers, rotateLayer(layer));
+
+            return {
+                ...state,
+                layers
+            };
+        }
+
+        case "PushDownLayer": {
+            const { layer } = action;
+
+            const [pushedLayer] = pushDownOutOfNegative([layer]);
+
+            const layers = update(layer, state.layers, pushedLayer);
 
             return {
                 ...state,

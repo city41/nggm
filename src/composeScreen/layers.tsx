@@ -80,6 +80,7 @@ interface LayerProps {
     onToggleVisibility: () => void;
     onClick: () => void;
     onExtendViaMirror: () => void;
+    onPushDown: () => void;
     focused?: boolean;
 }
 
@@ -91,6 +92,7 @@ const Layer: React.FunctionComponent<LayerProps> = ({
     onGroupToggleVisibility,
     onClick,
     onExtendViaMirror,
+    onPushDown,
     focused
 }) => {
     const { dispatch } = useAppState();
@@ -121,9 +123,8 @@ const Layer: React.FunctionComponent<LayerProps> = ({
                 >
                     rotate
                 </button>
-                <button onClick={() => onExtendViaMirror()}>
-                    extend via mirror
-                </button>
+                <button onClick={() => onExtendViaMirror()}>mirror</button>
+                <button onClick={() => onPushDown()}>push down</button>
             </div>
             {groups}
         </div>
@@ -156,6 +157,7 @@ export const Layers: React.FunctionComponent<LayersProps> = ({ className }) => {
             onExtendViaMirror={() =>
                 dispatch({ type: "ExtendLayerViaMirror", layer })
             }
+            onPushDown={() => dispatch({ type: "PushDownLayer", layer })}
         />
     ));
 
