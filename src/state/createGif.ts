@@ -2,10 +2,19 @@ import { Crop, Layer, ExtractedSpriteGroup } from "./types";
 // @ts-ignore
 import { GIFEncoder } from "./jsgif/GIFEncoder";
 import { layersToCanvas } from "./layersToCanvas";
+import { getAllTilesFromLayers } from "./spriteUtil";
 
-const TOTAL_FRAMES = 8;
 // loop set to zero means forever
 const FOREVER = 0;
+
+function determineNumberOfFramesToRender(layers: Layer[]): number {
+    const tiles = getAllTilesFromLayers(layers);
+
+    const maxAnimation = Math.max(...tiles.map(t => t.autoAnimation));
+
+    // 2 raised to maxAnimation
+    return 2 ** maxAnimation;
+}
 
 export function createGif(
     layers: Layer[],
@@ -26,7 +35,9 @@ export function createGif(
 
     encoder.start();
 
-    let remainingFrames = TOTAL_FRAMES;
+    const totalFrames = determineNumberOfFramesToRender(layers);
+
+    let remainingFrames = totalFrames;
 
     const finish = () => {
         encoder.finish();
@@ -37,14 +48,14 @@ export function createGif(
     };
 
     const addFrame = () => {
-        const animationCounter = TOTAL_FRAMES - remainingFrames;
+        const animationCounter = totalFrames - remainingFrames;
 
         const frameCanvas = layersToCanvas(layers, animationCounter, crop);
         encoder.addFrame(frameCanvas.getContext("2d")!);
 
         --remainingFrames;
 
-        onFrame(frameCanvas, animationCounter, TOTAL_FRAMES);
+        onFrame(frameCanvas, animationCounter, totalFrames);
 
         if (remainingFrames) {
             setTimeout(addFrame, 1);
