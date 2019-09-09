@@ -113,7 +113,7 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
                     runPreview={runPreview}
                     animationCounter={animationCounter.animation}
                     canDrag={!isCropping}
-                    outlineTiles={state.outlineExtractedTiles}
+                    outlineTiles={state.showGrid}
                 />
             );
         }
@@ -147,7 +147,7 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
             <div className={finalClassName}>
                 <div className={styles.toolbar}>
                     <button onClick={() => dispatch({ type: "ToggleGrid" })}>
-                        grid
+                        {state.showGrid ? "hide" : "show"} grid
                     </button>
                     <button
                         disabled={isCropping}

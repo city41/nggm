@@ -51,7 +51,7 @@ export type State = {
      * Whether to show an outline around extracted tiles. Helps show
      * the real bounds of a sprite group
      */
-    outlineExtractedTiles: boolean;
+    showGrid: boolean;
 };
 
 export type NonUndoableState = Omit<State, "past" | "present" | "future">;
@@ -72,7 +72,7 @@ export function getReducer(
         isPaused: false,
         pauseId: 0,
         crop: undefined,
-        outlineExtractedTiles: false
+        showGrid: false
     };
 
     function proxyReducer(state: State, action: Action): State {
@@ -96,7 +96,7 @@ export function getReducer(
             case "ToggleGrid": {
                 return {
                     ...state,
-                    outlineExtractedTiles: !state.outlineExtractedTiles
+                    showGrid: !state.showGrid
                 };
             }
 
