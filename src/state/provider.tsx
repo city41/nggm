@@ -5,20 +5,18 @@ import React, {
     useReducer
 } from "react";
 import {
-    initialState as appInitialState,
-    reducer as appReducer
-} from "./state";
-import { getTimelineReducer, TimelineAction } from "./timeline";
+    initialState as undoableInitialState,
+    reducer as undoableReducer
+} from "./undoableState";
+import { getReducer, Action } from "./state";
 
-const { initialState, reducer } = getTimelineReducer(
-    appInitialState,
-    appReducer
+const { initialState, reducer } = getReducer(
+    undoableInitialState,
+    undoableReducer
 );
 
 export const stateContext = createContext(initialState);
-export const dispatchContext = createContext((() => 0) as Dispatch<
-    TimelineAction
->);
+export const dispatchContext = createContext((() => 0) as Dispatch<Action>);
 
 export const Provider: FunctionComponent = ({ children }) => {
     const [state, dispatch] = useReducer(reducer, initialState);

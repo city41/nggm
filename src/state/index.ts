@@ -1,12 +1,11 @@
 import { useContext, Dispatch } from "react";
 import { AppState } from "./types";
-import { TimelineAction, TimelineState } from "./timeline";
+import { Action, State } from "./state";
 import { stateContext, dispatchContext } from "./provider";
 
 export function useAppState(): {
-    state: AppState &
-        Pick<TimelineState, "isPaused" | "hasStarted" | "pauseId">;
-    dispatch: Dispatch<TimelineAction>;
+    state: AppState & Pick<State, "isPaused" | "hasStarted" | "pauseId">;
+    dispatch: Dispatch<Action>;
     undo: Function;
     redo: Function;
     canUndo: boolean;

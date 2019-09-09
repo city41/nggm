@@ -1,474 +1,127 @@
-import {
-    AppState,
-    Crop,
-    Layer,
-    ExtractedSpriteGroup,
-    ExtractedSprite,
-    ExtractedTile
-} from "./types";
-import {
-    extendGroupsViaMirroring,
-    haveSameSprites,
-    moveGroups,
-    positionSpriteGroupInRelationToExistingGroups,
-    pushDownOutOfNegative,
-    pushInOutOfNegative,
-    getAllTilesFromLayers,
-    getMinY,
-    getMaxY
-} from "./spriteUtil";
-import {
-    extractSpriteAndStickyCompanionsToGroup,
-    extractSpritesIntoGroup
-} from "./extractSpriteGroup";
-import { without } from "lodash";
+import { Reducer } from "react";
+import { AppState } from "./types";
+import { UndoableAction } from "./undoableState";
 
-export type UndoableAction =
-    | {
-          type: "ExtractSprite";
-          spriteMemoryIndex: number;
-          composedX: number;
-      }
-    | {
-          type: "ExtractSpritesToGroup";
-          spriteMemoryIndices: number[];
-          composedX: number;
-      }
-    | {
-          type: "MoveSprite";
-          spriteMemoryIndex: number;
-          newComposedX: number;
-          pauseId: number;
-      }
-    | {
-          type: "HandleNegatives";
-      }
-    | { type: "DeleteGroup"; group: ExtractedSpriteGroup }
-    | { type: "ToggleVisibilityOfGroup"; group: ExtractedSpriteGroup }
-    | { type: "NewLayer" }
-    | { type: "DeleteLayer"; layer: Layer }
-    | { type: "ToggleVisibilityOfLayer"; layer: Layer }
-    | { type: "SetFocusedLayer"; layer: Layer }
-    | { type: "SetCrop"; crop: Crop }
-    | { type: "ClearCrop" }
-    | { type: "ExtendLayerViaMirror"; layer: Layer }
-    | { type: "ToggleOutlineExtractedTiles" }
-    | {
-          type: "RemoveSpriteFromExtractedGroup";
-          group: ExtractedSpriteGroup;
-          sprite: ExtractedSprite;
-      }
-    | { type: "RotateLayer"; layer: Layer }
-    | { type: "PushDownLayer"; layer: Layer };
+export type Action =
+    | UndoableAction
+    | { type: "StartEmulation" }
+    | { type: "TogglePause" }
+    | { type: "undo" }
+    | { type: "redo" };
 
-export const initialState: AppState = {
-    layers: [],
-    focusedLayerIndex: -1,
-    crop: undefined,
-    outlineExtractedTiles: false
+export type State = {
+    past: AppState[];
+    present: AppState;
+    future: AppState[];
+
+    /**
+     * indicates emulation has started, it may have since been paused
+     */
+    hasStarted: boolean;
+
+    /**
+     * true if the emulator has paused, false if is either running
+     * or has yet to start. It is only safe to access Neo Geo memory
+     * during a pause. In general the UI should largely "shut down" when
+     * this value is false
+     */
+    isPaused: boolean;
+
+    /**
+     * Indicates which pause session we are currently on.
+     * If this value increments, the user has unpaused then repaused
+     * the emulation. At that point, it is no longer safe to assume
+     * Neo Geo memory has not changed
+     */
+    pauseId: number;
 };
 
-function update<T>(obj: T, collection: T[], updates: Partial<T>) {
-    return collection.map(o => {
-        if (o === obj) {
-            return {
-                ...obj,
-                ...updates
-            };
-        } else {
-            return o;
-        }
-    });
-}
-
-function rotateTiles(
-    tiles: ExtractedTile[],
-    minY: number,
-    maxY: number
-): ExtractedTile[] {
-    if (tiles.length === 0) {
-        return tiles;
-    }
-
-    return tiles.map(tile => {
-        // if the tile is beyond maxY, then it is not on a 16px boundary.
-        // so when it wraps to the top, need to offset it from minY to maintain
-        // its position
-        const needsToWrap = tile.composedY >= maxY;
-        const wrapOffset = tile.composedY - maxY;
-
-        const newY = needsToWrap ? minY + wrapOffset : tile.composedY + 16;
-
-        return {
-            ...tile,
-            composedY: newY
-        };
-    });
-}
-
-function rotateSprites(
-    sprites: ExtractedSprite[],
-    minY: number,
-    maxY: number
-): ExtractedSprite[] {
-    return sprites.map(sprite => {
-        return {
-            ...sprite,
-            tiles: rotateTiles(sprite.tiles, minY, maxY)
-        };
-    });
-}
-
-function rotateLayer(layer: Layer, allLayers: Layer[]): Layer {
-    const tiles = getAllTilesFromLayers(allLayers);
-
-    // when wrapping, we only want to wrap on a 16 pixel boundary.
-    // To accomplish that, find min/max tiles that are on the boundary. Tiles that are off the boundary
-    // (typically small sprites on top of a background sprite), let them hang over when wrapping
-    const minY = tiles.reduce((minY, tile) => {
-        if (tile.composedY < minY && tile.composedY % 16 === 0) {
-            return tile.composedY;
-        } else {
-            return minY;
-        }
-    }, Infinity);
-
-    if (minY === Infinity) {
-        return layer;
-    }
-
-    const maxY = tiles.reduce((maxY, tile) => {
-        if (tile.composedY > maxY && tile.composedY % 16 === 0) {
-            return tile.composedY;
-        } else {
-            return maxY;
-        }
-    }, -Infinity);
-
-    if (maxY === -Infinity) {
-        return layer;
-    }
-
-    const groups = layer.groups.map(group => {
-        return {
-            ...group,
-            sprites: rotateSprites(group.sprites, minY, maxY)
-        };
-    });
-
-    return {
-        ...layer,
-        groups
+export function getReducer(
+    initialAppState: AppState,
+    reducer: (
+        state: AppState,
+        action: UndoableAction,
+        pauseId: number
+    ) => AppState
+) {
+    const initialState: State = {
+        past: [],
+        present: initialAppState,
+        future: [],
+        hasStarted: false,
+        isPaused: false,
+        pauseId: 0
     };
-}
 
-export function reducer(
-    state: AppState,
-    action: UndoableAction,
-    pauseId: number
-): AppState {
-    switch (action.type) {
-        case "ExtractSpritesToGroup":
-        case "ExtractSprite": {
-            let newSpriteGroup: ExtractedSpriteGroup;
+    function proxyReducer(state: State, action: Action): State {
+        let newState;
 
-            if ("spriteMemoryIndex" in action) {
-                const { spriteMemoryIndex, composedX } = action;
-
-                newSpriteGroup = extractSpriteAndStickyCompanionsToGroup(
-                    spriteMemoryIndex,
-                    composedX,
-                    pauseId
-                );
-            } else {
-                const { spriteMemoryIndices, composedX } = action;
-
-                newSpriteGroup = extractSpritesIntoGroup(
-                    spriteMemoryIndices,
-                    composedX,
-                    pauseId,
-                    { isAdhoc: true }
-                );
-            }
-
-            const layer = state.layers[state.focusedLayerIndex] ||
-                state.layers[state.layers.length - 1] || {
-                    groups: [newSpriteGroup],
-                    hidden: false
+        switch (action.type) {
+            case "StartEmulation":
+                return {
+                    ...state,
+                    hasStarted: true
                 };
 
-            const oldSpriteGroups = layer.groups.filter(
-                esg =>
-                    esg.pauseId !== newSpriteGroup.pauseId ||
-                    !haveSameSprites(esg, newSpriteGroup)
-            );
+            case "TogglePause":
+                const nowPaused = !state.isPaused;
+                return {
+                    ...state,
+                    isPaused: nowPaused,
+                    pauseId: nowPaused ? state.pauseId + 1 : state.pauseId
+                };
 
-            newSpriteGroup = positionSpriteGroupInRelationToExistingGroups(
-                newSpriteGroup,
-                oldSpriteGroups
-            );
+            case "undo": {
+                const pastCopy = [...state.past];
+                const newPresent = pastCopy.pop();
 
-            let layers;
+                if (!newPresent) {
+                    throw new Error("undo: nothing to undo!");
+                }
 
-            if (state.layers.length === 0) {
-                layers = [layer];
-            } else {
-                layers = update(layer, state.layers, {
-                    groups: [...layer.groups, newSpriteGroup]
-                });
+                newState = {
+                    ...state,
+                    past: pastCopy,
+                    present: newPresent,
+                    future: [...state.future, state.present]
+                };
+                break;
             }
+            case "redo": {
+                const futureCopy = [...state.future];
+                const newPresent = futureCopy.pop();
 
-            return {
-                ...state,
-                layers,
-                focusedLayerIndex:
-                    layers.length === 1 ? 0 : state.focusedLayerIndex
-            };
-        }
+                if (!newPresent) {
+                    throw new Error("redo: nothing to redo!");
+                }
 
-        case "MoveSprite": {
-            const { spriteMemoryIndex, newComposedX, pauseId } = action;
-
-            const layer = state.layers[state.focusedLayerIndex];
-
-            if (!layer) {
-                return state;
+                newState = {
+                    ...state,
+                    past: [...state.past, state.present],
+                    present: newPresent,
+                    future: futureCopy
+                };
+                break;
             }
-
-            const currentSpriteGroup = layer.groups.find(sg => {
-                return (
-                    sg.pauseId === pauseId &&
-                    sg.sprites.some(
-                        s => s.spriteMemoryIndex === spriteMemoryIndex
+            default: {
+                newState = {
+                    ...state,
+                    past: [...state.past, state.present],
+                    present: reducer(
+                        state.present,
+                        action as UndoableAction,
+                        state.pauseId
                     )
-                );
-            });
-
-            if (!currentSpriteGroup) {
-                return state;
+                };
+                break;
             }
-
-            const diffX =
-                newComposedX - currentSpriteGroup.sprites[0].composedX;
-            const movedGroups = moveGroups(layer.groups, diffX, pauseId);
-
-            return {
-                ...state,
-                layers: update(layer, state.layers, {
-                    groups: movedGroups
-                })
-            };
         }
 
-        case "HandleNegatives":
-            return {
-                ...state,
-                layers: pushDownOutOfNegative(state.layers)
-            };
-
-        case "DeleteGroup": {
-            const { group } = action;
-            const layer = state.layers.find(
-                layer => layer.groups.indexOf(group) > -1
-            );
-
-            if (!layer) {
-                throw new Error(
-                    "DeleteGroup: can't find the layer this group belongs to"
-                );
-            }
-
-            const groups = without(layer.groups, group);
-            const layers = update(layer, state.layers, { groups });
-
-            return {
-                ...state,
-                layers
-            };
-        }
-        case "ToggleVisibilityOfGroup": {
-            const { group } = action;
-
-            const layer = state.layers.find(
-                layer => layer.groups.indexOf(group) > -1
-            );
-
-            if (!layer) {
-                throw new Error(
-                    "ToggleVisibilityOfGroup: failed to find the layer that owns this group"
-                );
-            }
-
-            const newGroups = update(group, layer.groups, {
-                hidden: !group.hidden
-            });
-            const layers = update(layer, state.layers, {
-                groups: newGroups
-            });
-
-            return {
-                ...state,
-                layers
-            };
-        }
-
-        case "NewLayer": {
-            return {
-                ...state,
-                layers: state.layers.concat({
-                    groups: [],
-                    hidden: false
-                }),
-                focusedLayerIndex: state.layers.length
-            };
-        }
-
-        case "DeleteLayer": {
-            const { layer } = action;
-
-            return {
-                ...state,
-                layers: state.layers.filter(l => l !== layer),
-                focusedLayerIndex: -1
-            };
-        }
-
-        case "ToggleVisibilityOfLayer": {
-            const { layer } = action;
-
-            const layers = update(layer, state.layers, {
-                hidden: !layer.hidden
-            });
-
-            return {
-                ...state,
-                layers
-            };
-        }
-
-        case "SetFocusedLayer": {
-            const { layer } = action;
-
-            return {
-                ...state,
-                focusedLayerIndex: state.layers.indexOf(layer)
-            };
-        }
-
-        case "SetCrop": {
-            const { crop } = action;
-
-            return {
-                ...state,
-                crop
-            };
-        }
-
-        case "ClearCrop": {
-            return {
-                ...state,
-                crop: undefined
-            };
-        }
-
-        case "ExtendLayerViaMirror": {
-            const { layer } = action;
-
-            // don't bother to mirror an empty layer
-            if (layer.groups.length === 0) {
-                return state;
-            }
-
-            const mirroredGroups = extendGroupsViaMirroring(
-                layer.groups,
-                pauseId
-            );
-
-            const newLayer = {
-                groups: mirroredGroups,
-                hidden: false
-            };
-
-            const originalLayerIndex = state.layers.indexOf(layer);
-
-            let layers;
-
-            if (originalLayerIndex === 0) {
-                layers = [newLayer, ...state.layers];
-            } else {
-                layers = [
-                    ...state.layers.slice(0, originalLayerIndex - 1),
-                    newLayer,
-                    ...state.layers.slice(originalLayerIndex - 1)
-                ];
-            }
-
-            layers = pushInOutOfNegative(layers);
-
-            return {
-                ...state,
-                layers
-            };
-        }
-
-        case "ToggleOutlineExtractedTiles": {
-            return {
-                ...state,
-                outlineExtractedTiles: !state.outlineExtractedTiles
-            };
-        }
-
-        case "RemoveSpriteFromExtractedGroup": {
-            const { group, sprite } = action;
-
-            const layer = state.layers.find(
-                layer => layer.groups.indexOf(group) > -1
-            );
-
-            if (!layer) {
-                throw new Error(
-                    "RemoveSpriteFromExtractedGroup: cant find layer for group"
-                );
-            }
-
-            const groups = update(group, layer.groups, {
-                sprites: without(group.sprites, sprite)
-            });
-
-            const layers = update(layer, state.layers, { groups });
-
-            return {
-                ...state,
-                layers
-            };
-        }
-
-        case "RotateLayer": {
-            const { layer } = action;
-
-            const layers = update(
-                layer,
-                state.layers,
-                rotateLayer(layer, state.layers)
-            );
-
-            return {
-                ...state,
-                layers
-            };
-        }
-
-        case "PushDownLayer": {
-            const { layer } = action;
-
-            const [pushedLayer] = pushDownOutOfNegative([layer]);
-
-            const layers = update(layer, state.layers, pushedLayer);
-
-            return {
-                ...state,
-                layers
-            };
-        }
+        return newState;
     }
+
+    return {
+        initialState,
+        reducer: proxyReducer
+    };
 }
