@@ -24,8 +24,12 @@ export const SpriteTray: React.FunctionComponent<SpriteTrayProps> = ({
     className
 }) => {
     const { state } = useAppState();
-    const [focusedIndices, setFocusedIndices] = useState<number[]>([]);
-    const [shiftStartIndex, setShiftStartIndex] = useState<null | number>(null);
+    const [focusedEntryIndices, setFocusedEntryIndices] = useState<number[]>(
+        []
+    );
+    const [shiftKeyStartEntryIndex, setShiftKeyStartEntryIndex] = useState<
+        null | number
+    >(null);
 
     const classes = classnames(styles.root, className, {
         [styles.locked]: !state.isPaused
@@ -48,37 +52,38 @@ export const SpriteTray: React.FunctionComponent<SpriteTrayProps> = ({
             spriteData={spriteData}
             onClick={e => {
                 if (e.ctrlKey) {
-                    setFocusedIndices(focusedIndices.concat(i));
-                    setShiftStartIndex(null);
+                    setFocusedEntryIndices(focusedEntryIndices.concat(i));
+                    setShiftKeyStartEntryIndex(null);
                 } else if (e.shiftKey) {
                     if (
-                        shiftStartIndex !== null ||
-                        focusedIndices.length === 1
+                        shiftKeyStartEntryIndex !== null ||
+                        focusedEntryIndices.length === 1
                     ) {
                         const minIndex = Math.min(
-                            shiftStartIndex || focusedIndices[0],
+                            shiftKeyStartEntryIndex || focusedEntryIndices[0],
                             i
                         );
                         const maxIndex = Math.max(
-                            shiftStartIndex || focusedIndices[0],
+                            shiftKeyStartEntryIndex || focusedEntryIndices[0],
                             i
                         );
-                        setFocusedIndices(arrayFrom(minIndex, maxIndex));
+                        setFocusedEntryIndices(arrayFrom(minIndex, maxIndex));
                     } else {
-                        setFocusedIndices([i]);
-                        setShiftStartIndex(i);
+                        setFocusedEntryIndices([i]);
+                        setShiftKeyStartEntryIndex(i);
                     }
                 } else {
-                    setFocusedIndices([i]);
-                    setShiftStartIndex(null);
+                    setFocusedEntryIndices([i]);
+                    setShiftKeyStartEntryIndex(null);
                 }
             }}
-            focused={focusedIndices.indexOf(i) > -1}
+            focused={focusedEntryIndices.indexOf(i) > -1}
         />
     ));
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, dragRef, preview] = useDrag({
+        // @ts-ignore TS insists this have type, spriteMemoryIndex, etc, but it's not actually used
         item: { type: "Sprite" },
         begin(monitor: any) {
             if (divRef) {
@@ -88,10 +93,19 @@ export const SpriteTray: React.FunctionComponent<SpriteTrayProps> = ({
 
                 const index = Math.floor(x / 8);
 
-                return {
-                    spriteMemoryIndex: spriteDatas[index].spriteMemoryIndex,
-                    type: "Sprite"
-                };
+                if (focusedEntryIndices.indexOf(index) > -1) {
+                    return {
+                        type: "Sprites",
+                        spriteMemoryIndices: focusedEntryIndices.map(
+                            fei => spriteDatas[fei].spriteMemoryIndex
+                        )
+                    };
+                } else {
+                    return {
+                        spriteMemoryIndex: spriteDatas[index].spriteMemoryIndex,
+                        type: "Sprite"
+                    };
+                }
             }
         }
     });

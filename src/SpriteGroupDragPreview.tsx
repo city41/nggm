@@ -1,29 +1,46 @@
 import React from "react";
-import { extractSpriteGroup } from "./state/extractSpriteGroup";
+import {
+    extractSpriteAndStickyCompanionsToGroup,
+    extractSpritesIntoGroup
+} from "./state/extractSpriteGroup";
 import { ExtractedSprite } from "./composeScreen/extractedSprite";
 
-interface SpriteGroupDragPreviewProps {
+export class StickySpriteGroupDragPreview extends React.PureComponent<{
     seedSpriteMemoryIndex: number;
-    innerRef: any;
-}
-
-class SpriteGroupDragPreviewClass extends React.PureComponent<
-    SpriteGroupDragPreviewProps
-> {
+}> {
     render() {
-        const { seedSpriteMemoryIndex, innerRef } = this.props;
+        const { seedSpriteMemoryIndex } = this.props;
 
-        const spriteGroupData = extractSpriteGroup(seedSpriteMemoryIndex, 0, 0);
+        const spriteGroupData = extractSpriteAndStickyCompanionsToGroup(
+            seedSpriteMemoryIndex,
+            0,
+            0
+        );
 
-        const sprites = spriteGroupData.sprites.map(sprite => (
-            <ExtractedSprite data={sprite} canDrag={false} setYToZero />
+        const sprites = spriteGroupData.sprites.map((sprite, i) => (
+            <ExtractedSprite key={i} data={sprite} canDrag={false} setYToZero />
         ));
 
-        return <div ref={innerRef}>{sprites}</div>;
+        return <div>{sprites}</div>;
     }
 }
 
-export const SpriteGroupDragPreview = React.forwardRef<
-    HTMLDivElement,
-    SpriteGroupDragPreviewProps
->((props, ref) => <SpriteGroupDragPreviewClass innerRef={ref} {...props} />);
+export class AdhocSpriteGroupDragPreview extends React.PureComponent<{
+    spriteMemoryIndices: number[];
+}> {
+    render() {
+        const { spriteMemoryIndices } = this.props;
+
+        const spriteGroupData = extractSpritesIntoGroup(
+            spriteMemoryIndices,
+            0,
+            0
+        );
+
+        const sprites = spriteGroupData.sprites.map((sprite, i) => (
+            <ExtractedSprite key={i} data={sprite} canDrag={false} setYToZero />
+        ));
+
+        return <div>{sprites}</div>;
+    }
+}

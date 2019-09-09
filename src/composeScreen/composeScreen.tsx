@@ -60,7 +60,7 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, dropRef] = useDrop({
-        accept: "Sprite",
+        accept: ["Sprite", "Sprites"],
         drop: (item: any, monitor: any) => {
             if (divRef) {
                 const x =
@@ -68,20 +68,29 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
                     divRef.getBoundingClientRect().left;
 
                 const composedX = Math.floor(x / 16) * 16;
-                const spriteMemoryIndex = item.spriteMemoryIndex;
-                const pauseId = item.pauseId;
 
-                if (pauseId) {
-                    dispatch({
-                        type: "MoveSprite",
-                        spriteMemoryIndex,
-                        newComposedX: composedX,
-                        pauseId
-                    });
+                if (item.type === "Sprite") {
+                    const spriteMemoryIndex = item.spriteMemoryIndex;
+                    const pauseId = item.pauseId;
+
+                    if (pauseId) {
+                        dispatch({
+                            type: "MoveSprite",
+                            spriteMemoryIndex,
+                            newComposedX: composedX,
+                            pauseId
+                        });
+                    } else {
+                        dispatch({
+                            type: "ExtractSprite",
+                            spriteMemoryIndex,
+                            composedX
+                        });
+                    }
                 } else {
                     dispatch({
-                        type: "ExtractSprite",
-                        spriteMemoryIndex,
+                        type: "ExtractSpritesToGroup",
+                        spriteMemoryIndices: item.spriteMemoryIndices,
                         composedX
                     });
                 }

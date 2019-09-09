@@ -1,45 +1,53 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { useDragLayer } from "react-dnd";
-import { SpriteGroupDragPreview } from "./SpriteGroupDragPreview";
-
-import styles from "./dragPreviewLayer.module.css";
+import {
+    StickySpriteGroupDragPreview,
+    AdhocSpriteGroupDragPreview
+} from "./SpriteGroupDragPreview";
 
 export const DragPreviewLayer: React.FunctionComponent = () => {
-    const previewRef = useRef<null | HTMLDivElement>(null);
-
-    const { itemType, isDragging, item, currentOffset } = useDragLayer(
-        monitor => {
-            if (monitor.isDragging()) {
-                // debugger;
-            }
-            return {
-                item: monitor.getItem(),
-                itemType: monitor.getItemType(),
-                initialOffset: monitor.getInitialSourceClientOffset(),
-                currentOffset: monitor.getClientOffset(),
-                isDragging: monitor.isDragging()
-            };
+    const { isDragging, item, currentOffset } = useDragLayer(monitor => {
+        if (monitor.isDragging()) {
+            // debugger;
         }
-    );
-
-    useEffect(() => {
-        if (previewRef && previewRef.current && currentOffset) {
-            previewRef.current.style.position = "fixed";
-            previewRef.current.style.top = "fixed";
-            previewRef.current.style.top = currentOffset.y + 1 + "px";
-            previewRef.current.style.left = currentOffset.x + 1 + "px";
-            previewRef.current.style.zIndex = "1000";
-        }
+        return {
+            item: monitor.getItem(),
+            initialOffset: monitor.getInitialSourceClientOffset(),
+            currentOffset: monitor.getClientOffset(),
+            isDragging: monitor.isDragging()
+        };
     });
 
-    if (!isDragging || !currentOffset || itemType !== "Sprite") {
+    if (
+        !isDragging ||
+        !currentOffset ||
+        (item.type !== "Sprite" && item.type !== "Sprites")
+    ) {
         return null;
     }
 
-    return (
-        <SpriteGroupDragPreview
-            seedSpriteMemoryIndex={item.spriteMemoryIndex}
-            innerRef={previewRef}
-        />
-    );
+    const style = {
+        position: "fixed",
+        top: currentOffset.y + 1,
+        left: currentOffset.x + 1,
+        zIndex: 1000
+    } as const;
+
+    let spritesCmp;
+
+    if (item.type === "Sprite") {
+        spritesCmp = (
+            <StickySpriteGroupDragPreview
+                seedSpriteMemoryIndex={item.spriteMemoryIndex}
+            />
+        );
+    } else {
+        spritesCmp = (
+            <AdhocSpriteGroupDragPreview
+                spriteMemoryIndices={item.spriteMemoryIndices}
+            />
+        );
+    }
+
+    return <div style={style}>{spritesCmp}</div>;
 };

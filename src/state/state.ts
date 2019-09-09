@@ -17,13 +17,21 @@ import {
     getMinY,
     getMaxY
 } from "./spriteUtil";
-import { extractSpriteGroup } from "./extractSpriteGroup";
+import {
+    extractSpriteAndStickyCompanionsToGroup,
+    extractSpritesIntoGroup
+} from "./extractSpriteGroup";
 import { without } from "lodash";
 
 export type UndoableAction =
     | {
           type: "ExtractSprite";
           spriteMemoryIndex: number;
+          composedX: number;
+      }
+    | {
+          type: "ExtractSpritesToGroup";
+          spriteMemoryIndices: number[];
           composedX: number;
       }
     | {
@@ -160,14 +168,27 @@ export function reducer(
     pauseId: number
 ): AppState {
     switch (action.type) {
+        case "ExtractSpritesToGroup":
         case "ExtractSprite": {
-            const { spriteMemoryIndex, composedX } = action;
+            let newSpriteGroup: ExtractedSpriteGroup;
 
-            let newSpriteGroup = extractSpriteGroup(
-                spriteMemoryIndex,
-                composedX,
-                pauseId
-            );
+            if ("spriteMemoryIndex" in action) {
+                const { spriteMemoryIndex, composedX } = action;
+
+                newSpriteGroup = extractSpriteAndStickyCompanionsToGroup(
+                    spriteMemoryIndex,
+                    composedX,
+                    pauseId
+                );
+            } else {
+                const { spriteMemoryIndices, composedX } = action;
+
+                newSpriteGroup = extractSpritesIntoGroup(
+                    spriteMemoryIndices,
+                    composedX,
+                    pauseId
+                );
+            }
 
             const layer = state.layers[state.focusedLayerIndex] ||
                 state.layers[state.layers.length - 1] || {
