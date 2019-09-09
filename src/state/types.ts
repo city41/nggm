@@ -137,24 +137,4 @@ export interface AppState {
      * They can be safely interacted with at any time
      */
     layers: Layer[];
-
-    /**
-     * the index of the layer that will receive new sprite groups that get dragged in. If no
-     * layer is the focused layer, then the last layer gets the new sprite groups.
-     *
-     * set to -1 to make no layer focused
-     */
-    focusedLayerIndex: number;
-
-    /**
-     * A crop for the compose screen. When the gif is built, only
-     * the tiles inside the crop boundaries are considered
-     */
-    crop?: Crop;
-
-    /**
-     * Whether to show an outline around extracted tiles. Helps show
-     * the real bounds of a sprite group
-     */
-    outlineExtractedTiles: boolean;
 }

@@ -21,6 +21,8 @@ import {
     extractSpriteAndStickyCompanionsToGroup,
     extractSpritesIntoGroup
 } from "./extractSpriteGroup";
+import { NonUndoableState } from "./state";
+import { update } from "./update";
 import { without } from "lodash";
 
 export type UndoableAction =
@@ -47,12 +49,7 @@ export type UndoableAction =
     | { type: "ToggleVisibilityOfGroup"; group: ExtractedSpriteGroup }
     | { type: "NewLayer" }
     | { type: "DeleteLayer"; layer: Layer }
-    | { type: "ToggleVisibilityOfLayer"; layer: Layer }
-    | { type: "SetFocusedLayer"; layer: Layer }
-    | { type: "SetCrop"; crop: Crop }
-    | { type: "ClearCrop" }
     | { type: "ExtendLayerViaMirror"; layer: Layer }
-    | { type: "ToggleGrid" }
     | {
           type: "RemoveSpriteFromExtractedGroup";
           group: ExtractedSpriteGroup;
@@ -62,24 +59,8 @@ export type UndoableAction =
     | { type: "PushDownLayer"; layer: Layer };
 
 export const initialState: AppState = {
-    layers: [],
-    focusedLayerIndex: -1,
-    crop: undefined,
-    outlineExtractedTiles: false
+    layers: []
 };
-
-function update<T>(obj: T, collection: T[], updates: Partial<T>) {
-    return collection.map(o => {
-        if (o === obj) {
-            return {
-                ...obj,
-                ...updates
-            };
-        } else {
-            return o;
-        }
-    });
-}
 
 function rotateTiles(
     tiles: ExtractedTile[],
@@ -165,7 +146,7 @@ function rotateLayer(layer: Layer, allLayers: Layer[]): Layer {
 export function reducer(
     state: AppState,
     action: UndoableAction,
-    pauseId: number
+    nonUndoableState: NonUndoableState
 ): AppState {
     switch (action.type) {
         case "ExtractSpritesToGroup":
@@ -178,7 +159,7 @@ export function reducer(
                 newSpriteGroup = extractSpriteAndStickyCompanionsToGroup(
                     spriteMemoryIndex,
                     composedX,
-                    pauseId
+                    nonUndoableState.pauseId
                 );
             } else {
                 const { spriteMemoryIndices, composedX } = action;
@@ -186,12 +167,12 @@ export function reducer(
                 newSpriteGroup = extractSpritesIntoGroup(
                     spriteMemoryIndices,
                     composedX,
-                    pauseId,
+                    nonUndoableState.pauseId,
                     { isAdhoc: true }
                 );
             }
 
-            const layer = state.layers[state.focusedLayerIndex] ||
+            const layer = state.layers[nonUndoableState.focusedLayerIndex] ||
                 state.layers[state.layers.length - 1] || {
                     groups: [newSpriteGroup],
                     hidden: false
@@ -220,16 +201,14 @@ export function reducer(
 
             return {
                 ...state,
-                layers,
-                focusedLayerIndex:
-                    layers.length === 1 ? 0 : state.focusedLayerIndex
+                layers
             };
         }
 
         case "MoveSprite": {
             const { spriteMemoryIndex, newComposedX, pauseId } = action;
 
-            const layer = state.layers[state.focusedLayerIndex];
+            const layer = state.layers[nonUndoableState.focusedLayerIndex];
 
             if (!layer) {
                 return state;
@@ -318,8 +297,7 @@ export function reducer(
                 layers: state.layers.concat({
                     groups: [],
                     hidden: false
-                }),
-                focusedLayerIndex: state.layers.length
+                })
             };
         }
 
@@ -328,46 +306,7 @@ export function reducer(
 
             return {
                 ...state,
-                layers: state.layers.filter(l => l !== layer),
-                focusedLayerIndex: -1
-            };
-        }
-
-        case "ToggleVisibilityOfLayer": {
-            const { layer } = action;
-
-            const layers = update(layer, state.layers, {
-                hidden: !layer.hidden
-            });
-
-            return {
-                ...state,
-                layers
-            };
-        }
-
-        case "SetFocusedLayer": {
-            const { layer } = action;
-
-            return {
-                ...state,
-                focusedLayerIndex: state.layers.indexOf(layer)
-            };
-        }
-
-        case "SetCrop": {
-            const { crop } = action;
-
-            return {
-                ...state,
-                crop
-            };
-        }
-
-        case "ClearCrop": {
-            return {
-                ...state,
-                crop: undefined
+                layers: state.layers.filter(l => l !== layer)
             };
         }
 
@@ -381,7 +320,7 @@ export function reducer(
 
             const mirroredGroups = extendGroupsViaMirroring(
                 layer.groups,
-                pauseId
+                nonUndoableState.pauseId
             );
 
             const newLayer = {
@@ -408,13 +347,6 @@ export function reducer(
             return {
                 ...state,
                 layers
-            };
-        }
-
-        case "ToggleGrid": {
-            return {
-                ...state,
-                outlineExtractedTiles: !state.outlineExtractedTiles
             };
         }
 

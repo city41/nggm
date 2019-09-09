@@ -1,11 +1,17 @@
 import { Reducer } from "react";
-import { AppState } from "./types";
+import { AppState, Layer, Crop } from "./types";
 import { UndoableAction } from "./undoableState";
+import { update } from "./update";
 
 export type Action =
     | UndoableAction
     | { type: "StartEmulation" }
     | { type: "TogglePause" }
+    | { type: "ToggleVisibilityOfLayer"; layer: Layer }
+    | { type: "SetFocusedLayer"; layer: Layer }
+    | { type: "SetCrop"; crop: Crop }
+    | { type: "ToggleGrid" }
+    | { type: "ClearCrop" }
     | { type: "undo" }
     | { type: "redo" };
 
@@ -34,14 +40,36 @@ export type State = {
      * Neo Geo memory has not changed
      */
     pauseId: number;
+
+    /**
+     * the index of the layer that will receive new sprite groups that get dragged in. If no
+     * layer is the focused layer, then the last layer gets the new sprite groups.
+     *
+     * set to -1 to make no layer focused
+     */
+    focusedLayerIndex: number;
+
+    /**
+     * A crop for the compose screen. When the gif is built, only
+     * the tiles inside the crop boundaries are considered
+     */
+    crop?: Crop;
+
+    /**
+     * Whether to show an outline around extracted tiles. Helps show
+     * the real bounds of a sprite group
+     */
+    outlineExtractedTiles: boolean;
 };
+
+export type NonUndoableState = Omit<State, "past" | "present" | "future">;
 
 export function getReducer(
     initialAppState: AppState,
     reducer: (
         state: AppState,
         action: UndoableAction,
-        pauseId: number
+        nonUndoableState: NonUndoableState
     ) => AppState
 ) {
     const initialState: State = {
@@ -50,7 +78,10 @@ export function getReducer(
         future: [],
         hasStarted: false,
         isPaused: false,
-        pauseId: 0
+        pauseId: 0,
+        focusedLayerIndex: -1,
+        crop: undefined,
+        outlineExtractedTiles: false
     };
 
     function proxyReducer(state: State, action: Action): State {
@@ -70,6 +101,54 @@ export function getReducer(
                     isPaused: nowPaused,
                     pauseId: nowPaused ? state.pauseId + 1 : state.pauseId
                 };
+
+            case "ToggleGrid": {
+                return {
+                    ...state,
+                    outlineExtractedTiles: !state.outlineExtractedTiles
+                };
+            }
+
+            case "SetCrop": {
+                const { crop } = action;
+
+                return {
+                    ...state,
+                    crop
+                };
+            }
+
+            case "ClearCrop": {
+                return {
+                    ...state,
+                    crop: undefined
+                };
+            }
+
+            case "SetFocusedLayer": {
+                const { layer } = action;
+
+                return {
+                    ...state,
+                    focusedLayerIndex: state.present.layers.indexOf(layer)
+                };
+            }
+
+            case "ToggleVisibilityOfLayer": {
+                const { layer } = action;
+
+                const layers = update(layer, state.present.layers, {
+                    hidden: !layer.hidden
+                });
+
+                return {
+                    ...state,
+                    present: {
+                        ...state.present,
+                        layers
+                    }
+                };
+            }
 
             case "undo": {
                 const pastCopy = [...state.past];
@@ -110,7 +189,7 @@ export function getReducer(
                     present: reducer(
                         state.present,
                         action as UndoableAction,
-                        state.pauseId
+                        state
                     )
                 };
                 break;

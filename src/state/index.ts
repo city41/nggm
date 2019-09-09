@@ -1,10 +1,10 @@
 import { useContext, Dispatch } from "react";
 import { AppState } from "./types";
-import { Action, State } from "./state";
+import { Action, State, NonUndoableState } from "./state";
 import { stateContext, dispatchContext } from "./provider";
 
 export function useAppState(): {
-    state: AppState & Pick<State, "isPaused" | "hasStarted" | "pauseId">;
+    state: AppState & NonUndoableState;
     dispatch: Dispatch<Action>;
     undo: Function;
     redo: Function;
@@ -14,11 +14,11 @@ export function useAppState(): {
     const dispatch = useContext(dispatchContext);
     const rawState = useContext(stateContext);
 
+    const { past, present, future, ...nonUndoableState } = rawState;
+
     const state = {
         ...rawState.present,
-        isPaused: rawState.isPaused,
-        hasStarted: rawState.hasStarted,
-        pauseId: rawState.pauseId
+        ...nonUndoableState
     };
 
     return {
