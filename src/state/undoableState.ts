@@ -172,11 +172,10 @@ export function reducer(
                 );
             }
 
-            const layer = state.layers[nonUndoableState.focusedLayerIndex] ||
-                state.layers[state.layers.length - 1] || {
-                    groups: [newSpriteGroup],
-                    hidden: false
-                };
+            const layer = state.layers.find(l => !l.hidden) || {
+                groups: [newSpriteGroup],
+                hidden: false
+            };
 
             const oldSpriteGroups = layer.groups.filter(
                 esg =>
@@ -208,7 +207,16 @@ export function reducer(
         case "MoveSprite": {
             const { spriteMemoryIndex, newComposedX, pauseId } = action;
 
-            const layer = state.layers[nonUndoableState.focusedLayerIndex];
+            const layer = state.layers.find(l => {
+                return l.groups.some(g => {
+                    return g.sprites.some(s => {
+                        return (
+                            s.spriteMemoryIndex === spriteMemoryIndex &&
+                            s.pauseId === pauseId
+                        );
+                    });
+                });
+            });
 
             if (!layer) {
                 return state;
@@ -292,12 +300,14 @@ export function reducer(
         }
 
         case "NewLayer": {
+            const newLayer = {
+                groups: [],
+                hidden: false
+            };
+
             return {
                 ...state,
-                layers: state.layers.concat({
-                    groups: [],
-                    hidden: false
-                })
+                layers: [newLayer, ...state.layers]
             };
         }
 

@@ -42,14 +42,6 @@ export type State = {
     pauseId: number;
 
     /**
-     * the index of the layer that will receive new sprite groups that get dragged in. If no
-     * layer is the focused layer, then the last layer gets the new sprite groups.
-     *
-     * set to -1 to make no layer focused
-     */
-    focusedLayerIndex: number;
-
-    /**
      * A crop for the compose screen. When the gif is built, only
      * the tiles inside the crop boundaries are considered
      */
@@ -79,7 +71,6 @@ export function getReducer(
         hasStarted: false,
         isPaused: false,
         pauseId: 0,
-        focusedLayerIndex: -1,
         crop: undefined,
         outlineExtractedTiles: false
     };
@@ -122,15 +113,6 @@ export function getReducer(
                 return {
                     ...state,
                     crop: undefined
-                };
-            }
-
-            case "SetFocusedLayer": {
-                const { layer } = action;
-
-                return {
-                    ...state,
-                    focusedLayerIndex: state.present.layers.indexOf(layer)
                 };
             }
 

@@ -88,10 +88,8 @@ interface LayerProps {
     onGroupToggleVisibility: (group: ExtractedSpriteGroup) => void;
     onDelete: () => void;
     onToggleVisibility: () => void;
-    onClick: () => void;
     onExtendViaMirror: () => void;
     onPushDown: () => void;
-    focused?: boolean;
 }
 
 const Layer: React.FunctionComponent<LayerProps> = ({
@@ -100,10 +98,8 @@ const Layer: React.FunctionComponent<LayerProps> = ({
     onToggleVisibility,
     onGroupDelete,
     onGroupToggleVisibility,
-    onClick,
     onExtendViaMirror,
-    onPushDown,
-    focused
+    onPushDown
 }) => {
     const { dispatch } = useAppState();
 
@@ -116,12 +112,8 @@ const Layer: React.FunctionComponent<LayerProps> = ({
         />
     ));
 
-    const classes = classnames(styles.layer, {
-        [styles.focused]: focused
-    });
-
     return (
-        <div className={classes} onClick={() => onClick()}>
+        <div className={styles.layer}>
             <div>
                 <div className={styles.label}>L</div>
                 <IconButton
@@ -168,8 +160,6 @@ export const Layers: React.FunctionComponent<LayersProps> = ({ className }) => {
         <Layer
             key={i}
             layer={layer}
-            focused={i === state.focusedLayerIndex}
-            onClick={() => dispatch({ type: "SetFocusedLayer", layer })}
             onDelete={() => dispatch({ type: "DeleteLayer", layer })}
             onToggleVisibility={() =>
                 dispatch({ type: "ToggleVisibilityOfLayer", layer })
