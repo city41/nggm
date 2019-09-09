@@ -37,7 +37,7 @@
     z-index: 1999;
 }
 
-.handleNegatives {
+.pushAllDown {
     grid-column: 2;
     grid-row: 3;
 }

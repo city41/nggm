@@ -144,18 +144,20 @@ export function moveGroups(
  * this method causes all sprites to move down such that no sprites have a
  * negative y coordinate
  */
-export function pushDownOutOfNegative(layer: Layer): Layer {
-    const tiles = getAllTilesFromLayers([layer]);
+export function pushDownOutOfNegative(layers: Layer[]): Layer[] {
+    const tiles = getAllTilesFromLayers(layers);
     const minY = getMinY(tiles);
 
     if (minY >= 0) {
-        return layer;
+        return layers;
     }
 
-    return {
-        ...layer,
-        groups: moveGroupsY(layer.groups, minY * -1)
-    };
+    return layers.map(layer => {
+        return {
+            ...layer,
+            groups: moveGroupsY(layer.groups, minY * -1)
+        };
+    });
 }
 
 export function getAllTilesFromLayers(layers: Layer[]): ExtractedTile[] {

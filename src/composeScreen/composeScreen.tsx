@@ -257,6 +257,12 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
                         />
                     )}
                 </div>
+                <button
+                    className={styles.pushAllDown}
+                    onClick={() => dispatch({ type: "PushAllDown" })}
+                >
+                    push all down
+                </button>
             </div>
         </>
     );
