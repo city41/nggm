@@ -7,7 +7,6 @@ import {
 } from "../palette/neoGeoPalette";
 import { useAppState } from "../state";
 import { BuildGifModal } from "../gifBuilder/buildGifModal";
-import { Layers } from "./layers";
 import { Layer as LayerCmp } from "./layer";
 import { CropRect } from "./cropRect";
 import { getMaxX, getMaxY, getAllSpritesFromLayers } from "../state/spriteUtil";
@@ -187,7 +186,6 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
                         {animationCounter.rafFrameCountdown})
                     </div>
                 </div>
-                <Layers className={styles.layers} />
                 <div
                     className={styles.bg}
                     ref={div => {

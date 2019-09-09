@@ -3,8 +3,34 @@
     height: 100%;
 
     display: grid;
-    grid-template-rows: 1fr 2fr;
-    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr;
+    grid-template-columns: 1fr 320px;
+}
+
+.composeScreenTrayGrid {
+    height: 100%;
+
+    display: grid;
+    grid-template-rows: 1fr max-content;
+    grid-template-columns: 1fr;
+}
+
+.composeScreen {
+    grid-column: 1;
+    grid-row: 1 / 2;
+}
+
+.spriteTray {
+    grid-column: 1;
+    grid-row: 3;
+}
+
+.emulatorLayersGrid {
+    height: 100%;
+
+    display: grid;
+    grid-template-rows: max-content 1fr;
+    grid-template-columns: 1fr;
 }
 
 .emulator {
@@ -12,12 +38,7 @@
     grid-row: 1;
 }
 
-.composeScreen {
-    grid-column: 2;
-    grid-row: 1;
-}
-
-.spriteManager {
-    grid-column: 1 / -1;
+.layers {
+    grid-column: 1;
     grid-row: 2;
 }
