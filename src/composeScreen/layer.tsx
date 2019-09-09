@@ -1,7 +1,11 @@
 import React from "react";
-import { Layer as LayerData } from "../state/types";
+import {
+    Layer as LayerData,
+    ExtractedSprite as ExtractedSpriteData
+} from "../state/types";
 import { ExtractedSprite as ExtractedSpriteCmp } from "./extractedSprite";
 import { getAllSpritesFromLayers } from "../state/spriteUtil";
+import { useAppState } from "../state";
 
 import styles from "./layer.module.css";
 
@@ -22,7 +26,19 @@ export const Layer: React.FunctionComponent<LayerProps> = ({
     canDrag,
     outlineTiles
 }) => {
-    const sprites = getAllSpritesFromLayers([layer], { visibleOnly: true });
+    const { state } = useAppState();
+
+    if (state.hiddenLayers[layer.id]) {
+        return null;
+    }
+
+    const sprites = layer.groups.reduce<ExtractedSpriteData[]>((s, g) => {
+        if (state.hiddenGroups[g.id]) {
+            return s;
+        } else {
+            return s.concat(g.sprites);
+        }
+    }, []);
 
     const spriteCmps = sprites.map((extractedSprite, i) => (
         <ExtractedSpriteCmp

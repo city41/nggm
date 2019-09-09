@@ -4,6 +4,7 @@ import {
     Layer,
     ExtractedSprite
 } from "./types";
+import { getId } from "./ids";
 import { isEqual } from "lodash";
 
 function isExtractedSpriteArray(arr: unknown): arr is ExtractedSprite[] {
@@ -143,20 +144,18 @@ export function moveGroups(
  * this method causes all sprites to move down such that no sprites have a
  * negative y coordinate
  */
-export function pushDownOutOfNegative(layers: Layer[]): Layer[] {
-    const tiles = getAllTilesFromLayers(layers);
+export function pushDownOutOfNegative(layer: Layer): Layer {
+    const tiles = getAllTilesFromLayers([layer]);
     const minY = getMinY(tiles);
 
     if (minY >= 0) {
-        return layers;
+        return layer;
     }
 
-    return layers.map(layer => {
-        return {
-            ...layer,
-            groups: moveGroupsY(layer.groups, minY * -1)
-        };
-    });
+    return {
+        ...layer,
+        groups: moveGroupsY(layer.groups, minY * -1)
+    };
 }
 
 export function getAllTilesFromLayers(layers: Layer[]): ExtractedTile[] {
@@ -167,23 +166,16 @@ export function getAllTilesFromLayers(layers: Layer[]): ExtractedTile[] {
     }, []);
 }
 
-export function getAllSpritesFromLayers(
-    layers: Layer[],
-    options?: { visibleOnly: boolean }
-): ExtractedSprite[] {
+export function getAllSpritesFromLayers(layers: Layer[]): ExtractedSprite[] {
     return layers.reduce<ExtractedSprite[]>((sprites, layer) => {
-        return sprites.concat(getAllSpritesFromGroups(layer.groups, options));
+        return sprites.concat(getAllSpritesFromGroups(layer.groups));
     }, []);
 }
 
 function getAllSpritesFromGroups(
-    groups: ExtractedSpriteGroup[],
-    options?: { visibleOnly: boolean }
+    groups: ExtractedSpriteGroup[]
 ): ExtractedSprite[] {
     return groups.reduce<ExtractedSprite[]>((sprites, group) => {
-        if (options && options.visibleOnly && group.hidden) {
-            return sprites;
-        }
         return sprites.concat(group.sprites);
     }, []);
 }
@@ -334,14 +326,14 @@ export function extendGroupsViaMirroring(
     const leftMirror = mirrorSpritesToLeft(sprites);
 
     const newLeftGroup = {
+        id: getId(),
         pauseId,
-        hidden: false,
         sprites: leftMirror
     };
 
     const newRightGroup = {
+        id: getId(),
         pauseId,
-        hidden: false,
         sprites: rightMirror
     };
 

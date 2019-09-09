@@ -102,7 +102,7 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
     });
 
     const layers = state.layers.map((layer, i) => {
-        if (layer.hidden) {
+        if (state.hiddenLayers[layer.id]) {
             return null;
         } else {
             return (
@@ -257,12 +257,6 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
                         />
                     )}
                 </div>
-                <button
-                    className={styles.handleNegatives}
-                    onClick={() => dispatch({ type: "HandleNegatives" })}
-                >
-                    handle negatives
-                </button>
             </div>
         </>
     );

@@ -4,6 +4,7 @@ import {
     getNeoGeoPalette,
     convertNeoGeoPaletteToRGB
 } from "../palette/neoGeoPalette";
+import { getId } from "./ids";
 
 function convertTileDataToExtractedTile(tileData: TileData): ExtractedTile {
     const { y, paletteIndex, ...rest } = tileData;
@@ -76,9 +77,9 @@ export function extractSpritesIntoGroup(
     }) as ExtractedSprite[];
 
     const group: ExtractedSpriteGroup = {
+        id: getId(),
         pauseId,
-        sprites,
-        hidden: false
+        sprites
     };
 
     return group;

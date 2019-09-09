@@ -98,6 +98,11 @@ export interface ExtractedSprite {
  */
 export interface ExtractedSpriteGroup {
     /**
+     * a unique id across all groups
+     */
+    id: number;
+
+    /**
      * the pauseId that was active when this sprite group was extracted. Combining this
      * with spriteMemoryIndex creates a stable id
      */
@@ -107,26 +112,19 @@ export interface ExtractedSpriteGroup {
      * The sprites that make up the group
      */
     sprites: ExtractedSprite[];
-
-    /**
-     * Whether the group is currently not being displayed in
-     * the compose window. This is just cosmetic and to make composing easier, if a gif is built,
-     * this group will be a part of it
-     */
-    hidden: boolean;
 }
 
 export interface Layer {
+    /**
+     * A unique id across all layers
+     */
+    id: number;
+
     /**
      * The sprite groups that make up this layer. Within a layer, sprite groups from the same pauseId
      * are moved together
      */
     groups: ExtractedSpriteGroup[];
-
-    /**
-     * Whether this entire layer is hidden
-     */
-    hidden: boolean;
 }
 
 export type Crop = [{ x: number; y: number }, { x: number; y: number }];

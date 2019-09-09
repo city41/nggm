@@ -22,6 +22,7 @@ import {
     extractSpritesIntoGroup
 } from "./extractSpriteGroup";
 import { NonUndoableState } from "./state";
+import { getId } from "./ids";
 import { update } from "./update";
 import { without } from "lodash";
 
@@ -42,11 +43,7 @@ export type UndoableAction =
           newComposedX: number;
           pauseId: number;
       }
-    | {
-          type: "HandleNegatives";
-      }
     | { type: "DeleteGroup"; group: ExtractedSpriteGroup }
-    | { type: "ToggleVisibilityOfGroup"; group: ExtractedSpriteGroup }
     | { type: "NewLayer" }
     | { type: "DeleteLayer"; layer: Layer }
     | { type: "ExtendLayerViaMirror"; layer: Layer }
@@ -172,9 +169,11 @@ export function reducer(
                 );
             }
 
-            const layer = state.layers.find(l => !l.hidden) || {
-                groups: [newSpriteGroup],
-                hidden: false
+            const layer = state.layers.find(
+                l => !nonUndoableState.hiddenLayers[l.id]
+            ) || {
+                id: getId(),
+                groups: [newSpriteGroup]
             };
 
             const oldSpriteGroups = layer.groups.filter(
@@ -247,12 +246,6 @@ export function reducer(
             };
         }
 
-        case "HandleNegatives":
-            return {
-                ...state,
-                layers: pushDownOutOfNegative(state.layers)
-            };
-
         case "DeleteGroup": {
             const { group } = action;
             const layer = state.layers.find(
@@ -273,34 +266,10 @@ export function reducer(
                 layers
             };
         }
-        case "ToggleVisibilityOfGroup": {
-            const { group } = action;
-
-            const layer = state.layers.find(
-                layer => layer.groups.indexOf(group) > -1
-            );
-
-            if (!layer) {
-                throw new Error(
-                    "ToggleVisibilityOfGroup: failed to find the layer that owns this group"
-                );
-            }
-
-            const newGroups = update(group, layer.groups, {
-                hidden: !group.hidden
-            });
-            const layers = update(layer, state.layers, {
-                groups: newGroups
-            });
-
-            return {
-                ...state,
-                layers
-            };
-        }
 
         case "NewLayer": {
             const newLayer = {
+                id: getId(),
                 groups: [],
                 hidden: false
             };
@@ -334,6 +303,7 @@ export function reducer(
             );
 
             const newLayer = {
+                id: getId(),
                 groups: mirroredGroups,
                 hidden: false
             };
@@ -403,7 +373,7 @@ export function reducer(
         case "PushDownLayer": {
             const { layer } = action;
 
-            const [pushedLayer] = pushDownOutOfNegative([layer]);
+            const pushedLayer = pushDownOutOfNegative(layer);
 
             const layers = update(layer, state.layers, pushedLayer);
 

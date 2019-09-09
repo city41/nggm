@@ -44,7 +44,7 @@ const Group: React.FunctionComponent<GroupProps> = ({
     onDelete,
     onToggleVisibility
 }) => {
-    const { dispatch } = useAppState();
+    const { dispatch, state } = useAppState();
     const [showSprites, setShowSprites] = useState(false);
 
     let sprites = null;
@@ -72,7 +72,7 @@ const Group: React.FunctionComponent<GroupProps> = ({
                 "empty"}{" "}
             <button onClick={() => onDelete()}>delete</button>
             <button onClick={() => onToggleVisibility()}>
-                {group.hidden ? "show" : "hide"}
+                {state.hiddenGroups[group.id] ? "show" : "hide"}
             </button>
             <button onClick={() => setShowSprites(!showSprites)}>
                 sprites
@@ -101,7 +101,7 @@ const Layer: React.FunctionComponent<LayerProps> = ({
     onExtendViaMirror,
     onPushDown
 }) => {
-    const { dispatch } = useAppState();
+    const { dispatch, state } = useAppState();
 
     const groups = layer.groups.map((group, i) => (
         <Group
@@ -122,9 +122,11 @@ const Layer: React.FunctionComponent<LayerProps> = ({
                     onClick={() => onDelete()}
                 />
                 <IconButton
-                    icon={layer.hidden ? IoIosEyeOff : IoIosEye}
+                    icon={state.hiddenLayers[layer.id] ? IoIosEyeOff : IoIosEye}
                     onClick={() => onToggleVisibility()}
-                    title={`Layer is ${layer.hidden ? "hidden" : "visible"}`}
+                    title={`Layer is ${
+                        state.hiddenLayers[layer.id] ? "hidden" : "visible"
+                    }`}
                 />
                 <IconButton
                     icon={IoIosReorder}

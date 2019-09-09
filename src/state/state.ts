@@ -1,5 +1,5 @@
 import { Reducer } from "react";
-import { AppState, Layer, Crop } from "./types";
+import { AppState, Layer, Crop, ExtractedSpriteGroup } from "./types";
 import { UndoableAction } from "./undoableState";
 import { update } from "./update";
 
@@ -7,11 +7,12 @@ export type Action =
     | UndoableAction
     | { type: "StartEmulation" }
     | { type: "TogglePause" }
-    | { type: "ToggleVisibilityOfLayer"; layer: Layer }
     | { type: "SetFocusedLayer"; layer: Layer }
     | { type: "SetCrop"; crop: Crop }
     | { type: "ToggleGrid" }
     | { type: "ClearCrop" }
+    | { type: "ToggleVisibilityOfGroup"; group: ExtractedSpriteGroup }
+    | { type: "ToggleVisibilityOfLayer"; layer: Layer }
     | { type: "undo" }
     | { type: "redo" };
 
@@ -52,6 +53,9 @@ export type State = {
      * the real bounds of a sprite group
      */
     showGrid: boolean;
+
+    hiddenLayers: Record<number, boolean>;
+    hiddenGroups: Record<number, boolean>;
 };
 
 export type NonUndoableState = Omit<State, "past" | "present" | "future">;
@@ -72,7 +76,9 @@ export function getReducer(
         isPaused: false,
         pauseId: 0,
         crop: undefined,
-        showGrid: false
+        showGrid: false,
+        hiddenLayers: {},
+        hiddenGroups: {}
     };
 
     function proxyReducer(state: State, action: Action): State {
@@ -116,18 +122,26 @@ export function getReducer(
                 };
             }
 
-            case "ToggleVisibilityOfLayer": {
-                const { layer } = action;
-
-                const layers = update(layer, state.present.layers, {
-                    hidden: !layer.hidden
-                });
+            case "ToggleVisibilityOfGroup": {
+                const { group } = action;
 
                 return {
                     ...state,
-                    present: {
-                        ...state.present,
-                        layers
+                    hiddenGroups: {
+                        ...state.hiddenGroups,
+                        [group.id]: !state.hiddenGroups[group.id]
+                    }
+                };
+            }
+
+            case "ToggleVisibilityOfLayer": {
+                const { layer } = action;
+
+                return {
+                    ...state,
+                    hiddenLayers: {
+                        ...state.hiddenLayers,
+                        [layer.id]: !state.hiddenLayers[layer.id]
                     }
                 };
             }
