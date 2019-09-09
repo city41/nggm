@@ -35,15 +35,18 @@ export const SpriteTray: React.FunctionComponent<SpriteTrayProps> = ({
         [styles.locked]: !state.isPaused
     });
 
+    const firstFillerRef = useRef<HTMLDivElement | null>(null);
+
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, dragRef, preview] = useDrag({
         // @ts-ignore TS insists this have type, spriteMemoryIndex, etc, but it's not actually used
         item: { type: "Sprite" },
         begin(monitor: any) {
-            if (divRef) {
+            if (divRef && firstFillerRef && firstFillerRef.current) {
                 const x =
                     monitor.getClientOffset().x -
-                    divRef.getBoundingClientRect().left;
+                    divRef.getBoundingClientRect().left -
+                    firstFillerRef.current.getBoundingClientRect().width;
 
                 const index = Math.floor(x / 8);
 
@@ -54,7 +57,7 @@ export const SpriteTray: React.FunctionComponent<SpriteTrayProps> = ({
                             fei => spriteDatas[fei].spriteMemoryIndex
                         )
                     };
-                } else {
+                } else if (index >= 0 && index < spriteDatas.length) {
                     return {
                         spriteMemoryIndex: spriteDatas[index].spriteMemoryIndex,
                         type: "Sprite"
@@ -131,10 +134,19 @@ export const SpriteTray: React.FunctionComponent<SpriteTrayProps> = ({
                 key={state.pauseId}
                 className={styles.spriteEntries}
                 style={{
-                    gridTemplateColumns: `repeat(${TOTAL_SPRITE_COUNT}, max-content)`
+                    gridTemplateColumns: `1fr repeat(${spriteDatas.length}, max-content) 1fr`
                 }}
             >
+                <div
+                    className={styles.filler}
+                    ref={firstFillerRef}
+                    style={{ gridColumn: 1 }}
+                />
                 {sprites}
+                <div
+                    className={styles.filler}
+                    style={{ gridColumn: spriteDatas.length + 2 }}
+                />
             </div>
         </div>
     );

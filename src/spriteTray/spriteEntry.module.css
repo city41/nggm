@@ -1,22 +1,17 @@
 .root {
     height: 100%;
-    background-color: #aaa;
     width: 8px;
-    outline: 1px dotted rgba(255, 255, 255, 0.4);
+    outline: 1px solid rgba(255, 255, 255, 0.1);
 
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-.hide {
-    display: none;
-}
-
 .index {
     font-size: 0.6rem;
     writing-mode: vertical-lr;
-    height: 24px;
+    height: var(--spriteEntryHeader);
     padding-top: 8px;
     background-color: rgba(0, 0, 0, 0.5);
     color: white;

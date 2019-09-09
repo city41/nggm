@@ -4,7 +4,7 @@ import {
     ExtractedSprite as ExtractedSpriteData
 } from "../state/types";
 import { ExtractedSprite as ExtractedSpriteCmp } from "./extractedSprite";
-import { getAllSpritesFromLayers } from "../state/spriteUtil";
+import { getMaxX, getMaxY, getAllSpritesFromLayers } from "../state/spriteUtil";
 import { useAppState } from "../state";
 
 import styles from "./layer.module.css";
@@ -51,8 +51,17 @@ export const Layer: React.FunctionComponent<LayerProps> = ({
         />
     ));
 
+    const extractedSprites = getAllSpritesFromLayers([layer]);
+    const maxX = getMaxX(extractedSprites);
+    const width = Math.max(maxX + 48, 320);
+
+    const maxY = getMaxY(extractedSprites);
+    const height = Math.max(maxY + 48, 240);
+
     const style = {
-        zIndex: index
+        zIndex: index,
+        width,
+        height
     };
 
     return (

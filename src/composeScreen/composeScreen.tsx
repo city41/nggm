@@ -122,18 +122,16 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
         ? neoGeoColorToCSS(getBackdropNeoGeoColor())
         : "transparent";
 
+    const style = {
+        backgroundColor
+    };
+
     const extractedSprites = getAllSpritesFromLayers(state.layers);
     const maxX = getMaxX(extractedSprites);
-    const width = Math.max(maxX + 48, 320);
+    const totalWidth = Math.max(maxX + 48, 320);
 
     const maxY = getMaxY(extractedSprites);
-    const height = Math.max(maxY + 48, 240);
-
-    const style = {
-        backgroundColor,
-        width,
-        height
-    };
+    const totalHeight = Math.max(maxY + 48, 240);
 
     const finalClassName = classnames(styles.root, className);
 
@@ -181,10 +179,9 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
                     <button disabled={!canRedo} onClick={() => redo()}>
                         redo
                     </button>
-                    <div>
-                        {animationCounter.animation} (
-                        {animationCounter.rafFrameCountdown})
-                    </div>
+                    <button onClick={() => dispatch({ type: "PushAllDown" })}>
+                        down
+                    </button>
                 </div>
                 <div
                     className={styles.bg}
@@ -250,17 +247,11 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
                             crop={
                                 state.crop || [upperLeftCrop!, lowerRightCrop!]
                             }
-                            totalWidth={width}
-                            totalHeight={height}
+                            totalWidth={totalWidth}
+                            totalHeight={totalHeight}
                         />
                     )}
                 </div>
-                <button
-                    className={styles.pushAllDown}
-                    onClick={() => dispatch({ type: "PushAllDown" })}
-                >
-                    push all down
-                </button>
             </div>
         </>
     );
