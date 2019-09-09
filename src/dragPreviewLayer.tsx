@@ -7,9 +7,6 @@ import {
 
 export const DragPreviewLayer: React.FunctionComponent = () => {
     const { isDragging, item, currentOffset } = useDragLayer(monitor => {
-        if (monitor.isDragging()) {
-            // debugger;
-        }
         return {
             item: monitor.getItem(),
             initialOffset: monitor.getInitialSourceClientOffset(),
@@ -28,8 +25,8 @@ export const DragPreviewLayer: React.FunctionComponent = () => {
 
     const style = {
         position: "fixed",
-        top: currentOffset.y + 1,
-        left: currentOffset.x + 1,
+        top: currentOffset.y + 4,
+        left: currentOffset.x + 4,
         zIndex: 1000
     } as const;
 

@@ -38,7 +38,7 @@ export const ExtractedSprite: React.FunctionComponent<ExtractedSpriteProps> = ({
 
     useEffect(() => {
         preview(getEmptyImage(), { captureDraggingState: true });
-    }, []);
+    }, [preview]);
 
     const tiles = data.tiles.map((tileData, i) => {
         let tileIndex = tileData.tileIndex;

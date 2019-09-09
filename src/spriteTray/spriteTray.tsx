@@ -4,7 +4,7 @@ import { useDrag } from "react-dnd";
 import { getEmptyImage } from "react-dnd-html5-backend";
 import { SpriteEntry } from "./spriteEntry";
 import { useAppState } from "../state";
-import { getSpriteData, SpriteData } from "../state/spriteData";
+import { getSpriteData } from "../state/spriteData";
 
 import styles from "./spriteTray.module.css";
 
@@ -74,7 +74,7 @@ export const SpriteTray: React.FunctionComponent<SpriteTrayProps> = ({
 
     useEffect(() => {
         preview(getEmptyImage(), { captureDraggingState: true });
-    }, []);
+    }, [preview]);
 
     if (!state.isPaused) {
         return (

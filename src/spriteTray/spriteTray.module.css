@@ -4,7 +4,8 @@
     width: 100%;
     /* At most a sprite has 33 tiles, plus the sprite entry header is 32px */
     height: calc(33 * 8px + var(--spriteEntryHeader));
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--dock-color);
+    border-right: 1px solid var(--dock-border-color);
 }
 
 .spriteEntries {
