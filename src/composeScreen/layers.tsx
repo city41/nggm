@@ -158,24 +158,30 @@ export const Layers: React.FunctionComponent<LayersProps> = ({ className }) => {
 
     const classes = classnames(styles.root, className);
 
-    const layers = state.layers.map((layer, i) => (
-        <Layer
-            key={i}
-            layer={layer}
-            onDelete={() => dispatch({ type: "DeleteLayer", layer })}
-            onToggleVisibility={() =>
-                dispatch({ type: "ToggleVisibilityOfLayer", layer })
-            }
-            onGroupDelete={group => dispatch({ type: "DeleteGroup", group })}
-            onGroupToggleVisibility={group =>
-                dispatch({ type: "ToggleVisibilityOfGroup", group })
-            }
-            onExtendViaMirror={() =>
-                dispatch({ type: "ExtendLayerViaMirror", layer })
-            }
-            onPushDown={() => dispatch({ type: "PushDownLayer", layer })}
-        />
-    ));
+    // reverse layers due to wanting the highest z-index layer to be at the top of
+    // the list, which is opposite of how they are stored
+    const layers = [...state.layers]
+        .reverse()
+        .map((layer, i) => (
+            <Layer
+                key={i}
+                layer={layer}
+                onDelete={() => dispatch({ type: "DeleteLayer", layer })}
+                onToggleVisibility={() =>
+                    dispatch({ type: "ToggleVisibilityOfLayer", layer })
+                }
+                onGroupDelete={group =>
+                    dispatch({ type: "DeleteGroup", group })
+                }
+                onGroupToggleVisibility={group =>
+                    dispatch({ type: "ToggleVisibilityOfGroup", group })
+                }
+                onExtendViaMirror={() =>
+                    dispatch({ type: "ExtendLayerViaMirror", layer })
+                }
+                onPushDown={() => dispatch({ type: "PushDownLayer", layer })}
+            />
+        ));
 
     return (
         <div className={classes}>

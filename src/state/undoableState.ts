@@ -169,9 +169,9 @@ export function reducer(
                 );
             }
 
-            const layer = state.layers.find(
-                l => !nonUndoableState.hiddenLayers[l.id]
-            ) || {
+            const layer = [...state.layers]
+                .reverse()
+                .find(l => !nonUndoableState.hiddenLayers[l.id]) || {
                 id: getId(),
                 groups: [newSpriteGroup]
             };
@@ -276,7 +276,7 @@ export function reducer(
 
             return {
                 ...state,
-                layers: [newLayer, ...state.layers]
+                layers: [...state.layers, newLayer]
             };
         }
 
