@@ -146,11 +146,7 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
             />
             <div className={finalClassName}>
                 <div className={styles.toolbar}>
-                    <button
-                        onClick={() =>
-                            dispatch({ type: "ToggleOutlineExtractedTiles" })
-                        }
-                    >
+                    <button onClick={() => dispatch({ type: "ToggleGrid" })}>
                         grid
                     </button>
                     <button

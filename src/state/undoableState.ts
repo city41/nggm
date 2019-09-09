@@ -52,7 +52,7 @@ export type UndoableAction =
     | { type: "SetCrop"; crop: Crop }
     | { type: "ClearCrop" }
     | { type: "ExtendLayerViaMirror"; layer: Layer }
-    | { type: "ToggleOutlineExtractedTiles" }
+    | { type: "ToggleGrid" }
     | {
           type: "RemoveSpriteFromExtractedGroup";
           group: ExtractedSpriteGroup;
@@ -411,7 +411,7 @@ export function reducer(
             };
         }
 
-        case "ToggleOutlineExtractedTiles": {
+        case "ToggleGrid": {
             return {
                 ...state,
                 outlineExtractedTiles: !state.outlineExtractedTiles
