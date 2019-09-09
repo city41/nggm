@@ -35,10 +35,16 @@ export const DragPreviewLayer: React.FunctionComponent = () => {
 
     let spritesCmp;
 
-    if (item.type === "Sprite") {
+    if (item.type === "Sprite" && !item.isAdhoc) {
         spritesCmp = (
             <StickySpriteGroupDragPreview
                 seedSpriteMemoryIndex={item.spriteMemoryIndex}
+            />
+        );
+    } else if (item.type === "Sprite" && item.isAdhoc) {
+        spritesCmp = (
+            <AdhocSpriteGroupDragPreview
+                spriteMemoryIndices={[item.spriteMemoryIndex]}
             />
         );
     } else {

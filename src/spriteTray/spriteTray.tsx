@@ -107,6 +107,9 @@ export const SpriteTray: React.FunctionComponent<SpriteTrayProps> = ({
                     };
                 }
             }
+        },
+        canDrag() {
+            return state.isPaused;
         }
     });
     const [divRef, setDivRef] = useState<null | HTMLDivElement>(null);

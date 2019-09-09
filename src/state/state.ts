@@ -186,7 +186,8 @@ export function reducer(
                 newSpriteGroup = extractSpritesIntoGroup(
                     spriteMemoryIndices,
                     composedX,
-                    pauseId
+                    pauseId,
+                    { isAdhoc: true }
                 );
             }
 

@@ -81,6 +81,15 @@ export interface ExtractedSprite {
      * The sprite's y coordinate when composed into an extracted background
      */
     composedY: number;
+
+    /**
+     * Indicates the extracted sprite was brought in via an adhoc
+     * sprite group instead of using sticky sprites
+     *
+     * This is used when dragging to move the sprite in the compose window, it
+     * will only set this sprite as the drag preview
+     */
+    isAdhoc?: boolean;
 }
 
 /**

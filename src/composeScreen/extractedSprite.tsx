@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useDrag } from "react-dnd";
+import { getEmptyImage } from "react-dnd-html5-backend";
 import { ExtractedSprite as ExtractedSpriteData } from "../state/types";
 import { ExtractedTile } from "./extractedTile";
 
@@ -23,16 +24,21 @@ export const ExtractedSprite: React.FunctionComponent<ExtractedSpriteProps> = ({
     setYToZero
 }) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [_, dragRef] = useDrag({
+    const [_, dragRef, preview] = useDrag({
         item: {
             spriteMemoryIndex: data.spriteMemoryIndex,
             pauseId: data.pauseId,
-            type: "Sprite"
+            type: "Sprite",
+            isAdhoc: data.isAdhoc
         },
         canDrag() {
             return canDrag;
         }
     });
+
+    useEffect(() => {
+        preview(getEmptyImage(), { captureDraggingState: true });
+    }, []);
 
     const tiles = data.tiles.map((tileData, i) => {
         let tileIndex = tileData.tileIndex;

@@ -42,21 +42,29 @@ export function getSpriteGroup(spriteMemoryIndex: number): number[] {
 export function extractSpriteAndStickyCompanionsToGroup(
     spriteMemoryIndex: number,
     composedX: number,
-    pauseId: number
+    pauseId: number,
+    additionalProps: Partial<ExtractedSprite> = {}
 ): ExtractedSpriteGroup {
     const allSpriteMemoryIndices = getSpriteGroup(spriteMemoryIndex);
 
-    return extractSpritesIntoGroup(allSpriteMemoryIndices, composedX, pauseId);
+    return extractSpritesIntoGroup(
+        allSpriteMemoryIndices,
+        composedX,
+        pauseId,
+        additionalProps
+    );
 }
 
 export function extractSpritesIntoGroup(
     spriteMemoryIndices: number[],
     composedX: number,
-    pauseId: number
+    pauseId: number,
+    additionalProps: Partial<ExtractedSprite> = {}
 ): ExtractedSpriteGroup {
     const sprites: ExtractedSprite[] = spriteMemoryIndices.map((smi, i) => {
         const spriteData = getSpriteData(smi);
         return {
+            ...additionalProps,
             pauseId,
             spriteMemoryIndex: smi,
             tiles: spriteData.tiles.map(convertTileDataToExtractedTile),
@@ -65,7 +73,7 @@ export function extractSpritesIntoGroup(
             composedX: composedX + i * 16,
             composedY: spriteData.y
         };
-    });
+    }) as ExtractedSprite[];
 
     const group: ExtractedSpriteGroup = {
         pauseId,
