@@ -3,6 +3,8 @@ import classnames from "classnames";
 import { useAppState } from "../state";
 import { Layer as LayerData, ExtractedSpriteGroup } from "../state/types";
 import { IconButton } from "../components/iconButton";
+import Delete from "@material-ui/icons/Delete";
+import VerticalAlignBottom from "@material-ui/icons/VerticalAlignBottom";
 import {
     IoIosAdd,
     IoIosArrowDropright,
@@ -63,7 +65,7 @@ export const Layer: React.FunctionComponent<LayerProps> = ({
                     title="Mirror"
                 />
                 <IconButton
-                    icon={IoIosDownload}
+                    icon={VerticalAlignBottom}
                     onClick={() => onPushDown()}
                     title="Push Down"
                 />
@@ -75,7 +77,7 @@ export const Layer: React.FunctionComponent<LayerProps> = ({
                     }`}
                 />
                 <IconButton
-                    icon={IoIosTrash}
+                    icon={Delete}
                     title="Delete Layer"
                     onClick={() => onDelete()}
                 />

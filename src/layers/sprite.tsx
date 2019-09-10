@@ -3,9 +3,9 @@ import classnames from "classnames";
 import { useAppState } from "../state";
 import { Layer as LayerData, ExtractedSprite } from "../state/types";
 import { IconButton } from "../components/iconButton";
+import Delete from "@material-ui/icons/Delete";
 import {
     IoIosAdd,
-    IoIosTrash,
     IoIosEye,
     IoIosEyeOff,
     IoIosReorder,
@@ -29,7 +29,7 @@ export const Sprite: React.FunctionComponent<SpriteProps> = ({
             {" "}
             {sprite.spriteMemoryIndex}{" "}
             <IconButton
-                icon={IoIosTrash}
+                icon={Delete}
                 title="Delete Layer"
                 onClick={() => onDelete()}
             />

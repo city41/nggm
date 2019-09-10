@@ -3,6 +3,7 @@ import classnames from "classnames";
 import { useAppState } from "../state";
 import { Layer as LayerData, ExtractedSpriteGroup } from "../state/types";
 import { IconButton } from "../components/iconButton";
+import Delete from "@material-ui/icons/Delete";
 import {
     IoIosAdd,
     IoIosArrowDropright,
@@ -14,6 +15,7 @@ import {
     IoIosPhoneLandscape
 } from "react-icons/io";
 import { Sprite } from "./sprite";
+import { GroupPreview } from "./groupPreview";
 
 import styles from "./group.module.css";
 
@@ -52,6 +54,7 @@ export const Group: React.FunctionComponent<GroupProps> = ({
     return (
         <div className={styles.root}>
             <div className={styles.toolbar}>
+                <GroupPreview group={group} />
                 <IconButton
                     icon={IoIosArrowDropright}
                     title="Show sprites"
@@ -69,13 +72,12 @@ export const Group: React.FunctionComponent<GroupProps> = ({
                     }`}
                 />
                 <IconButton
-                    className={styles.trashButton}
-                    icon={IoIosTrash}
+                    icon={Delete}
                     title="Delete Group"
                     onClick={() => onDelete()}
                 />
             </div>
-            <div>{sprites}</div>
+            <div className={styles.spriteContainer}>{sprites}</div>
         </div>
     );
 };

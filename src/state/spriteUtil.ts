@@ -182,7 +182,7 @@ function getAllSpritesFromGroups(
     }, []);
 }
 
-function getAllTilesFromGroups(
+export function getAllTilesFromGroups(
     groups: ExtractedSpriteGroup[]
 ): ExtractedTile[] {
     return groups.reduce<ExtractedTile[]>((tiles, group) => {

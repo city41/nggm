@@ -7,11 +7,10 @@ import { Emulator } from "./emulator";
 import { SpriteTray } from "./spriteTray";
 import { ComposeScreen } from "./composeScreen";
 import { Layers } from "./layers";
-import { hot } from "react-hot-loader";
 
 import styles from "./app.module.css";
 
-const _App: React.FunctionComponent = () => {
+export const App: React.FunctionComponent = () => {
     return (
         <AppStateProvider>
             <DndProvider backend={HTML5Backend}>
@@ -30,5 +29,3 @@ const _App: React.FunctionComponent = () => {
         </AppStateProvider>
     );
 };
-
-export const App = hot(module)(_App);
