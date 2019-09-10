@@ -144,7 +144,7 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
             <div className={finalClassName}>
                 <div className={styles.toolbar}>
                     <button onClick={() => dispatch({ type: "ToggleGrid" })}>
-                        {state.showGrid ? "hide" : "show"} grid
+                        {state.showGrid ? "hide" : "shhhhow"} grid
                     </button>
                     <button
                         disabled={isCropping}

@@ -5,7 +5,8 @@ import { Layer as LayerData, ExtractedSpriteGroup } from "../state/types";
 import { IconButton } from "../components/iconButton";
 import {
     IoIosAdd,
-    IoIosClose,
+    IoIosArrowDropright,
+    IoIosTrash,
     IoIosEye,
     IoIosEyeOff,
     IoIosReorder,
@@ -52,20 +53,27 @@ export const Group: React.FunctionComponent<GroupProps> = ({
         <div className={styles.root}>
             <div className={styles.toolbar}>
                 <IconButton
-                    icon={IoIosClose}
-                    title="Delete Group"
-                    onClick={() => onDelete()}
+                    icon={IoIosArrowDropright}
+                    title="Show sprites"
+                    onClick={() => setShowSprites(!showSprites)}
                 />
                 <div>
                     {(group.sprites[0] && group.sprites[0].spriteMemoryIndex) ||
                         "empty"}
                 </div>
-                <button onClick={() => onToggleVisibility()}>
-                    {state.hiddenGroups[group.id] ? "show" : "hide"}
-                </button>
-                <button onClick={() => setShowSprites(!showSprites)}>
-                    sprites
-                </button>
+                <IconButton
+                    icon={state.hiddenGroups[group.id] ? IoIosEyeOff : IoIosEye}
+                    onClick={() => onToggleVisibility()}
+                    title={`Group is ${
+                        state.hiddenLayers[group.id] ? "hidden" : "visible"
+                    }`}
+                />
+                <IconButton
+                    className={styles.trashButton}
+                    icon={IoIosTrash}
+                    title="Delete Group"
+                    onClick={() => onDelete()}
+                />
             </div>
             <div>{sprites}</div>
         </div>

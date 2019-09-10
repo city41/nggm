@@ -53,13 +53,6 @@ export const Layer: React.FunctionComponent<LayerProps> = ({
                 <IconButton icon={IoIosArrowDropright} title="Show groups" />
                 <div>Layer</div>
                 <IconButton
-                    icon={state.hiddenLayers[layer.id] ? IoIosEyeOff : IoIosEye}
-                    onClick={() => onToggleVisibility()}
-                    title={`Layer is ${
-                        state.hiddenLayers[layer.id] ? "hidden" : "visible"
-                    }`}
-                />
-                <IconButton
                     icon={IoIosReorder}
                     onClick={() => dispatch({ type: "RotateLayer", layer })}
                     title="Rotate tiles"
@@ -73,6 +66,13 @@ export const Layer: React.FunctionComponent<LayerProps> = ({
                     icon={IoIosDownload}
                     onClick={() => onPushDown()}
                     title="Push Down"
+                />
+                <IconButton
+                    icon={state.hiddenLayers[layer.id] ? IoIosEyeOff : IoIosEye}
+                    onClick={() => onToggleVisibility()}
+                    title={`Layer is ${
+                        state.hiddenLayers[layer.id] ? "hidden" : "visible"
+                    }`}
                 />
                 <IconButton
                     icon={IoIosTrash}

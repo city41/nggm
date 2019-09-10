@@ -5,7 +5,7 @@ import { Layer as LayerData, ExtractedSprite } from "../state/types";
 import { IconButton } from "../components/iconButton";
 import {
     IoIosAdd,
-    IoIosClose,
+    IoIosTrash,
     IoIosEye,
     IoIosEyeOff,
     IoIosReorder,
@@ -28,7 +28,11 @@ export const Sprite: React.FunctionComponent<SpriteProps> = ({
         <div className={styles.root}>
             {" "}
             {sprite.spriteMemoryIndex}{" "}
-            <button onClick={() => onDelete()}>delete</button>
+            <IconButton
+                icon={IoIosTrash}
+                title="Delete Layer"
+                onClick={() => onDelete()}
+            />
         </div>
     );
 };

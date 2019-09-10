@@ -3,16 +3,5 @@
     background-color: var(--dock-color);
 
     padding: 2px;
-}
-
-.buttonIcon {
-    cursor: pointer;
-}
-
-.label {
-    display: inline-block;
-    padding: 4px;
-    font-weight: bold;
-    background-color: var(--focal-color);
-    color: white;
+    overflow-y: auto;
 }

@@ -14,7 +14,8 @@ body,
 #root {
     margin: 0;
     padding: 0;
-    height: 100%;
+    height: 100vh;
+    width: 100vw;
     background-color: var(--main-bg-color);
     color: var(--main-fg-color);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
