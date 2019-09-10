@@ -1,3 +1,14 @@
 .root {
     outline: 1px solid rgba(255, 255, 255, 0.5);
 }
+
+.toolbar {
+    padding: 1px;
+    height: 26px;
+    line-height: 26px;
+    display: grid;
+    grid-template-columns: 24px 1fr repeat(5, 24px);
+    column-gap: 1px;
+    justify-items: center;
+}
+padding: 1px;

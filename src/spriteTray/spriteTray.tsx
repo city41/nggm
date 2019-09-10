@@ -31,10 +31,6 @@ export const SpriteTray: React.FunctionComponent<SpriteTrayProps> = ({
         null | number
     >(null);
 
-    const classes = classnames(styles.root, className, {
-        [styles.locked]: !state.isPaused
-    });
-
     const firstFillerRef = useRef<HTMLDivElement | null>(null);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -77,8 +73,11 @@ export const SpriteTray: React.FunctionComponent<SpriteTrayProps> = ({
     }, [preview]);
 
     if (!state.isPaused) {
+        const classes = classnames(styles.root, styles.message, className);
         return (
-            <div className={styles.root}>pause the game to see its sprites</div>
+            <div className={classes}>
+                pause the game to load the current sprites
+            </div>
         );
     }
 
@@ -121,6 +120,10 @@ export const SpriteTray: React.FunctionComponent<SpriteTrayProps> = ({
             focused={focusedEntryIndices.indexOf(i) > -1}
         />
     ));
+
+    const classes = classnames(styles.root, className, {
+        [styles.locked]: !state.isPaused
+    });
 
     return (
         <div

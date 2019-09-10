@@ -5,7 +5,8 @@ import { Layer as LayerData, ExtractedSpriteGroup } from "../state/types";
 import { IconButton } from "../components/iconButton";
 import {
     IoIosAdd,
-    IoIosClose,
+    IoIosArrowDropright,
+    IoIosTrash,
     IoIosEye,
     IoIosEyeOff,
     IoIosReorder,
@@ -48,13 +49,9 @@ export const Layer: React.FunctionComponent<LayerProps> = ({
 
     return (
         <div className={styles.root}>
-            <div>
-                <div className={styles.label}>L</div>
-                <IconButton
-                    icon={IoIosClose}
-                    title="Delete Layer"
-                    onClick={() => onDelete()}
-                />
+            <div className={styles.toolbar}>
+                <IconButton icon={IoIosArrowDropright} title="Show groups" />
+                <div>Layer</div>
                 <IconButton
                     icon={state.hiddenLayers[layer.id] ? IoIosEyeOff : IoIosEye}
                     onClick={() => onToggleVisibility()}
@@ -76,6 +73,11 @@ export const Layer: React.FunctionComponent<LayerProps> = ({
                     icon={IoIosDownload}
                     onClick={() => onPushDown()}
                     title="Push Down"
+                />
+                <IconButton
+                    icon={IoIosTrash}
+                    title="Delete Layer"
+                    onClick={() => onDelete()}
                 />
             </div>
             {groups}

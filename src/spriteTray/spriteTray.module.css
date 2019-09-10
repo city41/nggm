@@ -8,6 +8,16 @@
     border-right: 1px solid var(--dock-border-color);
 }
 
+.message {
+    margin: auto;
+    text-align: center;
+    font-style: italic;
+    color: var(--dock-foreground-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
 .spriteEntries {
     display: grid;
     overflow-x: auto;

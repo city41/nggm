@@ -50,16 +50,23 @@ export const Group: React.FunctionComponent<GroupProps> = ({
 
     return (
         <div className={styles.root}>
-            {" "}
-            {(group.sprites[0] && group.sprites[0].spriteMemoryIndex) ||
-                "empty"}{" "}
-            <button onClick={() => onDelete()}>delete</button>
-            <button onClick={() => onToggleVisibility()}>
-                {state.hiddenGroups[group.id] ? "show" : "hide"}
-            </button>
-            <button onClick={() => setShowSprites(!showSprites)}>
-                sprites
-            </button>
+            <div className={styles.toolbar}>
+                <IconButton
+                    icon={IoIosClose}
+                    title="Delete Group"
+                    onClick={() => onDelete()}
+                />
+                <div>
+                    {(group.sprites[0] && group.sprites[0].spriteMemoryIndex) ||
+                        "empty"}
+                </div>
+                <button onClick={() => onToggleVisibility()}>
+                    {state.hiddenGroups[group.id] ? "show" : "hide"}
+                </button>
+                <button onClick={() => setShowSprites(!showSprites)}>
+                    sprites
+                </button>
+            </div>
             <div>{sprites}</div>
         </div>
     );
