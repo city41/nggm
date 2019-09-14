@@ -4,7 +4,7 @@ import { useDrag } from "react-dnd";
 import { getEmptyImage } from "react-dnd-html5-backend";
 import { SpriteEntry } from "./spriteEntry";
 import { useAppState } from "../state";
-import { getSpriteData, SpriteData } from "../state/spriteData";
+import { getSpriteData } from "../state/spriteData";
 
 import styles from "./spriteTray.module.css";
 
@@ -31,20 +31,60 @@ export const SpriteTray: React.FunctionComponent<SpriteTrayProps> = ({
         null | number
     >(null);
 
-    const classes = classnames(styles.root, className, {
-        [styles.locked]: !state.isPaused
+    const firstFillerRef = useRef<HTMLDivElement | null>(null);
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [_, dragRef, preview] = useDrag({
+        // @ts-ignore TS insists this have type, spriteMemoryIndex, etc, but it's not actually used
+        item: { type: "Sprite" },
+        begin(monitor: any) {
+            if (divRef && firstFillerRef && firstFillerRef.current) {
+                const x =
+                    monitor.getClientOffset().x -
+                    divRef.getBoundingClientRect().left -
+                    firstFillerRef.current.getBoundingClientRect().width;
+
+                const index = Math.floor(x / 8);
+
+                if (focusedEntryIndices.indexOf(index) > -1) {
+                    return {
+                        type: "Sprites",
+                        spriteMemoryIndices: focusedEntryIndices.map(
+                            fei => spriteDatas[fei].spriteMemoryIndex
+                        )
+                    };
+                } else if (index >= 0 && index < spriteDatas.length) {
+                    return {
+                        spriteMemoryIndex: spriteDatas[index].spriteMemoryIndex,
+                        type: "Sprite"
+                    };
+                }
+            }
+        },
+        canDrag() {
+            return state.isPaused;
+        }
     });
 
-    let spriteDatas: SpriteData[];
+    const [divRef, setDivRef] = useState<null | HTMLDivElement>(null);
 
-    if (state.isPaused) {
-        spriteDatas = new Array(TOTAL_SPRITE_COUNT)
-            .fill(1, 0, TOTAL_SPRITE_COUNT)
-            .map((_, i) => getSpriteData(i))
-            .filter(d => d.tiles.length > 0);
-    } else {
-        spriteDatas = [];
+    useEffect(() => {
+        preview(getEmptyImage(), { captureDraggingState: true });
+    }, [preview]);
+
+    if (!state.isPaused) {
+        const classes = classnames(styles.root, styles.message, className);
+        return (
+            <div className={classes}>
+                pause the game to load the current sprites
+            </div>
+        );
     }
+
+    const spriteDatas = new Array(TOTAL_SPRITE_COUNT)
+        .fill(1, 0, TOTAL_SPRITE_COUNT)
+        .map((_, i) => getSpriteData(i))
+        .filter(d => d.tiles.length > 0);
 
     const sprites = spriteDatas.map((spriteData, i) => (
         <SpriteEntry
@@ -81,42 +121,9 @@ export const SpriteTray: React.FunctionComponent<SpriteTrayProps> = ({
         />
     ));
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [_, dragRef, preview] = useDrag({
-        // @ts-ignore TS insists this have type, spriteMemoryIndex, etc, but it's not actually used
-        item: { type: "Sprite" },
-        begin(monitor: any) {
-            if (divRef) {
-                const x =
-                    monitor.getClientOffset().x -
-                    divRef.getBoundingClientRect().left;
-
-                const index = Math.floor(x / 8);
-
-                if (focusedEntryIndices.indexOf(index) > -1) {
-                    return {
-                        type: "Sprites",
-                        spriteMemoryIndices: focusedEntryIndices.map(
-                            fei => spriteDatas[fei].spriteMemoryIndex
-                        )
-                    };
-                } else {
-                    return {
-                        spriteMemoryIndex: spriteDatas[index].spriteMemoryIndex,
-                        type: "Sprite"
-                    };
-                }
-            }
-        },
-        canDrag() {
-            return state.isPaused;
-        }
+    const classes = classnames(styles.root, className, {
+        [styles.locked]: !state.isPaused
     });
-    const [divRef, setDivRef] = useState<null | HTMLDivElement>(null);
-
-    useEffect(() => {
-        preview(getEmptyImage(), { captureDraggingState: true });
-    }, []);
 
     return (
         <div
@@ -130,10 +137,19 @@ export const SpriteTray: React.FunctionComponent<SpriteTrayProps> = ({
                 key={state.pauseId}
                 className={styles.spriteEntries}
                 style={{
-                    gridTemplateColumns: `repeat(${TOTAL_SPRITE_COUNT}, max-content)`
+                    gridTemplateColumns: `1fr repeat(${spriteDatas.length}, max-content) 1fr`
                 }}
             >
+                <div
+                    className={styles.filler}
+                    ref={firstFillerRef}
+                    style={{ gridColumn: 1 }}
+                />
                 {sprites}
+                <div
+                    className={styles.filler}
+                    style={{ gridColumn: spriteDatas.length + 2 }}
+                />
             </div>
         </div>
     );

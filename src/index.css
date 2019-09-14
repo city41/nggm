@@ -3,6 +3,10 @@
     --main-fg-color: #f8f8f8;
 
     --focal-color: #61bb46;
+
+    --dock-color: #3f3f3f;
+    --dock-border-color: #4f4f4f;
+    --dock-foreground-color: #9f9f9f;
 }
 
 html,
@@ -10,9 +14,14 @@ body,
 #root {
     margin: 0;
     padding: 0;
-    height: 100%;
+    height: 100vh;
+    width: 100vw;
     background-color: var(--main-bg-color);
     color: var(--main-fg-color);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
         Oxygen-Sans, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+* {
+    box-sizing: border-box !important;
 }

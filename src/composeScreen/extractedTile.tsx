@@ -13,17 +13,17 @@ interface ExtractedTileProps {
     outlined?: boolean;
 }
 
-export class ExtractedTile extends React.PureComponent<ExtractedTileProps> {
-    render() {
-        const {
-            y: tileY,
-            tileIndex,
-            rgbPalette,
-            horizontalFlip,
-            verticalFlip,
-            outlined
-        } = this.props;
-
+export const ExtractedTile: React.FunctionComponent<
+    ExtractedTileProps
+> = React.memo<ExtractedTileProps>(
+    ({
+        y: tileY,
+        tileIndex,
+        rgbPalette,
+        horizontalFlip,
+        verticalFlip,
+        outlined
+    }) => {
         function renderCanvas(canvas: HTMLCanvasElement) {
             renderTileToCanvas(canvas, tileIndex, rgbPalette);
         }
@@ -49,4 +49,4 @@ export class ExtractedTile extends React.PureComponent<ExtractedTileProps> {
             />
         );
     }
-}
+);

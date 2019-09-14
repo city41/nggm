@@ -1,5 +1,22 @@
-.root canvas {
+.root {
     width: 320px;
     height: 240px;
-    border: 1px solid rgba(0, 0, 0, 0.5);
+    background-color: black;
+    cursor: pointer !important;
+    position: relative;
+}
+
+.pauseOverlay {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    opacity: 0;
+    transition-property: opacity;
+    transition-duration: 0.25s;
+}
+
+.pauseOverlay:hover {
+    opacity: 1;
 }

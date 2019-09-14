@@ -1,14 +1,30 @@
 .root {
+    --spriteEntryHeader: 32px;
+
     width: 100%;
-    height: 100%;
+    /* At most a sprite has 33 tiles, plus the sprite entry header is 32px */
+    height: calc(33 * 8px + var(--spriteEntryHeader));
+    background-color: var(--dock-color);
+    border-right: 1px solid var(--dock-border-color);
 }
 
-.locked {
-    opacity: 0.5;
+.message {
+    margin: auto;
+    text-align: center;
+    font-style: italic;
+    color: var(--dock-foreground-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .spriteEntries {
     display: grid;
     overflow-x: auto;
-    overflow-y: hidden;
+}
+
+.filler {
+    background-color: rgba(0, 0, 0, 0.5);
+    height: var(--spriteEntryHeader);
+    width: 100%;
 }

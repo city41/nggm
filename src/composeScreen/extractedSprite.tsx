@@ -13,6 +13,7 @@ interface ExtractedSpriteProps {
     canDrag: boolean;
     outlineTiles?: boolean;
     setYToZero?: boolean;
+    overrideX?: number;
 }
 
 export const ExtractedSprite: React.FunctionComponent<ExtractedSpriteProps> = ({
@@ -21,7 +22,8 @@ export const ExtractedSprite: React.FunctionComponent<ExtractedSpriteProps> = ({
     animationCounter,
     canDrag,
     outlineTiles,
-    setYToZero
+    setYToZero,
+    overrideX
 }) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, dragRef, preview] = useDrag({
@@ -38,7 +40,7 @@ export const ExtractedSprite: React.FunctionComponent<ExtractedSpriteProps> = ({
 
     useEffect(() => {
         preview(getEmptyImage(), { captureDraggingState: true });
-    }, []);
+    }, [preview]);
 
     const tiles = data.tiles.map((tileData, i) => {
         let tileIndex = tileData.tileIndex;
@@ -72,7 +74,7 @@ export const ExtractedSprite: React.FunctionComponent<ExtractedSpriteProps> = ({
 
     const style = {
         top: setYToZero ? 0 : data.composedY,
-        left: data.composedX,
+        left: typeof overrideX === "number" ? overrideX : data.composedX,
         gridTemplateRows: `repeat(${data.tiles.length}, 16px)`,
         zIndex: data.spriteMemoryIndex
     };

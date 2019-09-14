@@ -16,16 +16,8 @@ interface TileProps {
     verticalFlip?: boolean;
 }
 
-export class Tile extends React.PureComponent<TileProps> {
-    render() {
-        const {
-            y: tileY,
-            tileIndex,
-            paletteIndex,
-            horizontalFlip,
-            verticalFlip
-        } = this.props;
-
+export const Tile: React.FunctionComponent<TileProps> = React.memo<TileProps>(
+    ({ y: tileY, tileIndex, paletteIndex, horizontalFlip, verticalFlip }) => {
         function renderCanvas(canvas: HTMLCanvasElement) {
             const rgbPalette = convertNeoGeoPaletteToRGB(
                 getNeoGeoPalette(paletteIndex)
@@ -48,4 +40,4 @@ export class Tile extends React.PureComponent<TileProps> {
             />
         );
     }
-}
+);

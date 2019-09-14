@@ -1,27 +1,19 @@
 .root {
-    display: grid;
-    grid-template-rows: repeat(3, max-content);
-    grid-template-columns: repeat(2, max-content);
-}
-
-.layers {
-    grid-column: 1;
-    grid-row: 2 / -1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
 }
 
 .toolbar {
-    grid-column: 2;
-    grid-row: 1;
 }
 
 .bg {
-    grid-column: 2;
-    grid-row: 2;
-
     position: relative;
-    width: 600px;
-    height: 400px;
-    border: 1px solid grey;
+    width: 100%;
+    flex: 1;
+    align-self: center;
+    overflow: auto;
 }
 
 .captureLayer {
@@ -35,9 +27,4 @@
 
 .cropRect {
     z-index: 1999;
-}
-
-.pushAllDown {
-    grid-column: 2;
-    grid-row: 3;
 }

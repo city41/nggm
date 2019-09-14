@@ -105,19 +105,21 @@ export function positionSpriteGroupInRelationToExistingGroups(
 
     return {
         ...newGroup,
-        sprites: moveSprites(newGroup.sprites, diffX, "screenX")
+        sprites: moveSprites(newGroup.sprites, diffX, 0, "screenX")
     };
 }
 
 function moveSprites(
     sprites: ExtractedSprite[],
     diffX: number,
+    diffY: number,
     baseX: "composedX" | "screenX" = "composedX"
 ): ExtractedSprite[] {
     return sprites.map(sprite => {
         return {
             ...sprite,
-            composedX: sprite[baseX] + diffX
+            composedX: sprite[baseX] + diffX,
+            tiles: diffY === 0 ? sprite.tiles : moveTiles(sprite.tiles, diffY)
         };
     });
 }
@@ -125,16 +127,17 @@ function moveSprites(
 export function moveGroups(
     groups: ExtractedSpriteGroup[],
     diffX: number,
-    pauseId: number
+    diffY: number,
+    pauseId?: number
 ): ExtractedSpriteGroup[] {
     return groups.map(group => {
-        if (group.pauseId !== pauseId) {
+        if (typeof pauseId === "number" && group.pauseId !== pauseId) {
             return group;
         }
 
         return {
             ...group,
-            sprites: moveSprites(group.sprites, diffX)
+            sprites: moveSprites(group.sprites, diffX, diffY)
         };
     });
 }
@@ -182,7 +185,7 @@ function getAllSpritesFromGroups(
     }, []);
 }
 
-function getAllTilesFromGroups(
+export function getAllTilesFromGroups(
     groups: ExtractedSpriteGroup[]
 ): ExtractedTile[] {
     return groups.reduce<ExtractedTile[]>((tiles, group) => {
@@ -257,7 +260,7 @@ function moveGroupsX(
     return groups.map(group => {
         return {
             ...group,
-            sprites: moveSprites(group.sprites, deltaX)
+            sprites: moveSprites(group.sprites, deltaX, 0)
         };
     });
 }
@@ -340,4 +343,36 @@ export function extendGroupsViaMirroring(
     };
 
     return [newLeftGroup, newRightGroup];
+}
+
+export function setGroupToZeroZero(
+    group: ExtractedSpriteGroup
+): ExtractedSpriteGroup {
+    const minX = getMinX(group.sprites);
+    const minY = getMinY(getAllTilesFromSprites(group.sprites));
+
+    if (minX === 0 && minY === 0) {
+        return group;
+    }
+
+    return {
+        ...group,
+        sprites: moveSprites(group.sprites, -minX, -minY)
+    };
+}
+
+export function setLayerToZeroZero(layer: Layer): Layer {
+    const minX = getMinX(getAllSpritesFromLayers([layer]));
+    const minY = getMinY(getAllTilesFromLayers([layer]));
+
+    if (minX === 0 && minY === 0) {
+        return layer;
+    }
+
+    const groups = moveGroups(layer.groups, -minX, -minY);
+
+    return {
+        ...layer,
+        groups
+    };
 }

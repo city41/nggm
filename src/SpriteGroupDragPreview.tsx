@@ -5,12 +5,14 @@ import {
 } from "./state/extractSpriteGroup";
 import { ExtractedSprite } from "./composeScreen/extractedSprite";
 
-export class StickySpriteGroupDragPreview extends React.PureComponent<{
+interface StickySpriteGroupDragPreviewProps {
     seedSpriteMemoryIndex: number;
-}> {
-    render() {
-        const { seedSpriteMemoryIndex } = this.props;
+}
 
+export const StickySpriteGroupDragPreview: React.FunctionComponent<
+    StickySpriteGroupDragPreviewProps
+> = React.memo<StickySpriteGroupDragPreviewProps>(
+    ({ seedSpriteMemoryIndex }) => {
         const spriteGroupData = extractSpriteAndStickyCompanionsToGroup(
             seedSpriteMemoryIndex,
             0,
@@ -23,24 +25,20 @@ export class StickySpriteGroupDragPreview extends React.PureComponent<{
 
         return <div>{sprites}</div>;
     }
-}
+);
 
-export class AdhocSpriteGroupDragPreview extends React.PureComponent<{
+interface AdhocSpriteGroupDragPreviewProps {
     spriteMemoryIndices: number[];
-}> {
-    render() {
-        const { spriteMemoryIndices } = this.props;
-
-        const spriteGroupData = extractSpritesIntoGroup(
-            spriteMemoryIndices,
-            0,
-            0
-        );
-
-        const sprites = spriteGroupData.sprites.map((sprite, i) => (
-            <ExtractedSprite key={i} data={sprite} canDrag={false} setYToZero />
-        ));
-
-        return <div>{sprites}</div>;
-    }
 }
+
+export const AdhocSpriteGroupDragPreview: React.FunctionComponent<
+    AdhocSpriteGroupDragPreviewProps
+> = React.memo<AdhocSpriteGroupDragPreviewProps>(({ spriteMemoryIndices }) => {
+    const spriteGroupData = extractSpritesIntoGroup(spriteMemoryIndices, 0, 0);
+
+    const sprites = spriteGroupData.sprites.map((sprite, i) => (
+        <ExtractedSprite key={i} data={sprite} canDrag={false} setYToZero />
+    ));
+
+    return <div>{sprites}</div>;
+});

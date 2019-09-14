@@ -7,7 +7,7 @@ interface IconButtonProps {
     className?: string;
     title?: string;
     icon: React.ComponentType<any>;
-    onClick: (e: React.MouseEvent) => void;
+    onClick?: (e: React.MouseEvent) => void;
 }
 
 export const IconButton: React.FunctionComponent<IconButtonProps> = ({

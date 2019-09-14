@@ -1,0 +1,11 @@
+.root {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.root svg {
+    width: 30%;
+    height: 30%;
+}
