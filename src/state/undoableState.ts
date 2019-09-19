@@ -237,7 +237,7 @@ export function reducer(
 
             const diffX =
                 newComposedX - currentSpriteGroup.sprites[0].composedX;
-            const movedGroups = moveGroups(layer.groups, diffX, pauseId);
+            const movedGroups = moveGroups(layer.groups, diffX, 0, pauseId);
 
             return {
                 ...state,

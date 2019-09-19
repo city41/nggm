@@ -128,7 +128,7 @@ export function moveGroups(
     groups: ExtractedSpriteGroup[],
     diffX: number,
     diffY: number,
-    pauseId?: number
+    pauseId: number | undefined
 ): ExtractedSpriteGroup[] {
     return groups.map(group => {
         if (typeof pauseId === "number" && group.pauseId !== pauseId) {
@@ -369,7 +369,7 @@ export function setLayerToZeroZero(layer: Layer): Layer {
         return layer;
     }
 
-    const groups = moveGroups(layer.groups, -minX, -minY);
+    const groups = moveGroups(layer.groups, -minX, -minY, undefined);
 
     return {
         ...layer,
