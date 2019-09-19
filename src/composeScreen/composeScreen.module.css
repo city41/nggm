@@ -24,7 +24,3 @@
     bottom: 0;
     z-index: 2000;
 }
-
-.cropRect {
-    z-index: 1999;
-}

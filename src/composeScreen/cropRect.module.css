@@ -4,8 +4,8 @@
     height: 100%;
 
     display: grid;
-    grid-template-columns: repeat(3, max-content);
-    grid-template-rows: repeat(3, max-content);
+    grid-template-columns: repeat(2, max-content) 1fr;
+    grid-template-rows: repeat(2, max-content) 1fr;
 }
 
 .mask {

@@ -126,13 +126,6 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
         backgroundColor
     };
 
-    const extractedSprites = getAllSpritesFromLayers(state.layers);
-    const maxX = getMaxX(extractedSprites);
-    const totalWidth = Math.max(maxX + 48, 320);
-
-    const maxY = getMaxY(extractedSprites);
-    const totalHeight = Math.max(maxY + 48, 240);
-
     const finalClassName = classnames(styles.root, className);
 
     return (
@@ -247,8 +240,6 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
                             crop={
                                 state.crop || [upperLeftCrop!, lowerRightCrop!]
                             }
-                            totalWidth={totalWidth}
-                            totalHeight={totalHeight}
                         />
                     )}
                 </div>
