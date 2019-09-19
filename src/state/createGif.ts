@@ -1,4 +1,4 @@
-import { Crop, Layer, ExtractedSpriteGroup } from "./types";
+import { Crop, Layer, ExtractedSpriteGroup, ExtractedTile } from "./types";
 // @ts-ignore
 import { GIFEncoder } from "./jsgif/GIFEncoder";
 import { layersToCanvas } from "./layersToCanvas";
@@ -7,10 +7,52 @@ import { getAllTilesFromLayers } from "./spriteUtil";
 // loop set to zero means forever
 const FOREVER = 0;
 
-function determineNumberOfFramesToRender(layers: Layer[]): number {
-    const tiles = getAllTilesFromLayers(layers);
+function determineNumberOfFramesToRender(
+    layers: Layer[],
+    crop: Crop | undefined
+): number {
+    // const tiles = getAllTilesFromLayers(layers);
 
-    const maxAnimation = Math.max(...tiles.map(t => t.autoAnimation));
+    let validTiles;
+
+    if (!crop) {
+        validTiles = getAllTilesFromLayers(layers);
+    } else {
+        validTiles = layers.reduce<ExtractedTile[]>((ts, layer) => {
+            const validLayerTiles = layer.groups.reduce<ExtractedTile[]>(
+                (lts, group) => {
+                    const validSpriteTiles = group.sprites.reduce<
+                        ExtractedTile[]
+                    >((sts, sprite) => {
+                        if (
+                            sprite.composedX < crop[0].x ||
+                            sprite.composedX > crop[1].x
+                        ) {
+                            return sts;
+                        }
+
+                        const validTilesForSprite = sprite.tiles.filter(
+                            tile => {
+                                return (
+                                    tile.composedY >= crop[0].y &&
+                                    tile.composedY < crop[1].y
+                                );
+                            }
+                        );
+
+                        return sts.concat(validTilesForSprite);
+                    }, []);
+
+                    return lts.concat(validSpriteTiles);
+                },
+                []
+            );
+
+            return ts.concat(validLayerTiles);
+        }, []);
+    }
+
+    const maxAnimation = Math.max(...validTiles.map(t => t.autoAnimation));
 
     // 2 raised to maxAnimation
     return 2 ** maxAnimation;
@@ -35,7 +77,8 @@ export function createGif(
 
     encoder.start();
 
-    const totalFrames = determineNumberOfFramesToRender(layers);
+    const totalFrames = determineNumberOfFramesToRender(layers, crop);
+    console.log("totalFrames", totalFrames);
 
     let remainingFrames = totalFrames;
 
