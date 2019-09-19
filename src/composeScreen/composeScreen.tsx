@@ -184,8 +184,30 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
                     }}
                     style={style}
                 >
+                    {layers}
+                    {!!(
+                        (isCropping && upperLeftCrop && lowerRightCrop) ||
+                        state.crop
+                    ) && (
+                        <CropRect
+                            width={divRef && divRef.scrollWidth}
+                            height={divRef && divRef.scrollHeight}
+                            className={styles.cropRect}
+                            crop={
+                                state.crop || [upperLeftCrop!, lowerRightCrop!]
+                            }
+                        />
+                    )}
                     {isCropping && (
                         <div
+                            style={
+                                divRef
+                                    ? {
+                                          width: divRef.scrollWidth,
+                                          height: divRef.scrollHeight
+                                      }
+                                    : {}
+                            }
                             className={styles.captureLayer}
                             onMouseDown={(
                                 e: React.MouseEvent<HTMLDivElement>
@@ -228,18 +250,6 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
                                     setIsCropping(false);
                                 }
                             }}
-                        />
-                    )}
-                    {layers}
-                    {!!(
-                        (isCropping && upperLeftCrop && lowerRightCrop) ||
-                        state.crop
-                    ) && (
-                        <CropRect
-                            className={styles.cropRect}
-                            crop={
-                                state.crop || [upperLeftCrop!, lowerRightCrop!]
-                            }
                         />
                     )}
                 </div>

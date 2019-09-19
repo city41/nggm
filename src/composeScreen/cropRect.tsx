@@ -7,11 +7,15 @@ import styles from "./cropRect.module.css";
 interface CropRectProps {
     className?: string;
     crop: Crop;
+    width?: number | null;
+    height?: number | null;
 }
 
 export const CropRect: React.FunctionComponent<CropRectProps> = ({
     className,
-    crop
+    crop,
+    width,
+    height
 }) => {
     const classes = classnames(styles.root, className);
 
@@ -46,8 +50,13 @@ export const CropRect: React.FunctionComponent<CropRectProps> = ({
         flex: "1"
     };
 
+    const containerStyle = {
+        width: width || "100%",
+        height: height || "100%"
+    };
+
     return (
-        <div className={classes}>
+        <div className={classes} style={containerStyle}>
             <div className={styles.mask} style={topRowStyle} />
             <div className={styles.mask} style={leftCellStyle} />
             <div className={styles.crop} style={cropStyle} />
