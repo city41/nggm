@@ -1,10 +1,4 @@
-import {
-    Crop,
-    Layer,
-    ExtractedSpriteGroup,
-    ExtractedSprite,
-    ExtractedTile
-} from "./types";
+import { Crop, Layer, ExtractedSprite, ExtractedTile } from "./types";
 import { renderTileToCanvas } from "./renderTileToCanvas";
 import { getMaxX, getMaxY, getAllSpritesFromLayers } from "./spriteUtil";
 

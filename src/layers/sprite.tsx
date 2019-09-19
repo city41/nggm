@@ -1,17 +1,7 @@
-import React, { useState } from "react";
-import classnames from "classnames";
-import { useAppState } from "../state";
-import { Layer as LayerData, ExtractedSprite } from "../state/types";
+import React from "react";
+import { ExtractedSprite } from "../state/types";
 import { IconButton } from "../components/iconButton";
 import Delete from "@material-ui/icons/Delete";
-import {
-    IoIosAdd,
-    IoIosEye,
-    IoIosEyeOff,
-    IoIosReorder,
-    IoIosDownload,
-    IoIosPhoneLandscape
-} from "react-icons/io";
 
 import styles from "./sprite.module.css";
 

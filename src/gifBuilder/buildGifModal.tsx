@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import Modal from "react-modal";
 import { createGif } from "../state/createGif";
 import { useAppState } from "../state";
-import { ExtractedSpriteGroup } from "../state/types";
 
 type FrameStatus = { frame: number; totalFrames: number };
 
@@ -57,7 +56,7 @@ export const BuildGifModal: React.FunctionComponent<BuildGifModalProps> = ({
                 }
             );
         }
-    }, [isOpen]);
+    }, [isOpen, state.crop, state.layers]);
 
     return (
         <Modal isOpen={isOpen} onRequestClose={onRequestClose}>

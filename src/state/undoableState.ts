@@ -1,6 +1,5 @@
 import {
     AppState,
-    Crop,
     Layer,
     ExtractedSpriteGroup,
     ExtractedSprite,
@@ -13,9 +12,7 @@ import {
     positionSpriteGroupInRelationToExistingGroups,
     pushDownOutOfNegative,
     pushInOutOfNegative,
-    getAllTilesFromLayers,
-    getMinY,
-    getMaxY
+    getAllTilesFromLayers
 } from "./spriteUtil";
 import {
     extractSpriteAndStickyCompanionsToGroup,

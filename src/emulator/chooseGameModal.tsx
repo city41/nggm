@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import Modal from "react-modal";
 import { useAppState } from "../state";
 
@@ -65,6 +65,8 @@ export const ChooseGameModal: React.FunctionComponent = () => {
 
         if (biosLoaded) {
             startGame(gameName);
+        } else {
+            setGameName(gameName);
         }
     }
 

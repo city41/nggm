@@ -9,7 +9,6 @@ import { useAppState } from "../state";
 import { BuildGifModal } from "../gifBuilder/buildGifModal";
 import { Layer as LayerCmp } from "./layer";
 import { CropRect } from "./cropRect";
-import { getMaxX, getMaxY, getAllSpritesFromLayers } from "../state/spriteUtil";
 
 import styles from "./composeScreen.module.css";
 

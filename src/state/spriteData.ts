@@ -1,6 +1,3 @@
-import { getTileIndexedColorData } from "./renderTileToCanvas";
-import { memoize } from "lodash";
-
 // ALERT!
 // vram addresses in the neo geo are word wide, not byte wide!
 // TODO: can probably just use HEAPU16 and make this all much simpler
@@ -218,12 +215,6 @@ function getScale(
     const xScale = ((scb2Word >> 8) & 0xf) + 1;
 
     return { yScale, xScale };
-}
-
-function isTileEmpty(tile: TileData): boolean {
-    const tileIndexData = getTileIndexedColorData(tile.tileIndex);
-
-    return tileIndexData.every(i => i === 0);
 }
 
 export function getSpriteData(spriteMemoryIndex: number): SpriteData {

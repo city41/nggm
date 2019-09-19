@@ -25,7 +25,7 @@ export const IconButton: React.FunctionComponent<IconButtonProps> = ({
             className={classes}
             onClick={onClick}
             title={title}
-            aria-role="button"
+            role="button"
             aria-label={title}
         />
     );

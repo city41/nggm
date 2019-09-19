@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import classnames from "classnames";
 import { useAppState } from "../state";
-import { Layer as LayerData, ExtractedSpriteGroup } from "../state/types";
+import { ExtractedSpriteGroup } from "../state/types";
 import { IconButton } from "../components/iconButton";
 import Delete from "@material-ui/icons/Delete";
 import ExpandLess from "@material-ui/icons/ExpandLess";

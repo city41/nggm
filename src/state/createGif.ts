@@ -1,4 +1,4 @@
-import { Crop, Layer, ExtractedSpriteGroup, ExtractedTile } from "./types";
+import { Crop, Layer, ExtractedTile } from "./types";
 // @ts-ignore
 import { GIFEncoder } from "./jsgif/GIFEncoder";
 import { layersToCanvas } from "./layersToCanvas";

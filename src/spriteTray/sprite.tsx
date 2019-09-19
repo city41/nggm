@@ -40,8 +40,10 @@ export const Sprite: React.FunctionComponent<SpriteProps> = ({
         zIndex: spriteMemoryIndex
     };
 
+    const classes = classnames(styles.sprite, className);
+
     return (
-        <div className={styles.sprite} style={style}>
+        <div className={classes} style={style}>
             {tiles}
         </div>
     );

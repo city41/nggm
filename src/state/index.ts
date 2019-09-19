@@ -1,6 +1,6 @@
 import { useContext, Dispatch } from "react";
 import { AppState } from "./types";
-import { Action, State, NonUndoableState } from "./state";
+import { Action, NonUndoableState } from "./state";
 import { stateContext, dispatchContext } from "./provider";
 
 export function useAppState(): {

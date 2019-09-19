@@ -1,14 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import classnames from "classnames";
 import { useAppState } from "../state";
-import {
-    Layer as LayerData,
-    ExtractedSpriteGroup,
-    ExtractedSprite
-} from "../state/types";
 import { IconButton } from "../components/iconButton";
 import { IoIosAdd } from "react-icons/io";
-import { Group } from "./group";
 import { Layer } from "./layer";
 
 import styles from "./layers.module.css";

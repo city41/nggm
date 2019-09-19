@@ -1,7 +1,5 @@
-import { Reducer } from "react";
 import { AppState, Layer, Crop, ExtractedSpriteGroup } from "./types";
 import { UndoableAction } from "./undoableState";
-import { update } from "./update";
 
 export type Action =
     | UndoableAction
