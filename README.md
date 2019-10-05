@@ -4,19 +4,28 @@ A Neo Geo background extraction tool. With just a few clicks, you can extract th
 
 ## Status
 
-The tool now successfully extracts simple backgrounds. There is still much work to be done:
+The tool now successfully extracts a lot of backgrounds. There is still much work to be done:
   
-* tools to nudge sprites, they are often wrapped incorrectly in raw memory
-* ability to support parallaxing backgrounds (now solved with layers feature)
 * support manual sprite animation
-* other tools to just make life easier
+* more options for dealing with parallax mismatches
+  * currently have mirroring as only option
+  * also need to extend last color and fade to black as additional solutions
+  * TODO: document this
+* make it more user friendly
+  * a nice UI
+  * patch gngeo to support any neo geo rom instead of the specific formats it currently expects
+  * instructions on how to use it
+* support for vertical games (ie aerofighters, strikers, etc)
+  * currently the tool assumes the background will be horizontally oriented
+  * need a vert <-> hori toggle that applies the assumptions to either x or y, depending on chosen mode
+
+The tool can also extract character sprites pretty easily
 
 ## How to use
 
-For now, easiest to just watch this video and just play around with things
-https://www.youtube.com/watch?v=xgQp2mm5K20
+This is TODO
 
-I will create detailed instructions as the tool matures.
+I will create detailed instructions as the tool matures. This tool proved to be a lot more work than I thought it would be, so it might be a while before it's really usable
 
 NOTE: gngeo is the emulator that is running, and it wants your ROM files to be in a very specific format. For me, my samsho2, mslug, kof94 and kof95 roms all work fine. But my aof, aof3, pulstar, etc ROMs do not load. I'll eventually fix this.
 
