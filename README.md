@@ -6,6 +6,8 @@ A Neo Geo background extraction tool. With just a few clicks, you can extract th
 
 The tool now successfully extracts a lot of backgrounds. There is still much work to be done:
   
+TODO:
+
 * support manual sprite animation
 * more options for dealing with parallax mismatches
   * currently have mirroring as only option
