@@ -20,6 +20,8 @@ TODO:
 * support for vertical games (ie aerofighters, strikers, etc)
   * currently the tool assumes the background will be horizontally oriented
   * need a vert <-> hori toggle that applies the assumptions to either x or y, depending on chosen mode
+* loading indicator while downloading gngeo, which is about 3 megabytes
+  * would also be nice to keep trimming the stuff out of gngeo that ngbg doesn't need, to cut that 3 megs down more
 
 The tool can also extract character sprites pretty easily
 
