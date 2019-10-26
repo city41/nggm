@@ -1,11 +1,16 @@
-import React from "react";
-import styled from "styled-components";
+import React, { useState } from "react";
+import styled, { StyledFunction } from "styled-components";
 
 interface FileDropZoneProps {
   onFileChosen: (file: File) => void;
+  fileName?: string;
 }
 
-const Container = styled.div`
+interface ContainerProps {
+  isOver?: boolean;
+}
+
+const Container = styled.div<ContainerProps>`
   border: 1px dotted gray;
   flex: 1;
 
@@ -16,6 +21,8 @@ const Container = styled.div`
   text-align: center;
   font-size: 0.8em;
   color: gray;
+
+  background-color: ${props => (props.isOver ? "lightgray" : "transparent")};
 `;
 
 const ChooseFile = styled.label`
@@ -28,22 +35,67 @@ const FileInput = styled.input`
   height: 0.01px;
 `;
 
+function hasFiles(e: React.DragEvent<HTMLDivElement>): boolean {
+  let hasFiles = false;
+
+  if (e.dataTransfer) {
+    const types = e.dataTransfer.types;
+    for (const keyOrIndex in types) {
+      if (types[keyOrIndex] === "Files") {
+        hasFiles = true;
+        break;
+      }
+    }
+  }
+  return hasFiles;
+}
+
 export const FileDropZone: React.FunctionComponent<FileDropZoneProps> = ({
-  onFileChosen
+  onFileChosen,
+  fileName
 }) => {
+  const [isOver, setIsOver] = useState(false);
+
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     if (e.target && e.target.files && e.target.files[0]) {
       onFileChosen(e.target.files[0]);
     }
   }
 
-  return (
-    <Container>
+  function handleDragOver(e: React.DragEvent<HTMLDivElement>) {
+    setIsOver(hasFiles(e));
+  }
+
+  function handleDragLeave(e: React.DragEvent<HTMLDivElement>) {
+    setIsOver(false);
+  }
+
+  function handleDrop(e: React.DragEvent<HTMLDivElement>) {
+    if (hasFiles(e)) {
+      const file =
+        e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+
+      if (file) {
+        onFileChosen(file);
+      }
+    }
+  }
+
+  const body = fileName ? (
+    <>{fileName}</>
+  ) : (
+    <div
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
       drag a file here, or{" "}
       <ChooseFile>
         click to choose
         <FileInput type="file" onChange={handleChange} />
       </ChooseFile>
-    </Container>
+    </div>
   );
+
+  return <Container isOver={isOver}>{body}</Container>;
 };
