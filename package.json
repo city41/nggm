@@ -23,6 +23,7 @@
 		"react-modal": "^3.10.1",
 		"react-scripts": "3.1.1",
 		"react-spaces": "^0.1.14",
+		"styled-components": "^4.4.0",
 		"typescript": "3.5.3"
 	},
 	"scripts": {
@@ -56,6 +57,7 @@
 		"@types/react-dnd-html5-backend": "^3.0.2",
 		"@types/react-icons": "^3.0.0",
 		"@types/react-modal": "^3.8.3",
+		"@types/styled-components": "^4.1.19",
 		"gh-pages": "^2.1.1",
 		"prettier": "^1.18.2"
 	}

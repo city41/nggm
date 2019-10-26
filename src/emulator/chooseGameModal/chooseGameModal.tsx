@@ -1,7 +1,25 @@
 import React, { useState } from "react";
+import styled from "styled-components";
 import Modal from "react-modal";
 import { useAppState } from "../../state";
 import { FileStep } from "./fileStep";
+
+const StyledModal = styled(Modal)`
+  max-width: 600px;
+  padding: 16px;
+  margin: 96px auto;
+  background-color: white;
+
+  display: grid;
+  grid-template-rows: repeat(3, auto);
+  row-gap: 16px;
+
+  color: black;
+`;
+
+const Title = styled.div`
+  font-size: 24px;
+`;
 
 function loadFile<T>(file: File): Promise<T> {
   return new Promise((resolve, reject) => {
@@ -85,20 +103,21 @@ export const ChooseGameModal: React.FunctionComponent = () => {
     );
 
   return (
-    <Modal isOpen={isOpen}>
+    <StyledModal isOpen={isOpen}>
+      <Title>To start, please provide these two files</Title>
       <FileStep
         stepNumber={1}
         title="Neo Geo BIOS"
         description="The BIOS file for the Neo Geo, it must be named neogeo.zip"
-        onFileUploaded={loadBIOSFile}
+        onFileChosen={loadBIOSFile}
       />
       <FileStep
         stepNumber={2}
         title="Game ROM"
         description="The game ROM, such as samsho2.zip"
-        onFileUploaded={loadROMFile}
+        onFileChosen={loadROMFile}
       />
       {debugButton}
-    </Modal>
+    </StyledModal>
   );
 };
