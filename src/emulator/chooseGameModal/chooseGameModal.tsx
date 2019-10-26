@@ -21,6 +21,20 @@ const Title = styled.div`
   font-size: 24px;
 `;
 
+const Why = styled.div`
+  margin-top: 8px;
+  font-size: 0.8rem;
+
+  & > a {
+    color: blue;
+    cursor: pointer;
+  }
+
+  & > div {
+    margin-top: 8px;
+  }
+`;
+
 function loadFile<T>(file: File): Promise<T> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -49,6 +63,7 @@ async function addFileToVirtualFS(file: File) {
 }
 
 export const ChooseGameModal: React.FunctionComponent = () => {
+  const [showWhy, setShowWhy] = useState(false);
   const [isOpen, setIsOpen] = useState(true);
   const [romName, setRomName] = useState("");
   const [biosName, setBiosName] = useState(
@@ -112,6 +127,22 @@ export const ChooseGameModal: React.FunctionComponent = () => {
     startRom(rom);
   }
 
+  const romDescription = (
+    <div>
+      The game ROM, such as samsho2.zip
+      <Why>
+        <a onClick={() => setShowWhy(!showWhy)}>why does my ROM not work?</a>
+        {showWhy && (
+          <div>
+            NGBG uses GnGeo as its emulator. GnGeo requires ROMs to be in a
+            specific format, and many ROMs out there today don't match. I will
+            fix this eventually.
+          </div>
+        )}
+      </Why>
+    </div>
+  );
+
   return (
     <StyledModal isOpen={isOpen}>
       <Title>To start, please provide these two files</Title>
@@ -126,7 +157,7 @@ export const ChooseGameModal: React.FunctionComponent = () => {
       <FileStep
         stepNumber={2}
         title="Game ROM"
-        description="The game ROM, such as samsho2.zip"
+        description={romDescription}
         onFileChosen={loadRomFile}
         loading={loadingRom}
         fileName={romName}
