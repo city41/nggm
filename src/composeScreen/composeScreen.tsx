@@ -1,258 +1,250 @@
 import React, { useState, useEffect } from "react";
+import styled from "styled-components";
 import classnames from "classnames";
 import { useDrop } from "react-dnd";
 import {
-    getBackdropNeoGeoColor,
-    neoGeoColorToCSS
+  getBackdropNeoGeoColor,
+  neoGeoColorToCSS
 } from "../palette/neoGeoPalette";
 import { useAppState } from "../state";
 import { BuildGifModal } from "../gifBuilder/buildGifModal";
 import { Layer as LayerCmp } from "./layer";
 import { CropRect } from "./cropRect";
-
-import styles from "./composeScreen.module.css";
+import { Toolbar } from "./toolbar";
 
 interface ComposeScreenProps {
-    className?: string;
+  className?: string;
 }
 
+const Container = styled.div`
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  column-gap: var(--gutter-width);
+`;
+
+const Surface = styled.div`
+  position: relative;
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  align-self: center;
+  overflow: auto;
+  background-color: var(--dock-color);
+`;
+
+const CaptureLayer = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+`;
+
 export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
-    className
+  className
 }) => {
-    const [animationCounter, setAnimationCounter] = useState({
-        animation: 0,
-        rafFrameCountdown: 0
-    });
-    const [runPreview, setRunPreview] = useState(false);
-    const [showBuildGifModal, setShowBuildGifModal] = useState(false);
-    const { state, dispatch, undo, redo, canUndo, canRedo } = useAppState();
-    const [divRef, setDivRef] = useState<null | HTMLDivElement>(null);
-    const [isCropping, setIsCropping] = useState(false);
-    const [upperLeftCrop, setUpperLeftCrop] = useState<null | {
-        x: number;
-        y: number;
-    }>(null);
-    const [lowerRightCrop, setLowerRightCrop] = useState<null | {
-        x: number;
-        y: number;
-    }>(null);
+  const [animationCounter, setAnimationCounter] = useState({
+    animation: 0,
+    rafFrameCountdown: 0
+  });
+  const [runPreview, setRunPreview] = useState(false);
+  const [showBuildGifModal, setShowBuildGifModal] = useState(false);
+  const { state, dispatch, undo, redo, canUndo, canRedo } = useAppState();
+  const [divRef, setDivRef] = useState<null | HTMLDivElement>(null);
+  const [isCropping, setIsCropping] = useState(false);
+  const [upperLeftCrop, setUpperLeftCrop] = useState<null | {
+    x: number;
+    y: number;
+  }>(null);
+  const [lowerRightCrop, setLowerRightCrop] = useState<null | {
+    x: number;
+    y: number;
+  }>(null);
 
-    useEffect(() => {
-        if (runPreview) {
-            // minus one because on my machine the animation can't quite keep up
-            const frameCountdown =
-                window.Module._get_neogeo_frame_counter_speed() - 1;
-            requestAnimationFrame(() => {
-                const diff = animationCounter.rafFrameCountdown === 0 ? 1 : 0;
+  useEffect(() => {
+    if (runPreview) {
+      // minus one because on my machine the animation can't quite keep up
+      const frameCountdown =
+        window.Module._get_neogeo_frame_counter_speed() - 1;
+      requestAnimationFrame(() => {
+        const diff = animationCounter.rafFrameCountdown === 0 ? 1 : 0;
 
-                setAnimationCounter({
-                    animation: animationCounter.animation + diff,
-                    rafFrameCountdown:
-                        diff === 1
-                            ? frameCountdown
-                            : animationCounter.rafFrameCountdown - 1
-                });
+        setAnimationCounter({
+          animation: animationCounter.animation + diff,
+          rafFrameCountdown:
+            diff === 1 ? frameCountdown : animationCounter.rafFrameCountdown - 1
+        });
+      });
+    }
+  });
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, dropRef] = useDrop({
+    accept: ["Sprite", "Sprites"],
+    drop: (item: any, monitor: any) => {
+      if (divRef) {
+        const x =
+          monitor.getClientOffset().x - divRef.getBoundingClientRect().left;
+
+        const composedX = Math.floor(x / 16) * 16;
+
+        if (item.type === "Sprite") {
+          const spriteMemoryIndex = item.spriteMemoryIndex;
+          const pauseId = item.pauseId;
+
+          if (pauseId) {
+            dispatch({
+              type: "MoveSprite",
+              spriteMemoryIndex,
+              newComposedX: composedX,
+              pauseId
             });
-        }
-    });
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [_, dropRef] = useDrop({
-        accept: ["Sprite", "Sprites"],
-        drop: (item: any, monitor: any) => {
-            if (divRef) {
-                const x =
-                    monitor.getClientOffset().x -
-                    divRef.getBoundingClientRect().left;
-
-                const composedX = Math.floor(x / 16) * 16;
-
-                if (item.type === "Sprite") {
-                    const spriteMemoryIndex = item.spriteMemoryIndex;
-                    const pauseId = item.pauseId;
-
-                    if (pauseId) {
-                        dispatch({
-                            type: "MoveSprite",
-                            spriteMemoryIndex,
-                            newComposedX: composedX,
-                            pauseId
-                        });
-                    } else {
-                        dispatch({
-                            type: "ExtractSprite",
-                            spriteMemoryIndex,
-                            composedX
-                        });
-                    }
-                } else {
-                    dispatch({
-                        type: "ExtractSpritesToGroup",
-                        spriteMemoryIndices: item.spriteMemoryIndices,
-                        composedX
-                    });
-                }
-            }
-        },
-        canDrop() {
-            return !isCropping;
-        }
-    });
-
-    const layers = state.layers.map((layer, i) => {
-        if (state.hiddenLayers[layer.id]) {
-            return null;
+          } else {
+            dispatch({
+              type: "ExtractSprite",
+              spriteMemoryIndex,
+              composedX
+            });
+          }
         } else {
-            return (
-                <LayerCmp
-                    key={i}
-                    index={i}
-                    layer={layer}
-                    runPreview={runPreview}
-                    animationCounter={animationCounter.animation}
-                    canDrag={!isCropping}
-                    outlineTiles={state.showGrid}
-                />
-            );
+          dispatch({
+            type: "ExtractSpritesToGroup",
+            spriteMemoryIndices: item.spriteMemoryIndices,
+            composedX
+          });
         }
-    });
+      }
+    },
+    canDrop() {
+      return !isCropping;
+    }
+  });
 
-    const backgroundColor = state.isPaused
-        ? neoGeoColorToCSS(getBackdropNeoGeoColor())
-        : "transparent";
+  const layers = state.layers.map((layer, i) => {
+    if (state.hiddenLayers[layer.id]) {
+      return null;
+    } else {
+      return (
+        <LayerCmp
+          key={i}
+          index={i}
+          layer={layer}
+          runPreview={runPreview}
+          animationCounter={animationCounter.animation}
+          canDrag={!isCropping}
+          outlineTiles={state.showGrid}
+        />
+      );
+    }
+  });
 
-    const style = {
-        backgroundColor
-    };
+  const backgroundColorStyle = state.isPaused
+    ? {
+        backgroundColor: neoGeoColorToCSS(getBackdropNeoGeoColor())
+      }
+    : {};
 
-    const finalClassName = classnames(styles.root, className);
+  const toolbarProps = {
+    onToggleGrid() {
+      dispatch("ToggleGrid");
+    },
+    onCrop() {
+      setIsCropping(true);
+      dispatch("ClearCrop");
+      setUpperLeftCrop(null);
+      setLowerRightCrop(null);
+    },
+    onClearCrop() {
+      dispatch("ClearCrop");
+    },
+    onPreview() {
+      setRunPreview(!runPreview);
+    },
+    onBuildGif() {
+      setShowBuildGifModal(true);
+    },
+    onDown() {
+      dispatch("PushAllDown");
+    },
+    onUndo: undo,
+    onRedo: redo
+  };
 
-    return (
-        <>
-            <BuildGifModal
-                isOpen={showBuildGifModal}
-                onRequestClose={() => setShowBuildGifModal(false)}
+  return (
+    <>
+      <BuildGifModal
+        isOpen={showBuildGifModal}
+        onRequestClose={() => setShowBuildGifModal(false)}
+      />
+      <Container className={className}>
+        <Toolbar {...toolbarProps} />
+        <Surface
+          style={backgroundColorStyle}
+          ref={div => {
+            setDivRef(div);
+            dropRef(div);
+          }}
+        >
+          {layers}
+          {!!(
+            (isCropping && upperLeftCrop && lowerRightCrop) ||
+            state.crop
+          ) && (
+            <CropRect
+              width={divRef && divRef.scrollWidth}
+              height={divRef && divRef.scrollHeight}
+              crop={state.crop || [upperLeftCrop!, lowerRightCrop!]}
             />
-            <div className={finalClassName}>
-                <div className={styles.toolbar}>
-                    <button onClick={() => dispatch({ type: "ToggleGrid" })}>
-                        {state.showGrid ? "hide" : "show"} grid
-                    </button>
-                    <button
-                        disabled={isCropping}
-                        onClick={() => {
-                            setIsCropping(true);
-                            dispatch({ type: "ClearCrop" });
-                            setUpperLeftCrop(null);
-                            setLowerRightCrop(null);
-                        }}
-                    >
-                        crop
-                    </button>
-                    <button
-                        disabled={!state.crop}
-                        onClick={() => {
-                            dispatch({ type: "ClearCrop" });
-                            setUpperLeftCrop(null);
-                            setLowerRightCrop(null);
-                        }}
-                    >
-                        clear crop
-                    </button>
-                    <button onClick={() => setRunPreview(!runPreview)}>
-                        {runPreview ? "stop" : "preview"}
-                    </button>
-                    <button onClick={() => setShowBuildGifModal(true)}>
-                        build gif
-                    </button>
-                    <button disabled={!canUndo} onClick={() => undo()}>
-                        undo
-                    </button>
-                    <button disabled={!canRedo} onClick={() => redo()}>
-                        redo
-                    </button>
-                    <button onClick={() => dispatch({ type: "PushAllDown" })}>
-                        down
-                    </button>
-                </div>
-                <div
-                    className={styles.bg}
-                    ref={div => {
-                        setDivRef(div);
-                        dropRef(div);
-                    }}
-                    style={style}
-                >
-                    {layers}
-                    {!!(
-                        (isCropping && upperLeftCrop && lowerRightCrop) ||
-                        state.crop
-                    ) && (
-                        <CropRect
-                            width={divRef && divRef.scrollWidth}
-                            height={divRef && divRef.scrollHeight}
-                            className={styles.cropRect}
-                            crop={
-                                state.crop || [upperLeftCrop!, lowerRightCrop!]
-                            }
-                        />
-                    )}
-                    {isCropping && (
-                        <div
-                            style={
-                                divRef
-                                    ? {
-                                          width: divRef.scrollWidth,
-                                          height: divRef.scrollHeight
-                                      }
-                                    : {}
-                            }
-                            className={styles.captureLayer}
-                            onMouseDown={(
-                                e: React.MouseEvent<HTMLDivElement>
-                            ) => {
-                                if (isCropping) {
-                                    const rect = (e.target as HTMLDivElement).getBoundingClientRect() as DOMRect;
+          )}
+          {isCropping && (
+            <CaptureLayer
+              style={
+                divRef
+                  ? {
+                      width: divRef.scrollWidth,
+                      height: divRef.scrollHeight
+                    }
+                  : {}
+              }
+              onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => {
+                if (isCropping) {
+                  const rect = (e.target as HTMLDivElement).getBoundingClientRect() as DOMRect;
 
-                                    const rawX = e.clientX - rect.x;
-                                    const rawY = e.clientY - rect.y;
+                  const rawX = e.clientX - rect.x;
+                  const rawY = e.clientY - rect.y;
 
-                                    const x = Math.floor(rawX / 16) * 16;
-                                    const y = Math.floor(rawY / 16) * 16;
+                  const x = Math.floor(rawX / 16) * 16;
+                  const y = Math.floor(rawY / 16) * 16;
 
-                                    setUpperLeftCrop({ x, y });
-                                }
-                            }}
-                            onMouseMove={e => {
-                                if (isCropping && upperLeftCrop) {
-                                    const rect = (e.target as HTMLDivElement).getBoundingClientRect() as DOMRect;
+                  setUpperLeftCrop({ x, y });
+                }
+              }}
+              onMouseMove={e => {
+                if (isCropping && upperLeftCrop) {
+                  const rect = (e.target as HTMLDivElement).getBoundingClientRect() as DOMRect;
 
-                                    const rawX = e.clientX - rect.x;
-                                    const rawY = e.clientY - rect.y;
+                  const rawX = e.clientX - rect.x;
+                  const rawY = e.clientY - rect.y;
 
-                                    const x = Math.floor(rawX / 16) * 16;
-                                    const y = Math.floor(rawY / 16) * 16;
+                  const x = Math.floor(rawX / 16) * 16;
+                  const y = Math.floor(rawY / 16) * 16;
 
-                                    setLowerRightCrop({ x, y });
-                                }
-                            }}
-                            onMouseUp={e => {
-                                if (
-                                    isCropping &&
-                                    upperLeftCrop &&
-                                    lowerRightCrop
-                                ) {
-                                    dispatch({
-                                        type: "SetCrop",
-                                        crop: [upperLeftCrop, lowerRightCrop]
-                                    });
-                                    setIsCropping(false);
-                                }
-                            }}
-                        />
-                    )}
-                </div>
-            </div>
-        </>
-    );
+                  setLowerRightCrop({ x, y });
+                }
+              }}
+              onMouseUp={e => {
+                if (isCropping && upperLeftCrop && lowerRightCrop) {
+                  dispatch({
+                    type: "SetCrop",
+                    crop: [upperLeftCrop, lowerRightCrop]
+                  });
+                  setIsCropping(false);
+                }
+              }}
+            />
+          )}
+        </Surface>
+      </Container>
+    </>
+  );
 };

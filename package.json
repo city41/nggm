@@ -24,6 +24,7 @@
 		"react-scripts": "3.1.1",
 		"react-spaces": "^0.1.14",
 		"styled-components": "^4.4.0",
+		"ts-toolbelt": "^4.9.4",
 		"typescript": "3.5.3"
 	},
 	"scripts": {
