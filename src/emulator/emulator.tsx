@@ -1,41 +1,60 @@
 import React from "react";
-import classnames from "classnames";
+import styled from "styled-components";
 import { useAppState } from "../state";
 import { ChooseGameModal } from "./chooseGameModal";
 import { PauseOverlay } from "./pauseOverlay";
 
-import styles from "./emulator.module.css";
-
 interface EmulatorProps {
-    className?: string;
+  className?: string;
 }
 
+const Container = styled.div`
+  width: 320px;
+  height: 224px;
+  background-color: var(--dock-color);
+  cursor: pointer !important;
+  position: relative;
+
+  & .pauseOverlay {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    opacity: 0;
+    transition-property: opacity;
+    transition-duration: 0.25s;
+  }
+
+  & .pauseOverlay:hover {
+    opacity: 1;
+  }
+`;
+
 export const Emulator: React.FunctionComponent<EmulatorProps> = props => {
-    const { state, dispatch } = useAppState();
+  const { state, dispatch } = useAppState();
 
-    function togglePause() {
-        if (state.isPaused) {
-            window.Module.resumeMainLoop();
-        } else {
-            window.Module.pauseMainLoop();
-        }
-
-        dispatch({ type: "TogglePause" });
+  function togglePause() {
+    if (state.isPaused) {
+      window.Module.resumeMainLoop();
+    } else {
+      window.Module.pauseMainLoop();
     }
 
-    const classes = classnames(styles.root, props.className);
+    dispatch("TogglePause");
+  }
 
-    return (
-        <>
-            <ChooseGameModal />
-            <div className={classes}>
-                <canvas id="canvas" />
-                <PauseOverlay
-                    className={styles.pauseOverlay}
-                    onTogglePause={() => togglePause()}
-                    isPaused={state.isPaused}
-                />
-            </div>
-        </>
-    );
+  return (
+    <>
+      <ChooseGameModal />
+      <Container className={props.className}>
+        <canvas id="canvas" />
+        <PauseOverlay
+          className="pauseOverlay"
+          onTogglePause={() => togglePause()}
+          isPaused={state.isPaused}
+        />
+      </Container>
+    </>
+  );
 };

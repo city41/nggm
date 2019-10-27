@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import classnames from "classnames";
 import { useDrop } from "react-dnd";
 import {
   getBackdropNeoGeoColor,
@@ -10,19 +9,12 @@ import { useAppState } from "../state";
 import { BuildGifModal } from "../gifBuilder/buildGifModal";
 import { Layer as LayerCmp } from "./layer";
 import { CropRect } from "./cropRect";
-import { Toolbar } from "./toolbar";
 
 interface ComposeScreenProps {
   className?: string;
 }
 
 const Container = styled.div`
-  display: grid;
-  grid-template-columns: 32px 1fr;
-  column-gap: var(--gutter-width);
-`;
-
-const Surface = styled.div`
   position: relative;
   width: 100%;
   height: 100%;
@@ -47,9 +39,7 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
     animation: 0,
     rafFrameCountdown: 0
   });
-  const [runPreview, setRunPreview] = useState(false);
-  const [showBuildGifModal, setShowBuildGifModal] = useState(false);
-  const { state, dispatch, undo, redo, canUndo, canRedo } = useAppState();
+  const { state, dispatch } = useAppState();
   const [divRef, setDivRef] = useState<null | HTMLDivElement>(null);
   const [isCropping, setIsCropping] = useState(false);
   const [upperLeftCrop, setUpperLeftCrop] = useState<null | {
@@ -62,7 +52,7 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
   }>(null);
 
   useEffect(() => {
-    if (runPreview) {
+    if (state.isPreviewing) {
       // minus one because on my machine the animation can't quite keep up
       const frameCountdown =
         window.Module._get_neogeo_frame_counter_speed() - 1;
@@ -129,7 +119,7 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
           key={i}
           index={i}
           layer={layer}
-          runPreview={runPreview}
+          runPreview={state.isPreviewing}
           animationCounter={animationCounter.animation}
           canDrag={!isCropping}
           outlineTiles={state.showGrid}
@@ -144,106 +134,75 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
       }
     : {};
 
-  const toolbarProps = {
-    onToggleGrid() {
-      dispatch("ToggleGrid");
-    },
-    onCrop() {
-      setIsCropping(true);
-      dispatch("ClearCrop");
-      setUpperLeftCrop(null);
-      setLowerRightCrop(null);
-    },
-    onClearCrop() {
-      dispatch("ClearCrop");
-    },
-    onPreview() {
-      setRunPreview(!runPreview);
-    },
-    onBuildGif() {
-      setShowBuildGifModal(true);
-    },
-    onDown() {
-      dispatch("PushAllDown");
-    },
-    onUndo: undo,
-    onRedo: redo
-  };
-
   return (
     <>
       <BuildGifModal
-        isOpen={showBuildGifModal}
-        onRequestClose={() => setShowBuildGifModal(false)}
+        isOpen={state.isBuildingGif}
+        onRequestClose={() => dispatch("StopBuildGif")}
       />
-      <Container className={className}>
-        <Toolbar {...toolbarProps} />
-        <Surface
-          style={backgroundColorStyle}
-          ref={div => {
-            setDivRef(div);
-            dropRef(div);
-          }}
-        >
-          {layers}
-          {!!(
-            (isCropping && upperLeftCrop && lowerRightCrop) ||
-            state.crop
-          ) && (
-            <CropRect
-              width={divRef && divRef.scrollWidth}
-              height={divRef && divRef.scrollHeight}
-              crop={state.crop || [upperLeftCrop!, lowerRightCrop!]}
-            />
-          )}
-          {isCropping && (
-            <CaptureLayer
-              style={
-                divRef
-                  ? {
-                      width: divRef.scrollWidth,
-                      height: divRef.scrollHeight
-                    }
-                  : {}
+      <Container
+        className={className}
+        style={backgroundColorStyle}
+        ref={div => {
+          setDivRef(div);
+          dropRef(div);
+        }}
+      >
+        {layers}
+        {!!((isCropping && upperLeftCrop && lowerRightCrop) || state.crop) && (
+          <CropRect
+            width={divRef && divRef.scrollWidth}
+            height={divRef && divRef.scrollHeight}
+            crop={state.crop || [upperLeftCrop!, lowerRightCrop!]}
+          />
+        )}
+        {isCropping && (
+          <CaptureLayer
+            style={
+              divRef
+                ? {
+                    width: divRef.scrollWidth,
+                    height: divRef.scrollHeight
+                  }
+                : {}
+            }
+            onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => {
+              if (isCropping) {
+                const rect = (e.target as HTMLDivElement).getBoundingClientRect() as DOMRect;
+
+                const rawX = e.clientX - rect.x;
+                const rawY = e.clientY - rect.y;
+
+                const x = Math.floor(rawX / 16) * 16;
+                const y = Math.floor(rawY / 16) * 16;
+
+                setUpperLeftCrop({ x, y });
               }
-              onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => {
-                if (isCropping) {
-                  const rect = (e.target as HTMLDivElement).getBoundingClientRect() as DOMRect;
+            }}
+            onMouseMove={e => {
+              if (isCropping && upperLeftCrop) {
+                const rect = (e.target as HTMLDivElement).getBoundingClientRect() as DOMRect;
 
-                  const rawX = e.clientX - rect.x;
-                  const rawY = e.clientY - rect.y;
+                const rawX = e.clientX - rect.x;
+                const rawY = e.clientY - rect.y;
 
-                  const x = Math.floor(rawX / 16) * 16;
-                  const y = Math.floor(rawY / 16) * 16;
+                const x = Math.floor(rawX / 16) * 16;
+                const y = Math.floor(rawY / 16) * 16;
 
-                  setUpperLeftCrop({ x, y });
-                }
-              }}
-              onMouseMove={e => {
-                if (isCropping && upperLeftCrop) {
-                  const rect = (e.target as HTMLDivElement).getBoundingClientRect() as DOMRect;
-
-                  const rawX = e.clientX - rect.x;
-                  const rawY = e.clientY - rect.y;
-
-                  const x = Math.floor(rawX / 16) * 16;
-                  const y = Math.floor(rawY / 16) * 16;
-
-                  setLowerRightCrop({ x, y });
-                }
-              }}
-              onMouseUp={e => {
-                if (isCropping && upperLeftCrop && lowerRightCrop) {
-                  dispatch({
-                    type: "SetCrop",
-                    crop: [upperLeftCrop, lowerRightCrop]
-                  });
-                  setIsCropping(false);
-                }
-              }}
-            />
-          )}
-        </Surface>
+                setLowerRightCrop({ x, y });
+              }
+            }}
+            onMouseUp={e => {
+              if (isCropping && upperLeftCrop && lowerRightCrop) {
+                dispatch({
+                  type: "SetCrop",
+                  crop: [upperLeftCrop, lowerRightCrop]
+                });
+                setIsCropping(false);
+              }
+            }}
+          />
+        )}
       </Container>
     </>
   );

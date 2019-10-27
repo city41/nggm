@@ -1,32 +1,3 @@
-.app {
-  --gutter-width: 16px;
-
-  width: 100vw;
-  height: 100vh;
-
-  display: grid;
-  grid-template-rows: 1fr;
-  grid-template-columns: 1fr 320px;
-  column-gap: var(--gutter-width);
-
-  padding: var(--gutter-width);
-}
-
-.composeScreenTrayGrid {
-  display: grid;
-  grid-template-rows: 1fr max-content;
-  grid-template-columns: 1fr;
-  row-gap: var(--gutter-width);
-}
-
-.composeScreen {
-  grid-row: 1;
-}
-
-.spriteTray {
-  grid-row: 2;
-}
-
 .emulatorLayersGrid {
   /* height: 100vh; */
 
@@ -34,14 +5,4 @@
   grid-template-rows: max-content 1fr;
   grid-template-columns: 1fr;
   row-gap: var(--gutter-width);
-}
-
-.emulator {
-  grid-column: 1;
-  grid-row: 1;
-}
-
-.layers {
-  grid-column: 1;
-  grid-row: 2;
 }

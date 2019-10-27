@@ -9,9 +9,13 @@ export type Action =
   | { type: "SetFocusedLayer"; layer: Layer }
   | { type: "SetCrop"; crop: Crop }
   | { type: "ToggleGrid" }
+  | { type: "StartCrop" }
   | { type: "ClearCrop" }
+  | { type: "TogglePreview" }
   | { type: "ToggleVisibilityOfGroup"; group: ExtractedSpriteGroup }
   | { type: "ToggleVisibilityOfLayer"; layer: Layer }
+  | { type: "BuildGif" }
+  | { type: "StopBuildGif" }
   | { type: "undo" }
   | { type: "redo" };
 
@@ -44,10 +48,25 @@ export type State = {
   pauseId: number;
 
   /**
+   * Whether the user is currently cropping
+   */
+  isCropping: boolean;
+
+  /**
    * A crop for the compose screen. When the gif is built, only
    * the tiles inside the crop boundaries are considered
    */
   crop?: Crop;
+
+  /**
+   * Whether the animation is currently being previewed or not
+   */
+  isPreviewing: boolean;
+
+  /**
+   * Whether the user is currently having their gif be built
+   */
+  isBuildingGif: boolean;
 
   /**
    * Whether to show an outline around extracted tiles. Helps show
@@ -76,7 +95,10 @@ export function getReducer(
     hasStarted: false,
     isPaused: false,
     pauseId: 0,
+    isCropping: false,
     crop: undefined,
+    isPreviewing: false,
+    isBuildingGif: false,
     showGrid: false,
     hiddenLayers: {},
     hiddenGroups: {}
@@ -107,6 +129,13 @@ export function getReducer(
         };
       }
 
+      case "StartCrop": {
+        return {
+          ...state,
+          isCropping: true
+        };
+      }
+
       case "SetCrop": {
         const { crop } = action;
 
@@ -119,7 +148,29 @@ export function getReducer(
       case "ClearCrop": {
         return {
           ...state,
-          crop: undefined
+          crop: undefined,
+          isCropping: false
+        };
+      }
+
+      case "TogglePreview": {
+        return {
+          ...state,
+          isPreviewing: !state.isPreviewing
+        };
+      }
+
+      case "BuildGif": {
+        return {
+          ...state,
+          isBuildingGif: true
+        };
+      }
+
+      case "StopBuildGif": {
+        return {
+          ...state,
+          isBuildingGif: false
         };
       }
 
