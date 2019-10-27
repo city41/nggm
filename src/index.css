@@ -1,27 +1,42 @@
 :root {
-    --main-bg-color: #292929;
-    --main-fg-color: #f8f8f8;
+  --main-bg-color: #292929;
+  --main-fg-color: #f8f8f8;
 
-    --focal-color: #61bb46;
+  --focal-color: #61bb46;
 
-    --dock-color: #3f3f3f;
-    --dock-border-color: #4f4f4f;
-    --dock-foreground-color: #9f9f9f;
+  --dock-color: #3f3f3f;
+  --dock-border-color: #4f4f4f;
+  --dock-foreground-color: #9f9f9f;
 }
 
 html,
 body,
 #root {
-    margin: 0;
-    padding: 0;
-    height: 100vh;
-    width: 100vw;
-    background-color: var(--main-bg-color);
-    color: var(--main-fg-color);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-        Oxygen-Sans, Cantarell, "Helvetica Neue", sans-serif;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  width: 100vw;
+  background-color: var(--main-bg-color);
+  color: var(--main-fg-color);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen-Sans, Cantarell, "Helvetica Neue", sans-serif;
 }
 
 * {
-    box-sizing: border-box !important;
+  box-sizing: border-box !important;
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* background: radial-gradient(#444 15%, transparent 16%) 0 0; */
+  /* radial-gradient(black 15%, transparent 16%) 8px 8px, */
+  /* radial-gradient(rgba(255, 255, 255, 0.1) 15%, transparent 20%) 0 1px, */
+  /* radial-gradient(rgba(255, 255, 255, 0.1) 15%, transparent 20%) 8px 9px; */
+  /* background-color: rgba(79, 79, 79, 1); */
+  /* background-size: 8px 8px; */
+  background-color: rgba(255, 255, 255, 0.2);
 }

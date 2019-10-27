@@ -10,10 +10,6 @@ interface SpriteProps {
     spriteData: SpriteData;
 }
 
-interface PreviewProps {
-    connect: any;
-}
-
 export const Sprite: React.FunctionComponent<SpriteProps> = ({
     className,
     spriteData
