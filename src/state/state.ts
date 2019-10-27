@@ -9,7 +9,7 @@ export type Action =
   | { type: "SetFocusedLayer"; layer: Layer }
   | { type: "SetCrop"; crop: Crop }
   | { type: "ToggleGrid" }
-  | { type: "StartCrop" }
+  | { type: "ToggleCropping" }
   | { type: "ClearCrop" }
   | { type: "TogglePreview" }
   | { type: "ToggleVisibilityOfGroup"; group: ExtractedSpriteGroup }
@@ -129,10 +129,11 @@ export function getReducer(
         };
       }
 
-      case "StartCrop": {
+      case "ToggleCropping": {
         return {
           ...state,
-          isCropping: true
+          isCropping: !state.isCropping,
+          crop: undefined
         };
       }
 

@@ -25,8 +25,8 @@ export const Toolbar: React.FunctionComponent<ToolbarProps> = ({
       >
         G
       </button>
-      <button title="crop" onClick={() => dispatch("StartCrop")}>
-        C
+      <button title="crop" onClick={() => dispatch("ToggleCropping")}>
+        C{state.isCropping ? "y" : "n"}
       </button>
       <button title="clear crop" onClick={() => dispatch("ClearCrop")}>
         X
