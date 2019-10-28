@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import Modal from "react-modal";
-import { useAppState } from "../../state";
-import { DemoData } from "../../state/state";
+import { useAppState } from "../state";
+import { DemoData } from "../state/state";
 import { FileStep } from "./fileStep";
 import { DemoChoices } from "./demoChoices";
 

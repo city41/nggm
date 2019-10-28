@@ -9,6 +9,7 @@ import { SpriteTray } from "./spriteTray";
 import { ComposeScreen } from "./composeScreen";
 import { Toolbar } from "./toolbar";
 import { Layers } from "./layers";
+import { ChooseGameModal } from "./chooseGameModal";
 
 const AppRoot = styled.div`
   --gutter-width: 16px;
@@ -60,6 +61,7 @@ export const App: React.FunctionComponent = () => {
   return (
     <AppStateProvider>
       <DndProvider backend={HTML5Backend}>
+        <ChooseGameModal />
         <DragPreviewLayer />
         <AppRoot>
           <Toolbar />

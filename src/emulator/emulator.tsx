@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 import { useAppState } from "../state";
-import { ChooseGameModal } from "./chooseGameModal";
 import { PauseOverlay } from "./pauseOverlay";
 
 interface EmulatorProps {
@@ -45,16 +44,13 @@ export const Emulator: React.FunctionComponent<EmulatorProps> = props => {
   }
 
   return (
-    <>
-      <ChooseGameModal />
-      <Container className={props.className}>
-        <canvas id="canvas" />
-        <PauseOverlay
-          className="pauseOverlay"
-          onTogglePause={() => togglePause()}
-          isPaused={state.isPaused}
-        />
-      </Container>
-    </>
+    <Container className={props.className}>
+      <canvas id="canvas" />
+      <PauseOverlay
+        className="pauseOverlay"
+        onTogglePause={() => togglePause()}
+        isPaused={state.isPaused}
+      />
+    </Container>
   );
 };
