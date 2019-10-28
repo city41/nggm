@@ -70,15 +70,9 @@ export const ChooseGameModal: React.FunctionComponent = () => {
   const [showWhy, setShowWhy] = useState(false);
   const [isOpen, setIsOpen] = useState(true);
   const [romName, setRomName] = useState("");
-  const [biosName, setBiosName] = useState(
-    process.env.NODE_ENV !== "production" ? "neogeo.zip" : ""
-  );
-  const [romLoaded, setRomLoaded] = useState(
-    process.env.NODE_ENV !== "production"
-  );
-  const [biosLoaded, setBiosLoaded] = useState(
-    process.env.NODE_ENV !== "production"
-  );
+  const [biosName, setBiosName] = useState("");
+  const [romLoaded, setRomLoaded] = useState(false);
+  const [biosLoaded, setBiosLoaded] = useState(false);
   const [loadingBios, setLoadingBios] = useState(false);
   const [loadingRom, setLoadingRom] = useState(false);
 

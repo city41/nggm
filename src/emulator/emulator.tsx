@@ -11,7 +11,6 @@ const Container = styled.div`
   width: 320px;
   height: 224px;
   background-color: var(--dock-color);
-  cursor: pointer !important;
   position: relative;
 
   & .pauseOverlay {
@@ -23,11 +22,25 @@ const Container = styled.div`
     opacity: 0;
     transition-property: opacity;
     transition-duration: 0.25s;
+    cursor: pointer;
   }
 
   & .pauseOverlay:hover {
     opacity: 1;
   }
+`;
+
+const DemoDisclaimer = styled.div`
+  height: 100%;
+  padding: 8px;
+
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
+  text-align: center;
+  font-style: italic;
+  color: var(--dock-foreground-color);
 `;
 
 export const Emulator: React.FunctionComponent<EmulatorProps> = props => {
@@ -45,12 +58,21 @@ export const Emulator: React.FunctionComponent<EmulatorProps> = props => {
 
   return (
     <Container className={props.className}>
-      <canvas id="canvas" />
-      <PauseOverlay
-        className="pauseOverlay"
-        onTogglePause={() => togglePause()}
-        isPaused={state.isPaused}
-      />
+      {!state.isDemoing && (
+        <>
+          <canvas id="canvas" />
+          <PauseOverlay
+            className="pauseOverlay"
+            onTogglePause={() => togglePause()}
+            isPaused={state.isPaused}
+          />
+        </>
+      )}
+      {state.isDemoing && (
+        <DemoDisclaimer>
+          the game plays here in an emulator when not in demo mode
+        </DemoDisclaimer>
+      )}
     </Container>
   );
 };
