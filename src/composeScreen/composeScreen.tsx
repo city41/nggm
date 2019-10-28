@@ -69,7 +69,7 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
   });
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_, dropRef] = useDrop({
+  const [, dropRef] = useDrop({
     accept: ["Sprite", "Sprites"],
     drop: (item: any, monitor: any) => {
       if (divRef) {

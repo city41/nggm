@@ -43,10 +43,10 @@ export const Toolbar: React.FunctionComponent<ToolbarProps> = ({
 
       <div />
 
-      <button title="undo" onClick={() => undo()}>
+      <button title="undo" disabled={!canUndo} onClick={() => undo()}>
         U
       </button>
-      <button title="redo" onClick={() => redo()}>
+      <button title="redo" disabled={!canRedo} onClick={() => redo()}>
         R
       </button>
     </Container>

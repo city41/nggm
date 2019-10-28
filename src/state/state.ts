@@ -1,10 +1,16 @@
 import { AppState, Layer, Crop, ExtractedSpriteGroup } from "./types";
 import { UndoableAction } from "./undoableState";
-import { Any } from "ts-toolbelt";
+
+export type DemoData = {
+  palettes: Record<number, number[]>;
+  spriteMemory: number[];
+  tileMemory: Record<number, number[]>;
+};
 
 export type Action =
   | UndoableAction
   | { type: "StartEmulation" }
+  | { type: "SetDemo"; demoData: DemoData }
   | { type: "TogglePause" }
   | { type: "SetFocusedLayer"; layer: Layer }
   | { type: "SetCrop"; crop: Crop }
@@ -76,9 +82,45 @@ export type State = {
 
   hiddenLayers: Record<number, boolean>;
   hiddenGroups: Record<number, boolean>;
+
+  /**
+   * Whether the app is in demo mode
+   */
+  isDemoing: boolean;
 };
 
 export type NonUndoableState = Omit<State, "past" | "present" | "future">;
+
+const DEMO_PALETTE_ADDRESS = 1379916;
+
+function copySpriteDataToHeap(data: number[]) {
+  window.HEAPU8.set(data, window.Module._get_tile_ram_addr());
+}
+
+function copyTileDataToHeap(data: Record<string, number[]>) {
+  Object.keys(data).forEach(key => {
+    const keyData = data[key];
+
+    window.HEAPU8.set(
+      keyData,
+      window.Module._get_rom_ctile_addr() + Number(key) * 16 * 4 * 2
+    );
+  });
+}
+
+function copyPaletteDataToHeap(data: Record<string, number[]>) {
+  const PALETTE_SIZE_IN_BYTES = 32;
+
+  Object.keys(data).forEach(key => {
+    const keyData = data[key];
+
+    const palAddr = DEMO_PALETTE_ADDRESS;
+    const palOffset = Number(key) * PALETTE_SIZE_IN_BYTES;
+    const palIndexInHeap = (palAddr + palOffset) / 2;
+
+    window.Module.HEAPU16.set(keyData, palIndexInHeap);
+  });
+}
 
 export function getReducer(
   initialAppState: AppState,
@@ -101,7 +143,8 @@ export function getReducer(
     isBuildingGif: false,
     showGrid: false,
     hiddenLayers: {},
-    hiddenGroups: {}
+    hiddenGroups: {},
+    isDemoing: false
   };
 
   function proxyReducer(state: State, action: Action): State {
@@ -231,6 +274,25 @@ export function getReducer(
         };
         break;
       }
+
+      case "SetDemo": {
+        const { demoData } = action;
+
+        copySpriteDataToHeap(demoData.spriteMemory);
+        copyTileDataToHeap(demoData.tileMemory);
+        copyPaletteDataToHeap(demoData.palettes);
+
+        window.Module._get_current_pal_addr = () => DEMO_PALETTE_ADDRESS;
+
+        return {
+          ...state,
+          isDemoing: true,
+          hasStarted: true,
+          isPaused: true,
+          pauseId: 1
+        };
+      }
+
       default: {
         newState = {
           ...state,

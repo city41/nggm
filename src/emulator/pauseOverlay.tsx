@@ -3,8 +3,6 @@ import styled from "styled-components";
 import PlayArrow from "@material-ui/icons/PlayArrow";
 import Pause from "@material-ui/icons/Pause";
 
-import styles from "./pauseOverlay.module.css";
-
 interface PauseOverlayProps {
   className?: string;
   onTogglePause: () => void;

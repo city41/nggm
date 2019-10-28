@@ -32,11 +32,6 @@ body,
   left: 0;
   right: 0;
   bottom: 0;
-  /* background: radial-gradient(#444 15%, transparent 16%) 0 0; */
-  /* radial-gradient(black 15%, transparent 16%) 8px 8px, */
-  /* radial-gradient(rgba(255, 255, 255, 0.1) 15%, transparent 20%) 0 1px, */
-  /* radial-gradient(rgba(255, 255, 255, 0.1) 15%, transparent 20%) 8px 9px; */
-  /* background-color: rgba(79, 79, 79, 1); */
-  /* background-size: 8px 8px; */
   background-color: rgba(255, 255, 255, 0.2);
+  overflow-y: auto;
 }

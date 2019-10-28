@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import Modal from "react-modal";
 import { useAppState } from "../../state";
+import { DemoData } from "../../state/state";
 import { FileStep } from "./fileStep";
+import { DemoChoices } from "./demoChoices";
 
 const StyledModal = styled(Modal)`
   max-width: 600px;
@@ -129,6 +131,14 @@ export const ChooseGameModal: React.FunctionComponent = () => {
     startRom(rom);
   }
 
+  async function handleDemoChoice(demoType: "ss2" | "gowcaizer") {
+    const fetchedRawData = await fetch(`./${demoType}.json`);
+    const data = await fetchedRawData.json();
+
+    setIsOpen(false);
+    dispatch({ type: "SetDemo", demoData: data as DemoData });
+  }
+
   const romDescription = (
     <div>
       The game ROM, such as samsho2.zip
@@ -167,6 +177,8 @@ export const ChooseGameModal: React.FunctionComponent = () => {
       <button disabled={!romLoaded || !biosLoaded} onClick={() => launch()}>
         launch
       </button>
+      <Title>Or ... choose a demo to taste how the app works</Title>
+      <DemoChoices onChoice={handleDemoChoice} />
     </StyledModal>
   );
 };

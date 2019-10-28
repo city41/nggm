@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styled, { StyledFunction } from "styled-components";
+import styled from "styled-components";
 
 interface FileDropZoneProps {
   onFileChosen: (file: File) => void;
