@@ -68,7 +68,8 @@ export const SpriteTray: React.FunctionComponent<SpriteTrayProps> = ({
         const x =
           monitor.getClientOffset().x -
           divRef.getBoundingClientRect().left -
-          firstFillerRef.current.getBoundingClientRect().width;
+          firstFillerRef.current.getBoundingClientRect().width +
+          divRef.scrollLeft;
 
         const index = Math.floor(x / 8);
 
