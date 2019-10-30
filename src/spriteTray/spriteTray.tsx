@@ -31,7 +31,6 @@ export const SpriteTray: React.FunctionComponent<SpriteTrayProps> = ({
 
   const firstFillerRef = useRef<HTMLDivElement | null>(null);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [, dragRef, preview] = useDrag({
     // @ts-ignore TS insists this have type, spriteMemoryIndex, etc, but it's not actually used
     item: { type: "Sprite" },
