@@ -66,7 +66,7 @@ export const FileDropZone: React.FunctionComponent<FileDropZoneProps> = ({
     setIsOver(hasFiles(e));
   }
 
-  function handleDragLeave(e: React.DragEvent<HTMLDivElement>) {
+  function handleDragLeave() {
     setIsOver(false);
   }
 

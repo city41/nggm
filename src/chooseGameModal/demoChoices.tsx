@@ -41,7 +41,7 @@ export const DemoChoices: React.FunctionComponent<DemoChoicesProps> = ({
   onChoice
 }) => {
   return (
-    <Container>
+    <Container className={className}>
       <SS2>
         <Choice onClick={() => onChoice("ss2")} />
       </SS2>

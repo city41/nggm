@@ -84,7 +84,7 @@ export const SpriteTray: React.FunctionComponent<SpriteTrayProps> = ({
 
   const sprites = spriteDatas.map((spriteData, i) => (
     <SpriteEntry
-      key={i}
+      key={spriteData.spriteMemoryIndex + "-" + state.pauseId}
       spriteData={spriteData}
       onClick={e => {
         if (e.ctrlKey) {

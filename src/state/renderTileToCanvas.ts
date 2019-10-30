@@ -49,6 +49,7 @@ export function renderTileToCanvas(
   tileIndex: number,
   rgbPalette: Array<[number, number, number, number]>
 ) {
+  console.log("renderTileToCanvas");
   const indexedTileData = getTileIndexedColorData(tileIndex);
 
   canvas.width = 16;

@@ -192,7 +192,7 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
                 setLowerRightCrop({ x, y });
               }
             }}
-            onMouseUp={e => {
+            onMouseUp={() => {
               if (isCropping && upperLeftCrop && lowerRightCrop) {
                 dispatch({
                   type: "SetCrop",
