@@ -1,4 +1,5 @@
 import { memoize } from "lodash";
+import { RgbPalette } from "./types";
 
 // 16 rows, each row has 2 ints (32 bits each)
 const TILE_SIZE_INTS = 2 * 16;
@@ -44,19 +45,40 @@ export const getTileIndexedColorData = memoize(function getTileIndexedColorData(
   return tileIndexData;
 });
 
+function hashPalette(palette: RgbPalette): number {
+  return palette.reduce<number>((hash, color) => {
+    return color.reduce<number>((innerHash, channel) => {
+      return innerHash * 19 + channel;
+    }, hash);
+  }, 17);
+}
+
+const tileCanvasCache: Record<string, HTMLCanvasElement> = {};
+
 export function renderTileToCanvas(
-  canvas: HTMLCanvasElement,
+  destCanvas: HTMLCanvasElement,
   tileIndex: number,
-  rgbPalette: Array<[number, number, number, number]>
+  rgbPalette: RgbPalette
 ) {
-  console.log("renderTileToCanvas");
+  destCanvas.width = 16;
+  destCanvas.height = 16;
+
+  const destContext = destCanvas.getContext("2d")!;
+  const key = `${tileIndex}-${hashPalette(rgbPalette)}`;
+
+  if (tileCanvasCache[key]) {
+    destContext.drawImage(tileCanvasCache[key], 0, 0);
+    return destCanvas;
+  }
+
+  const cacheCanvas = document.createElement("canvas");
+  cacheCanvas.width = 16;
+  cacheCanvas.height = 16;
+  const cacheContext = cacheCanvas.getContext("2d")!;
+
   const indexedTileData = getTileIndexedColorData(tileIndex);
 
-  canvas.width = 16;
-  canvas.height = 16;
-
-  const context = canvas.getContext("2d")!;
-  const imageData = context.getImageData(0, 0, 16, 16);
+  const imageData = cacheContext.getImageData(0, 0, 16, 16);
 
   for (let y = 0; y < 16; ++y) {
     for (let x = 0; x < 16; ++x) {
@@ -69,5 +91,8 @@ export function renderTileToCanvas(
     }
   }
 
-  context.putImageData(imageData, 0, 0);
+  cacheContext.putImageData(imageData, 0, 0);
+
+  tileCanvasCache[key] = cacheCanvas;
+  renderTileToCanvas(destCanvas, tileIndex, rgbPalette);
 }
