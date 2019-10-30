@@ -107,7 +107,7 @@ export const FileStep: React.FunctionComponent<FileStepProps> = ({
         <StepNumber>{stepNumber}</StepNumber>
         <TitleContainer>
           <Title>{title}</Title>
-          <p>{description}</p>
+          <div>{description}</div>
         </TitleContainer>
         <FileDropZone onFileChosen={onFileChosen} fileName={fileName} />
       </InnerContainer>
