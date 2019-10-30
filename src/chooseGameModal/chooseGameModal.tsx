@@ -125,7 +125,7 @@ export const ChooseGameModal: React.FunctionComponent = () => {
     startRom(rom);
   }
 
-  async function handleDemoChoice(demoType: "ss2" | "gowcaizer") {
+  async function handleDemoChoice(demoType: "ss2" | "streetSlam") {
     const fetchedRawData = await fetch(`./${demoType}.json`);
     const data = await fetchedRawData.json();
 

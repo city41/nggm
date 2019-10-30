@@ -1,11 +1,11 @@
 import React from "react";
 import styled from "styled-components";
-import gowcaizerImg from "./gowcaizerTitle.png";
 import ss2Img from "./ss2Title.png";
+import streetSlamImg from "./streetSlamTitle.png";
 
 interface DemoChoicesProps {
   className?: string;
-  onChoice: (demoType: "ss2" | "gowcaizer") => void;
+  onChoice: (demoType: "ss2" | "streetSlam") => void;
 }
 
 const Container = styled.div`
@@ -32,8 +32,8 @@ const SS2 = styled.div`
   --choice-title-img: url(${ss2Img});
 `;
 
-const Gowcaizer = styled.div`
-  --choice-title-img: url(${gowcaizerImg});
+const StreetSlam = styled.div`
+  --choice-title-img: url(${streetSlamImg});
 `;
 
 export const DemoChoices: React.FunctionComponent<DemoChoicesProps> = ({
@@ -45,9 +45,9 @@ export const DemoChoices: React.FunctionComponent<DemoChoicesProps> = ({
       <SS2>
         <Choice onClick={() => onChoice("ss2")} />
       </SS2>
-      <Gowcaizer>
-        <Choice onClick={() => onChoice("gowcaizer")} />
-      </Gowcaizer>
+      <StreetSlam>
+        <Choice onClick={() => onChoice("streetSlam")} />
+      </StreetSlam>
     </Container>
   );
 };

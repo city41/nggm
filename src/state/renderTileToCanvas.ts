@@ -60,6 +60,13 @@ export function renderTileToCanvas(
   tileIndex: number,
   rgbPalette: RgbPalette
 ) {
+  if (process.env.ENABLE_DEMO_DUMP) {
+    // @ts-ignore
+    window.neededTiles = window.neededTiles || {};
+    // @ts-ignore
+    window.neededTiles[tileIndex] = true;
+  }
+
   destCanvas.width = 16;
   destCanvas.height = 16;
 

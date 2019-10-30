@@ -35,6 +35,13 @@ function convertNeoGeoColorToRGBColor(
 }
 
 export function getNeoGeoPalette(paletteMemoryIndex: number): number[] {
+  if (process.env.ENABLE_DEMO_DUMP) {
+    // @ts-ignore
+    window.neededPalettes = window.neededPalettes || {};
+    // @ts-ignore
+    window.neededPalettes[paletteMemoryIndex] = true;
+  }
+
   const palAddr = window.Module._get_current_pal_addr();
   const palOffset = paletteMemoryIndex * PALETTE_SIZE_IN_BYTES;
   const palIndexInHeap = (palAddr + palOffset) / 2;
