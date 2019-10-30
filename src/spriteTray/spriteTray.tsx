@@ -1,12 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
-import classnames from "classnames";
+import styled from "styled-components";
 import { useDrag } from "react-dnd";
 import { getEmptyImage } from "react-dnd-html5-backend";
 import { SpriteEntry } from "./spriteEntry";
 import { useAppState } from "../state";
 import { getSpriteData } from "../state/spriteData";
 
-import styles from "./spriteTray.module.css";
+interface SpriteTrayProps {
+  className?: string;
+}
 
 const TOTAL_SPRITE_COUNT = 381;
 
@@ -16,9 +18,36 @@ function arrayFrom(minValue: number, maxValue: number) {
   return new Array(count).fill(0, 0, count).map((_, i) => i + minValue);
 }
 
-interface SpriteTrayProps {
-  className?: string;
-}
+const Container = styled.div`
+  --spriteEntryHeader: 32px;
+
+  width: 100%;
+  /* At most a sprite has 33 tiles, plus the sprite entry header is 32px */
+  height: calc(33 * 8px + var(--spriteEntryHeader));
+  background-color: var(--dock-color);
+  border-right: 1px solid var(--dock-border-color);
+  overflow-x: auto;
+`;
+
+const Message = styled(Container)`
+  margin: auto;
+  text-align: center;
+  font-style: italic;
+  color: var(--dock-foreground-color);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`;
+
+const SpriteEntries = styled.div`
+  display: grid;
+`;
+
+const Filler = styled.div`
+  background-color: rgba(0, 0, 0, 0.5);
+  height: var(--spriteEntryHeader);
+  width: 100%;
+`;
 
 export const SpriteTray: React.FunctionComponent<SpriteTrayProps> = ({
   className
@@ -70,9 +99,10 @@ export const SpriteTray: React.FunctionComponent<SpriteTrayProps> = ({
   }, [preview]);
 
   if (!state.isPaused) {
-    const classes = classnames(styles.root, styles.message, className);
     return (
-      <div className={classes}>pause the game to load the current sprites</div>
+      <Message className={className}>
+        pause the game to load the current sprites
+      </Message>
     );
   }
 
@@ -116,36 +146,24 @@ export const SpriteTray: React.FunctionComponent<SpriteTrayProps> = ({
     />
   ));
 
-  const classes = classnames(styles.root, className, {
-    [styles.locked]: !state.isPaused
-  });
-
   return (
-    <div
-      className={classes}
+    <Container
+      className={className}
       ref={div => {
         setDivRef(div);
         dragRef(div);
       }}
     >
-      <div
+      <SpriteEntries
         key={state.pauseId}
-        className={styles.spriteEntries}
         style={{
           gridTemplateColumns: `1fr repeat(${spriteDatas.length}, max-content) 1fr`
         }}
       >
-        <div
-          className={styles.filler}
-          ref={firstFillerRef}
-          style={{ gridColumn: 1 }}
-        />
+        <Filler ref={firstFillerRef} style={{ gridColumn: 1 }} />
         {sprites}
-        <div
-          className={styles.filler}
-          style={{ gridColumn: spriteDatas.length + 2 }}
-        />
-      </div>
-    </div>
+        <Filler style={{ gridColumn: spriteDatas.length + 2 }} />
+      </SpriteEntries>
+    </Container>
   );
 };
