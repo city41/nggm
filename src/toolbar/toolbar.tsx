@@ -36,13 +36,13 @@ export const Toolbar: React.FunctionComponent<ToolbarProps> = ({
         C{state.isCropping ? "y" : "n"}
       </button>
       <button title="preview" onClick={() => dispatch("TogglePreview")}>
-        P
-      </button>
-      <button title="build gif" onClick={() => dispatch("BuildGif")}>
-        G
+        P{state.isPreviewing ? "y" : "n"}
       </button>
       <button title="down" onClick={() => dispatch("PushAllDown")}>
         D
+      </button>
+      <button title="build gif" onClick={() => dispatch("BuildGif")}>
+        G
       </button>
 
       <div />
