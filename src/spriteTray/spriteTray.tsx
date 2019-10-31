@@ -167,7 +167,7 @@ export const SpriteTray: React.FunctionComponent<SpriteTrayProps> = ({
     >
       {state.isCropping && (
         <DisabledMessage>
-          <div>Can't drag new sprites in while in cropping mode</div>
+          <div>Can't drag sprites while in cropping mode</div>
           <div>
             (
             <StopCropping onClick={() => dispatch("ToggleCropping")}>
