@@ -27,13 +27,22 @@ const Container = styled.div`
   background-color: var(--dock-color);
   border-right: 1px solid var(--dock-border-color);
   overflow-x: auto;
+  position: relative;
 `;
 
-const Message = styled(Container)`
+const DisabledMessage = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+
   margin: auto;
   text-align: center;
   font-style: italic;
   color: var(--dock-foreground-color);
+  background-color: rgba(0, 0, 0, 0.7);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -49,10 +58,17 @@ const Filler = styled.div`
   width: 100%;
 `;
 
+const StopCropping = styled.a`
+  cursor: pointer;
+  color: var(--focal-color);
+  font-weight: bold;
+  font-style: normal;
+`;
+
 export const SpriteTray: React.FunctionComponent<SpriteTrayProps> = ({
   className
 }) => {
-  const { state } = useAppState();
+  const { state, dispatch } = useAppState();
   const [focusedEntryIndices, setFocusedEntryIndices] = useState<number[]>([]);
   const [shiftKeyStartEntryIndex, setShiftKeyStartEntryIndex] = useState<
     null | number
@@ -89,7 +105,7 @@ export const SpriteTray: React.FunctionComponent<SpriteTrayProps> = ({
       }
     },
     canDrag() {
-      return state.isPaused;
+      return state.isPaused && !state.isCropping;
     }
   });
 
@@ -99,18 +115,12 @@ export const SpriteTray: React.FunctionComponent<SpriteTrayProps> = ({
     preview(getEmptyImage(), { captureDraggingState: true });
   }, [preview]);
 
-  if (!state.isPaused) {
-    return (
-      <Message className={className}>
-        pause the game to load the current sprites
-      </Message>
-    );
-  }
-
-  const spriteDatas = new Array(TOTAL_SPRITE_COUNT)
-    .fill(1, 0, TOTAL_SPRITE_COUNT)
-    .map((_, i) => getSpriteData(i))
-    .filter(d => d.tiles.length > 0);
+  const spriteDatas = !state.isPaused
+    ? []
+    : new Array(TOTAL_SPRITE_COUNT)
+        .fill(1, 0, TOTAL_SPRITE_COUNT)
+        .map((_, i) => getSpriteData(i))
+        .filter(d => d.tiles.length > 0);
 
   const sprites = spriteDatas.map((spriteData, i) => (
     <SpriteEntry
@@ -155,6 +165,23 @@ export const SpriteTray: React.FunctionComponent<SpriteTrayProps> = ({
         dragRef(div);
       }}
     >
+      {state.isCropping && (
+        <DisabledMessage>
+          <div>Can't drag new sprites in while in cropping mode</div>
+          <div>
+            (
+            <StopCropping onClick={() => dispatch("ToggleCropping")}>
+              stop cropping
+            </StopCropping>
+            )
+          </div>
+        </DisabledMessage>
+      )}
+      {!state.isPaused && (
+        <DisabledMessage>
+          Pause the game to load the current sprites
+        </DisabledMessage>
+      )}
       <SpriteEntries
         key={state.pauseId}
         style={{

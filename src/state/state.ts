@@ -175,7 +175,8 @@ export function getReducer(
       case "ToggleCropping": {
         return {
           ...state,
-          isCropping: !state.isCropping
+          isCropping: !state.isCropping,
+          crop: undefined
         };
       }
 

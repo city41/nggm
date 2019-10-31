@@ -14,8 +14,6 @@ export const Sprite: React.FunctionComponent<SpriteProps> = ({
   className,
   spriteData
 }) => {
-  const { spriteMemoryIndex } = spriteData;
-
   if (spriteData.tiles.length === 0) {
     return null;
   }
@@ -31,8 +29,7 @@ export const Sprite: React.FunctionComponent<SpriteProps> = ({
   ));
 
   const style = {
-    gridTemplateRows: `repeat(${spriteData.tiles.length}, 8px)`,
-    zIndex: spriteMemoryIndex
+    gridTemplateRows: `repeat(${spriteData.tiles.length}, 8px)`
   };
 
   const classes = classnames(styles.sprite, className);
