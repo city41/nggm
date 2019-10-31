@@ -13,7 +13,7 @@ export type Action =
   | { type: "SetDemo"; demoData: DemoData }
   | { type: "TogglePause" }
   | { type: "SetFocusedLayer"; layer: Layer }
-  | { type: "SetCrop"; crop: Crop }
+  | { type: "SetCrop"; crop: Crop | undefined }
   | { type: "ToggleGrid" }
   | { type: "ToggleCropping" }
   | { type: "ClearCrop" }
@@ -175,17 +175,29 @@ export function getReducer(
       case "ToggleCropping": {
         return {
           ...state,
-          isCropping: !state.isCropping,
-          crop: undefined
+          isCropping: !state.isCropping
         };
       }
 
       case "SetCrop": {
         const { crop } = action;
 
+        const newCrop =
+          crop &&
+          ([
+            {
+              x: Math.min(crop[0].x, crop[1].x),
+              y: Math.min(crop[0].y, crop[1].y)
+            },
+            {
+              x: Math.max(crop[0].x, crop[1].x),
+              y: Math.max(crop[0].y, crop[1].y)
+            }
+          ] as Crop);
+
         return {
           ...state,
-          crop
+          crop: newCrop
         };
       }
 

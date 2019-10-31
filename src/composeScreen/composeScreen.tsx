@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { useDrop } from "react-dnd";
 import {
@@ -9,6 +9,12 @@ import { useAppState } from "../state";
 import { BuildGifModal } from "../gifBuilder/buildGifModal";
 import { Layer as LayerCmp } from "./layer";
 import { CropRect } from "./cropRect";
+
+type Point = { x: number; y: number };
+
+function cropHasArea(a: Point, b: Point): boolean {
+  return a.x !== b.x && a.y !== b.y;
+}
 
 interface ComposeScreenProps {
   className?: string;
@@ -30,6 +36,7 @@ const CaptureLayer = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
+  cursor: crosshair;
 `;
 
 export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
@@ -41,21 +48,25 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
   });
   const { state, dispatch } = useAppState();
   const [divRef, setDivRef] = useState<null | HTMLDivElement>(null);
-  const [isCropping, setIsCropping] = useState(false);
-  const [upperLeftCrop, setUpperLeftCrop] = useState<null | {
-    x: number;
-    y: number;
-  }>(null);
-  const [lowerRightCrop, setLowerRightCrop] = useState<null | {
-    x: number;
-    y: number;
-  }>(null);
+  const [anchorPoint, setAnchorPoint] = useState<null | Point>(null);
+  const [movingPoint, setMovingPoint] = useState<null | Point>(null);
+
+  const isCroppingRef = useRef(false);
+
+  const isCropping = state.isCropping;
+
+  useEffect(() => {
+    if (!isCroppingRef.current && state.isCropping) {
+      setAnchorPoint(null);
+      setMovingPoint(null);
+    }
+
+    isCroppingRef.current = state.isCropping;
+  }, [state.isCropping]);
 
   useEffect(() => {
     if (state.isPreviewing) {
-      // minus one because on my machine the animation can't quite keep up
-      const frameCountdown =
-        window.Module._get_neogeo_frame_counter_speed() - 1;
+      const frameCountdown = window.Module._get_neogeo_frame_counter_speed();
       requestAnimationFrame(() => {
         const diff = animationCounter.rafFrameCountdown === 0 ? 1 : 0;
 
@@ -148,11 +159,11 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
         }}
       >
         {layers}
-        {!!((isCropping && upperLeftCrop && lowerRightCrop) || state.crop) && (
+        {!!((isCropping && anchorPoint && movingPoint) || state.crop) && (
           <CropRect
             width={divRef && divRef.scrollWidth}
             height={divRef && divRef.scrollHeight}
-            crop={state.crop || [upperLeftCrop!, lowerRightCrop!]}
+            crop={state.crop || [anchorPoint!, movingPoint!]}
           />
         )}
         {isCropping && (
@@ -175,11 +186,11 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
                 const x = Math.floor(rawX / 16) * 16;
                 const y = Math.floor(rawY / 16) * 16;
 
-                setUpperLeftCrop({ x, y });
+                setAnchorPoint({ x, y });
               }
             }}
             onMouseMove={e => {
-              if (isCropping && upperLeftCrop) {
+              if (isCropping && anchorPoint) {
                 const rect = (e.target as HTMLDivElement).getBoundingClientRect() as DOMRect;
 
                 const rawX = e.clientX - rect.x;
@@ -188,16 +199,24 @@ export const ComposeScreen: React.FunctionComponent<ComposeScreenProps> = ({
                 const x = Math.floor(rawX / 16) * 16;
                 const y = Math.floor(rawY / 16) * 16;
 
-                setLowerRightCrop({ x, y });
+                setMovingPoint({ x, y });
               }
             }}
             onMouseUp={() => {
-              if (isCropping && upperLeftCrop && lowerRightCrop) {
+              if (
+                isCropping &&
+                anchorPoint &&
+                movingPoint &&
+                cropHasArea(anchorPoint, movingPoint)
+              ) {
                 dispatch({
                   type: "SetCrop",
-                  crop: [upperLeftCrop, lowerRightCrop]
+                  crop: [anchorPoint, movingPoint]
                 });
-                setIsCropping(false);
+              } else {
+                dispatch({ type: "SetCrop", crop: undefined });
+                setAnchorPoint(null);
+                setMovingPoint(null);
               }
             }}
           />

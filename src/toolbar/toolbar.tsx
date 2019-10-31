@@ -9,7 +9,7 @@ interface ToolbarProps {
 const Container = styled.div`
   display: grid;
   grid-template-columns: 32px;
-  grid-template-rows: repeat(6, 32px) 1fr 32px 32px;
+  grid-template-rows: repeat(5, 32px) 1fr 32px 32px;
 `;
 
 export const Toolbar: React.FunctionComponent<ToolbarProps> = ({
@@ -25,11 +25,15 @@ export const Toolbar: React.FunctionComponent<ToolbarProps> = ({
       >
         G
       </button>
-      <button title="crop" onClick={() => dispatch("ToggleCropping")}>
+      <button
+        title="crop"
+        onClick={e => {
+          e.stopPropagation();
+          dispatch({ type: "SetCrop", crop: undefined });
+          dispatch("ToggleCropping");
+        }}
+      >
         C{state.isCropping ? "y" : "n"}
-      </button>
-      <button title="clear crop" onClick={() => dispatch("ClearCrop")}>
-        X
       </button>
       <button title="preview" onClick={() => dispatch("TogglePreview")}>
         P
