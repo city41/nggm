@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/ngbg/static/css/main.9f199208.chunk.css",
-    "main.js": "/ngbg/static/js/main.daac5041.chunk.js",
-    "main.js.map": "/ngbg/static/js/main.daac5041.chunk.js.map",
+    "main.js": "/ngbg/static/js/main.97ac5d72.chunk.js",
+    "main.js.map": "/ngbg/static/js/main.97ac5d72.chunk.js.map",
     "runtime~main.js": "/ngbg/static/js/runtime~main.51291c84.js",
     "runtime~main.js.map": "/ngbg/static/js/runtime~main.51291c84.js.map",
     "static/js/2.69e07db8.chunk.js": "/ngbg/static/js/2.69e07db8.chunk.js",
     "static/js/2.69e07db8.chunk.js.map": "/ngbg/static/js/2.69e07db8.chunk.js.map",
     "index.html": "/ngbg/index.html",
-    "precache-manifest.09e77955ebb8eaa6b14e67cac78f9326.js": "/ngbg/precache-manifest.09e77955ebb8eaa6b14e67cac78f9326.js",
+    "precache-manifest.7512935b594645f75d1a942c7e54e649.js": "/ngbg/precache-manifest.7512935b594645f75d1a942c7e54e649.js",
     "service-worker.js": "/ngbg/service-worker.js",
     "static/css/main.9f199208.chunk.css.map": "/ngbg/static/css/main.9f199208.chunk.css.map"
   }
