@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/ngbg/static/css/main.76f44117.chunk.css",
-    "main.js": "/ngbg/static/js/main.996493fb.chunk.js",
-    "main.js.map": "/ngbg/static/js/main.996493fb.chunk.js.map",
+    "main.js": "/ngbg/static/js/main.1719cb0d.chunk.js",
+    "main.js.map": "/ngbg/static/js/main.1719cb0d.chunk.js.map",
     "runtime~main.js": "/ngbg/static/js/runtime~main.51291c84.js",
     "runtime~main.js.map": "/ngbg/static/js/runtime~main.51291c84.js.map",
     "static/js/2.69e07db8.chunk.js": "/ngbg/static/js/2.69e07db8.chunk.js",
     "static/js/2.69e07db8.chunk.js.map": "/ngbg/static/js/2.69e07db8.chunk.js.map",
     "index.html": "/ngbg/index.html",
-    "precache-manifest.a869d1abac3743c390d97a4e95290caf.js": "/ngbg/precache-manifest.a869d1abac3743c390d97a4e95290caf.js",
+    "precache-manifest.659d541c1e8fcc1a36c6cd7c06bddb19.js": "/ngbg/precache-manifest.659d541c1e8fcc1a36c6cd7c06bddb19.js",
     "service-worker.js": "/ngbg/service-worker.js",
     "static/css/main.76f44117.chunk.css.map": "/ngbg/static/css/main.76f44117.chunk.css.map"
   }
