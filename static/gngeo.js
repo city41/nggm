@@ -191,7 +191,7 @@ Module['FS_createPath']('/', 'virtualfs', true, true);
   }
 
  }
- loadPackage({"files": [{"start": 0, "audio": 0, "end": 336, "filename": "/virtualfs/gngeorc"}, {"start": 336, "audio": 0, "end": 221114, "filename": "/virtualfs/gngeo_data.zip"}], "remote_package_size": 221114, "package_uuid": "36a87ceb-e00b-4cae-916c-586446c9db90"});
+ loadPackage({"files": [{"start": 0, "audio": 0, "end": 336, "filename": "/virtualfs/gngeorc"}, {"start": 336, "audio": 0, "end": 221114, "filename": "/virtualfs/gngeo_data.zip"}], "remote_package_size": 221114, "package_uuid": "ff71b651-d20e-4124-a637-9f6506e23e36"});
 
 })();
 
@@ -1395,11 +1395,11 @@ function updateGlobalBufferViews() {
 
 
 var STATIC_BASE = 1024,
-    STACK_BASE = 1500288,
+    STACK_BASE = 1500208,
     STACKTOP = STACK_BASE,
-    STACK_MAX = 6743168,
-    DYNAMIC_BASE = 6743168,
-    DYNAMICTOP_PTR = 1500256;
+    STACK_MAX = 6743088,
+    DYNAMIC_BASE = 6743088,
+    DYNAMICTOP_PTR = 1500176;
 
 assert(STACK_BASE % 16 === 0, 'stack must start aligned');
 assert(DYNAMIC_BASE % 16 === 0, 'heap must start aligned');
@@ -1948,7 +1948,7 @@ function _emscripten_asm_const_iiii(code, a0, a1, a2) {
 
 
 
-// STATICTOP = STATIC_BASE + 1499264;
+// STATICTOP = STATIC_BASE + 1499184;
 /* global initializers */  __ATINIT__.push({ func: function() { ___emscripten_environ_constructor() } });
 
 
@@ -1959,7 +1959,7 @@ function _emscripten_asm_const_iiii(code, a0, a1, a2) {
 
 
 /* no memory initializer */
-var tempDoublePtr = 1500272
+var tempDoublePtr = 1500192
 assert(tempDoublePtr % 8 == 0);
 
 function copyTempFloat(ptr) { // functions, because inlining this code increases code size too much
@@ -9402,10 +9402,10 @@ function copyTempDouble(ptr) {
    
 
   
-  var ___tm_current=1500112;
+  var ___tm_current=1500032;
   
   
-  var ___tm_timezone=(stringToUTF8("GMT", 1500160, 4), 1500160);
+  var ___tm_timezone=(stringToUTF8("GMT", 1500080, 4), 1500080);
   
   function _tzset() {
       // TODO: Use (malleable) environment variables instead of system settings.
@@ -9469,6 +9469,10 @@ function copyTempDouble(ptr) {
       return _localtime_r(time, ___tm_current);
     }
 
+  function _malloc_or_die() {
+  err('missing function: malloc_or_die'); abort(-1);
+  }
+
   
   function _emscripten_memcpy_big(dest, src, num) {
       HEAPU8.set(HEAPU8.subarray(src, src+num), dest);
@@ -9477,6 +9481,14 @@ function copyTempDouble(ptr) {
    
 
    
+
+  function _memory_region() {
+  err('missing function: memory_region'); abort(-1);
+  }
+
+  function _memory_region_length() {
+  err('missing function: memory_region_length'); abort(-1);
+  }
 
    
 
@@ -9516,6 +9528,14 @@ function copyTempDouble(ptr) {
       }
       return _usleep((seconds * 1e6) + (nanoseconds / 1000));
     }
+
+  function _neogeo_bootleg_cx_decrypt() {
+  err('missing function: neogeo_bootleg_cx_decrypt'); abort(-1);
+  }
+
+  function _neogeo_bootleg_sx_decrypt() {
+  err('missing function: neogeo_bootleg_sx_decrypt'); abort(-1);
+  }
 
   
   
@@ -10038,7 +10058,12 @@ var asmLibraryArg = {
   "_gettimeofday": _gettimeofday,
   "_localtime": _localtime,
   "_localtime_r": _localtime_r,
+  "_malloc_or_die": _malloc_or_die,
+  "_memory_region": _memory_region,
+  "_memory_region_length": _memory_region_length,
   "_nanosleep": _nanosleep,
+  "_neogeo_bootleg_cx_decrypt": _neogeo_bootleg_cx_decrypt,
+  "_neogeo_bootleg_sx_decrypt": _neogeo_bootleg_sx_decrypt,
   "_sigaction": _sigaction,
   "_signal": _signal,
   "_time": _time,
