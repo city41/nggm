@@ -1,0 +1,17 @@
+.root {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    display: grid;
+    grid-template-columns: repeat(2, max-content) 1fr;
+    grid-template-rows: repeat(2, max-content) 1fr;
+}
+
+.mask {
+    background-color: rgba(255, 255, 255, 0.7);
+}
+
+.crop {
+    outline: 4px solid white;
+}

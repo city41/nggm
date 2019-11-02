@@ -1,0 +1,14 @@
+.root {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.toolbar {
+    padding: 1px;
+    height: 48px;
+    line-height: 48px;
+    display: grid;
+    grid-template-columns: 24px 1fr repeat(5, 24px);
+    column-gap: 1px;
+    justify-items: center;
+    align-items: center;
+}

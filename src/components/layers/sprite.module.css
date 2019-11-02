@@ -1,0 +1,14 @@
+.root {
+    background-color: rgba(255, 255, 255, 0.1);
+    margin: 2px;
+
+    display: grid;
+    grid-template-columns: 1fr 24px;
+    column-gap: 1px;
+    align-items: center;
+
+    height: 32px;
+    line-height: 32px;
+
+    padding-left: 8px;
+}

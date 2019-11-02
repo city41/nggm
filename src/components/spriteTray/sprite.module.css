@@ -1,0 +1,5 @@
+.sprite {
+    width: 8px;
+    display: grid;
+    grid-template-columns: 8px;
+}

@@ -1,0 +1,23 @@
+.root {
+    background-color: rgba(255, 255, 255, 0.1);
+    margin: 2px 0 2px 16px;
+}
+
+.toolbar {
+    padding: 1px;
+    height: 32px;
+    line-height: 32px;
+    display: grid;
+    grid-template-columns: 32px 24px 1fr repeat(2, 24px);
+    grid-template-rows: 32px;
+    column-gap: 1px;
+    justify-items: center;
+    align-items: center;
+}
+
+.spriteContainer {
+    margin-left: 16px;
+    /* display: flex; */
+    /* flex-direction: row; */
+    /* flex-wrap: wrap; */
+}
