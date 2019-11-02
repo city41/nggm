@@ -12,6 +12,6 @@ emcc gngeo.o -o gngeo.html \
     -s EXPORTED_FUNCTIONS='["_run_rom", "_get_tile_ram_addr", "_get_rom_ctile_addr", "_get_current_pal_addr", "_get_neogeo_frame_counter", "_get_neogeo_frame_counter_speed"]' \
     --preload-file virtualfs
 
-mv gngeo.js gngeo.data gngeo.wasm ../../public/static
+mv gngeo.js gngeo.data gngeo.wasm ../../static
 
 

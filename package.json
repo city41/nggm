@@ -6,14 +6,17 @@
   "version": "0.1.0",
   "author": "Kyle Mathews <mathews.kyle@gmail.com>",
   "scripts": {
-    "build": "gatsby build",
+    "copy-static": "mkdir -p public/static && cp -R static/* public/static",
+    "prebuild": "yarn copy-static",
+    "build": "gatsby build --prefix-paths",
+    "predevelop": "yarn copy-static",
     "develop": "gatsby develop",
     "format": "prettier --write \"**/*.{js,jsx,json,md}\"",
     "start": "npm run develop",
     "serve": "gatsby serve",
     "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\" && exit 1",
     "build-gngeo": "(./scripts/build-gngeo.sh)",
-    "predeploy": "gatsby clean && yarn build",
+    "predeploy": "gatsby clean && yarn build && yarn copy-static",
     "deploy": "gh-pages -d public"
   },
   "dependencies": {
