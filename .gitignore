@@ -31,3 +31,5 @@ gngeo.wasm
 virtualfs/neogeo.zip
 virtualfs/samsho2.zip
 
+# gatsby's cache
+.cache

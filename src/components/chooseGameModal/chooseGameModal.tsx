@@ -39,6 +39,32 @@ const Why = styled.div`
   }
 `;
 
+let gngeoLoaded = false;
+
+function loadGngeo(): Promise<void> {
+  if (gngeoLoaded) {
+    return Promise.resolve();
+  }
+
+  return new Promise(resolve => {
+    const moduleTag = document.createElement("script");
+    moduleTag.onload = function() {
+      window.Module.runningListeners.push(() => {
+        gngeoLoaded = true;
+        resolve();
+      });
+
+      const gngeoTag = document.createElement("script");
+
+      gngeoTag.src = "static/gngeo.js";
+      document.head.appendChild(gngeoTag);
+    };
+
+    moduleTag.src = "static/module.js";
+    document.head.appendChild(moduleTag);
+  });
+}
+
 function loadFile<T>(file: File): Promise<T> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -55,15 +81,21 @@ function loadFile<T>(file: File): Promise<T> {
 }
 
 async function addFileToVirtualFS(file: File) {
-  const data: ArrayBuffer = await loadFile(file);
+  try {
+    await loadGngeo();
 
-  window.Module.FS_createDataFile(
-    "/virtualfs",
-    file.name,
-    new Uint8Array(data),
-    true,
-    true
-  );
+    const data: ArrayBuffer = await loadFile(file);
+
+    window.Module.FS_createDataFile(
+      "/virtualfs",
+      file.name,
+      new Uint8Array(data),
+      true,
+      true
+    );
+  } catch (e) {
+    console.log("addFileToVirtualFS", e);
+  }
 }
 
 export const ChooseGameModal: React.FunctionComponent = () => {
@@ -119,7 +151,7 @@ export const ChooseGameModal: React.FunctionComponent = () => {
     }
   }
 
-  function launch() {
+  async function launch() {
     const rom =
       process.env.NODE_ENV !== "production" ? romName || "samsho2" : romName;
     startRom(rom);
