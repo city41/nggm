@@ -2,6 +2,7 @@ import { AppState, Layer, Crop, ExtractedSpriteGroup } from "./types";
 import { UndoableAction } from "./undoableState";
 
 export type DemoData = {
+  frameCounterSpeed: number;
   palettes: Record<number, number[]>;
   spriteMemory: number[];
   tileMemory: Record<number, number[]>;
@@ -91,7 +92,26 @@ export type State = {
 
 export type NonUndoableState = Omit<State, "past" | "present" | "future">;
 
-const DEMO_PALETTE_ADDRESS = 1379916;
+// two zeroes since palette goes into HEAPU16, and tiles go into HEAPU8
+const DEMO_PALETTE_ADDRESS = 0;
+const HEAPU16_SIZE = 256 * 16 * 2;
+
+const DEMO_TILE_RAM_ADDRESS = 0;
+const DEMO_CTILE_ADDRESS = DEMO_TILE_RAM_ADDRESS + 0x85ff * 2;
+const HEAPU8_SIZE = 16 * 1024 * 1024;
+
+function shimEmscripten(frameCounterSpeed: number) {
+  window.Module = window.Module || {};
+
+  window.HEAPU8 = window.HEAPU8 || new Uint8Array(HEAPU8_SIZE);
+  window.Module.HEAPU16 =
+    window.Module.HEAPU16 || new Uint16Array(HEAPU16_SIZE);
+
+  window.Module._get_current_pal_addr = () => DEMO_PALETTE_ADDRESS;
+  window.Module._get_tile_ram_addr = () => DEMO_TILE_RAM_ADDRESS;
+  window.Module._get_rom_ctile_addr = () => DEMO_CTILE_ADDRESS;
+  window.Module._get_neogeo_frame_counter_speed = () => frameCounterSpeed;
+}
 
 function copySpriteDataToHeap(data: number[]) {
   window.HEAPU8.set(data, window.Module._get_tile_ram_addr());
@@ -291,11 +311,10 @@ export function getReducer(
       case "SetDemo": {
         const { demoData } = action;
 
+        shimEmscripten(demoData.frameCounterSpeed);
         copySpriteDataToHeap(demoData.spriteMemory);
         copyTileDataToHeap(demoData.tileMemory);
         copyPaletteDataToHeap(demoData.palettes);
-
-        window.Module._get_current_pal_addr = () => DEMO_PALETTE_ADDRESS;
 
         return {
           ...state,
