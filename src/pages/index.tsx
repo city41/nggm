@@ -1,4 +1,5 @@
 import React from "react";
+import Helmet from "react-helmet";
 import styled from "styled-components";
 import { DndProvider } from "react-dnd";
 import HTML5Backend from "react-dnd-html5-backend";
@@ -59,23 +60,30 @@ const EmulatorLayersGrid = styled.div`
 
 const App: React.FunctionComponent = () => {
   return (
-    <AppStateProvider>
-      <DndProvider backend={HTML5Backend}>
-        <ChooseGameModal />
-        <DragPreviewLayer />
-        <AppRoot>
-          <Toolbar />
-          <ComposeScreenTrayGrid>
-            <ComposeScreen className="composeScreen" />
-            <SpriteTray className="spriteTray" />
-          </ComposeScreenTrayGrid>
-          <EmulatorLayersGrid>
-            <Emulator className="emulator" />
-            <Layers className="layers" />
-          </EmulatorLayersGrid>
-        </AppRoot>
-      </DndProvider>
-    </AppStateProvider>
+    <>
+      <Helmet>
+        <meta charSet="utf-8" />
+        <title>Neo Geo gif creator - NGBG</title>
+        <link rel="canonical" href="https://city41.github.io/ngbg" />
+      </Helmet>
+      <AppStateProvider>
+        <DndProvider backend={HTML5Backend}>
+          <ChooseGameModal />
+          <DragPreviewLayer />
+          <AppRoot>
+            <Toolbar />
+            <ComposeScreenTrayGrid>
+              <ComposeScreen className="composeScreen" />
+              <SpriteTray className="spriteTray" />
+            </ComposeScreenTrayGrid>
+            <EmulatorLayersGrid>
+              <Emulator className="emulator" />
+              <Layers className="layers" />
+            </EmulatorLayersGrid>
+          </AppRoot>
+        </DndProvider>
+      </AppStateProvider>
+    </>
   );
 };
 

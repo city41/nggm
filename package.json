@@ -50,13 +50,15 @@
     "@types/material-ui": "^0.21.7",
     "@types/react-dnd": "^3.0.2",
     "@types/react-dnd-html5-backend": "^3.0.2",
+    "@types/react-helmet": "^5.0.14",
     "@types/react-icons": "^3.0.0",
     "@types/react-modal": "^3.10.0",
     "@types/styled-components": "^4.1.20",
     "gatsby-plugin-typescript": "^2.1.15",
     "gatsby-plugin-typescript-checker": "^1.1.1",
     "gh-pages": "^2.1.1",
-    "prettier": "^1.18.2"
+    "prettier": "^1.18.2",
+    "typescript": "^3.6.4"
   },
   "keywords": [
     "gatsby"
