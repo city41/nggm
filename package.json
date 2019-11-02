@@ -11,11 +11,14 @@
     "start": "npm run develop",
     "serve": "gatsby serve",
     "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\" && exit 1",
-    "build-gngeo": "(./scripts/build-gngeo.sh)"
+    "build-gngeo": "(./scripts/build-gngeo.sh)",
+    "predeploy": "gatsby clean && yarn build",
+    "deploy": "gh-pages -d public"
   },
   "dependencies": {
     "@material-ui/core": "^4.5.2",
     "@material-ui/icons": "^4.5.1",
+    "babel-plugin-styled-components": "^1.10.6",
     "classnames": "^2.2.6",
     "gatsby": "^2.17.6",
     "gatsby-image": "^2.2.30",
@@ -23,6 +26,7 @@
     "gatsby-plugin-offline": "^3.0.17",
     "gatsby-plugin-react-helmet": "^3.1.13",
     "gatsby-plugin-sharp": "^2.2.34",
+    "gatsby-plugin-styled-components": "^3.1.11",
     "gatsby-source-filesystem": "^2.1.35",
     "gatsby-transformer-sharp": "^2.3.1",
     "lodash": "^4.17.15",
