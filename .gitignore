@@ -32,6 +32,5 @@ virtualfs/neogeo.zip
 virtualfs/samsho2.zip
 
 # gatsby
-.cache
-public/*
-!public/static/*
+/.cache
+/public
