@@ -1,9 +1,7 @@
-/**
- * Implement Gatsby's Browser APIs in this file.
- *
- * See: https://www.gatsbyjs.org/docs/browser-apis/
- */
-
-// You can delete this file if you're not using it
+import Modal from "react-modal";
 
 import "./src/index.css";
+
+export function onClientEntry() {
+  Modal.setAppElement(document.getElementById("___gatsby"));
+}
