@@ -1,0 +1,26 @@
+# Compiling GnGeo on Raspberry Pi
+
+Raspberry Pi supports OpenGL ES 2.0, so you can enable the GLSL blitter
+to have hardware accelerated rendering and GLSL post-processing based
+the libretro's GLSL shader spec [1].
+
+Before building, make sure you have installed the prerequisites. For
+instance on a Debian-based distro:
+
+    sudo apt-get install libsdl2-dev libraspberrypi-dev autoconf-archive
+
+In order to build the GLSL blitter successfully, it is important that
+you use the OpenGL implementation for the VideoCore IV chipset
+(libraspberrypi-dev) and not the Mesa implementation (libgl1-mesa-dev).
+A dedicated configure flag sets up the proper flags for you:
+
+    autoreconf -v
+    ./configure --enable-rpi
+    make
+    sudo make install
+
+This will enable both the soft and glsl blitters. The original opengl
+blitter is not enabled because it depends on OpenGL core, which is
+not implemented in libraspberrypi-dev.
+
+[1] https://doc.libretro.com/specs/shader/#glsl-shader-spec
