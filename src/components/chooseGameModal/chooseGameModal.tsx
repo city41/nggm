@@ -126,7 +126,7 @@ export const ChooseGameModal: React.FunctionComponent = () => {
   }
 
   async function handleDemoChoice(demoType: "ss2" | "streetSlam") {
-    const fetchedRawData = await fetch(`./${demoType}.json`);
+    const fetchedRawData = await fetch(`./static/${demoType}.json`);
     const data = await fetchedRawData.json();
 
     setIsOpen(false);

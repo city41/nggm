@@ -25,7 +25,8 @@ Also don't delete `def68k.o`, as if it goes missing, make will want to recreate 
 at root of gngeo
 
 1. `emconfigure ./configure`
-2. `emmake make`
+2. edit `gngeo/src/Makefile` and add `USE_ZLIB=1` in the two places `USE_SDL=2` is set
+3. `emmake make`
 
 If all succeeded, you should have three `a.out.*` files at the root of the repo. These are useless.
 
@@ -44,6 +45,20 @@ from `src/`
 
 1. `http-server`
 2. head to `http://localhost:8080/gngeo.html`
+
+# Virtual File System
+
+emscripten automatically adds in virtual file system support due to it noticing gngeo making file system calls. This version of gngeo was hardcoded to look for files in `/virtualfs/`, so all the files in that directory get packaged up into gngeo.data by empscripten.
+
+# Gatsby Considerations
+
+It's much easier to load static files from `public/static` when using Gatsby. So the gngeo.data file is located at `static/gngeo.data`, but `gngeo.js` assumes it's at the root of the web server. Easiest fix is to edit gngeo.js and change:
+
+`var REMOTE_PACKAGE_BASE = 'gngeo.data';`
+
+to
+
+`var REMOTE_PACKAGE_BASE = 'static/gngeo.data';`
 
 # TODO
 
