@@ -20,7 +20,7 @@ const Container = styled.div<ContainerProps>`
   align-content: center;
   text-align: center;
   font-size: 0.8em;
-  color: gray;
+  color: #555;
 
   background-color: ${props => (props.isOver ? "lightgray" : "transparent")};
 `;
