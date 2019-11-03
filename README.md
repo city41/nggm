@@ -2,6 +2,10 @@
 
 A Neo Geo background extraction tool. With just a few clicks, you can extract the backgrounds of Neo Geo games into animated gifs. Usually the hardest part is playing the game long enough to get the background you are interested in loaded into memory :)
 
+This image was created with the tool, as were many of the backgrounds at https://www.fgbg.art
+
+![rbff_eastSidePark](rbff_eastSidePark.gif)
+
 ## Status
 
 The tool now successfully extracts a lot of backgrounds. There is still much work to be done:
