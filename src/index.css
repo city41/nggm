@@ -36,3 +36,9 @@ body,
   overflow-y: auto;
   z-index: 10;
 }
+
+@media (max-width: 700px) {
+  .modalOverlay {
+    display: none;
+  }
+}

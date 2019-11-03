@@ -24,6 +24,10 @@ const AppRoot = styled.div`
   column-gap: var(--gutter-width);
 
   padding: var(--gutter-width);
+
+  @media (max-width: 700px) {
+    display: none;
+  }
 `;
 
 const ComposeScreenTrayGrid = styled.div`
@@ -58,6 +62,32 @@ const EmulatorLayersGrid = styled.div`
   }
 `;
 
+const SpaceNeededDisclaimer = styled.div`
+  display: flex;
+  margin: auto;
+  text-align: center;
+  font-style: italic;
+  color: white;
+  flex-direction: column;
+  justify-content: center;
+  height: 100vh;
+  padding: 24px;
+
+  font-style: normal;
+
+  h1 {
+    color: #666;
+  }
+
+  p:last-of-type {
+    margin: 0;
+  }
+
+  @media (min-width: 701px) {
+    display: none;
+  }
+`;
+
 const App: React.FunctionComponent = () => {
   return (
     <>
@@ -70,6 +100,11 @@ const App: React.FunctionComponent = () => {
         <DndProvider backend={HTML5Backend}>
           <ChooseGameModal />
           <DragPreviewLayer />
+          <SpaceNeededDisclaimer>
+            <h1>too small :(</h1>
+            <p>NGBG is a complex app and needs more space.</p>
+            <p>Please increase the size of your browser if you can.</p>
+          </SpaceNeededDisclaimer>
           <AppRoot>
             <Toolbar />
             <ComposeScreenTrayGrid>
