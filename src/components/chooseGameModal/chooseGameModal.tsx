@@ -1,25 +1,10 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import Modal from "react-modal";
+import { Modal } from "../primitives/modal";
 import { useAppState } from "../../state";
 import { DemoData } from "../../state/state";
 import { FileStep } from "./fileStep";
 import { DemoChoices } from "./demoChoices";
-
-const StyledModal = styled(Modal)`
-  max-width: 600px;
-  padding: 16px;
-  margin: 96px auto;
-  background-color: white;
-
-  display: grid;
-  grid-template-rows: repeat(3, auto);
-  row-gap: 16px;
-
-  background-color: #eee;
-  color: black;
-  box-shadow: 0px 24px 20px 0px rgba(0, 0, 0, 0.7);
-`;
 
 const Title = styled.div`
   font-size: 24px;
@@ -173,7 +158,7 @@ export const ChooseGameModal: React.FunctionComponent = () => {
         {showWhy && (
           <div>
             NGBG uses GnGeo as its emulator. GnGeo requires ROMs to be in a
-            specific format, and many ROMs out there today don't match. I will
+            specific format, and many ROMs out there today do not match. I will
             fix this eventually.
           </div>
         )}
@@ -182,7 +167,7 @@ export const ChooseGameModal: React.FunctionComponent = () => {
   );
 
   return (
-    <StyledModal isOpen={isOpen} overlayClassName="modalOverlay">
+    <Modal isOpen={isOpen}>
       <Title>To start, please provide these two files</Title>
       <FileStep
         stepNumber={1}
@@ -205,6 +190,6 @@ export const ChooseGameModal: React.FunctionComponent = () => {
       </button>
       <Title>Or ... choose a demo to taste how the app works</Title>
       <DemoChoices onChoice={handleDemoChoice} />
-    </StyledModal>
+    </Modal>
   );
 };

@@ -1,7 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
-import Modal from "react-modal";
+import styled from "styled-components";
+import { Modal } from "../primitives/modal";
 import { createGif } from "../../gif/createGif";
 import { useAppState } from "../../state";
+
+const StyledModal = styled(Modal)`
+  width: auto;
+  min-width: 600px;
+  min-height: 400px;
+  display: inline-block;
+`;
 
 type FrameStatus = { frame: number; totalFrames: number };
 
@@ -55,17 +63,13 @@ export const BuildGifModal: React.FunctionComponent<BuildGifModalProps> = ({
   }, [isOpen, state.crop, state.layers]);
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onRequestClose={onRequestClose}
-      overlayClassName="modalOverlay"
-    >
+    <StyledModal isOpen={isOpen} onRequestClose={onRequestClose}>
       {frameStatus && (
         <div>
           {frameStatus.frame} of {frameStatus.totalFrames}
         </div>
       )}
       <div ref={containerRef} />
-    </Modal>
+    </StyledModal>
   );
 };
