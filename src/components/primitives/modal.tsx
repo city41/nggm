@@ -25,10 +25,8 @@ const GlobalModalStyle = createGlobalStyle`
       opacity: 0;
     }
 
-    @media (max-width: 700px) {
-      .modalOverlay {
-        display: none;
-      }
+    @media (max-width: 700px), (max-height:  500px) {
+      display: none;
     }
   }
 `;

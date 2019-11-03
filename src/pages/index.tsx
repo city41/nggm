@@ -25,7 +25,7 @@ const AppRoot = styled.div`
 
   padding: var(--gutter-width);
 
-  @media (max-width: 700px) {
+  @media (max-width: 700px), (max-height: 500px) {
     display: none;
   }
 `;
@@ -84,7 +84,7 @@ const SpaceNeededDisclaimer = styled.div`
     margin: 0;
   }
 
-  @media (min-width: 701px) {
+  @media (min-width: 701px) and (min-height: 501px) {
     display: none;
   }
 `;
