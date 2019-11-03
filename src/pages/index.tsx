@@ -1,5 +1,4 @@
 import React from "react";
-import Helmet from "react-helmet";
 import styled from "styled-components";
 import { DndProvider } from "react-dnd";
 import HTML5Backend from "react-dnd-html5-backend";
@@ -83,36 +82,29 @@ const SpaceNeededDisclaimer = styled.div`
 
 const App: React.FunctionComponent = () => {
   return (
-    <>
-      <Helmet>
-        <meta charSet="utf-8" />
-        <title>Neo Geo gif creator - NGBG</title>
-        <link rel="canonical" href="https://city41.github.io/ngbg" />
-      </Helmet>
-      <AppStateProvider>
-        <DndProvider backend={HTML5Backend}>
-          <ChooseGameModal />
-          <DragPreviewLayer />
-          <SpaceNeededDisclaimer>
-            <h1>too small :(</h1>
-            <p>NGBG is a complex app and needs more space.</p>
-            <p>Please increase the size of your browser if you can.</p>
-          </SpaceNeededDisclaimer>
-          <AppRoot>
-            <Toolbar />
-            <ComposeScreenTrayGrid>
-              <ComposeScreen className="composeScreen" />
-              <SpriteTray className="spriteTray" />
-            </ComposeScreenTrayGrid>
-            <EmulatorLayersTitleGrid>
-              <TitleCard />
-              <Emulator />
-              <Layers />
-            </EmulatorLayersTitleGrid>
-          </AppRoot>
-        </DndProvider>
-      </AppStateProvider>
-    </>
+    <AppStateProvider>
+      <DndProvider backend={HTML5Backend}>
+        <ChooseGameModal />
+        <DragPreviewLayer />
+        <SpaceNeededDisclaimer>
+          <h1>too small :(</h1>
+          <p>NGBG is a complex app and needs more space.</p>
+          <p>Please increase the size of your browser if you can.</p>
+        </SpaceNeededDisclaimer>
+        <AppRoot>
+          <Toolbar />
+          <ComposeScreenTrayGrid>
+            <ComposeScreen className="composeScreen" />
+            <SpriteTray className="spriteTray" />
+          </ComposeScreenTrayGrid>
+          <EmulatorLayersTitleGrid>
+            <TitleCard />
+            <Emulator />
+            <Layers />
+          </EmulatorLayersTitleGrid>
+        </AppRoot>
+      </DndProvider>
+    </AppStateProvider>
   );
 };
 
