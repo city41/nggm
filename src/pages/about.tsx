@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import { Link } from "gatsby";
 
 const Root = styled.div`
   display: flex;
@@ -21,12 +22,20 @@ const Root = styled.div`
   p:last-of-type {
     margin: 0;
   }
+
+  a {
+    color: white;
+    text-decoration: underline;
+  }
 `;
 const About: React.FunctionComponent = () => {
   return (
     <Root>
       <h1>About</h1>
       <p>this will be an about/help page</p>
+      <p>
+        <Link to="/">Back to NGGM</Link>
+      </p>
     </Root>
   );
 };
