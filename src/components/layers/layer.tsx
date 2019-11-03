@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import styled, { keyframes } from "styled-components";
 import { useAppState } from "../../state";
 import { Layer as LayerData, ExtractedSpriteGroup } from "../../state/types";
 import { IconButton } from "../primitives/iconButton";
@@ -15,7 +16,30 @@ import {
 import { Group } from "./group";
 import { LayerPreview } from "./layerPreview";
 
-import styles from "./layer.module.css";
+const fadeIn = keyframes`
+  from {
+    height: 0;
+  }
+  to {
+    height: 48px;
+  }
+`;
+
+const Container = styled.div`
+  background-color: rgba(255, 255, 255, 0.1);
+  animation: ${fadeIn} 100ms ease-in;
+`;
+
+const Toolbar = styled.div`
+  padding: 1px;
+  height: 48px;
+  line-height: 48px;
+  display: grid;
+  grid-template-columns: 24px 1fr repeat(5, 24px);
+  column-gap: 1px;
+  justify-items: center;
+  align-items: center;
+`;
 
 interface LayerProps {
   layer: LayerData;
@@ -49,8 +73,8 @@ export const Layer: React.FunctionComponent<LayerProps> = ({
   ));
 
   return (
-    <div className={styles.root}>
-      <div className={styles.toolbar}>
+    <Container>
+      <Toolbar>
         <IconButton
           icon={showGroups ? ExpandLess : ExpandMore}
           title="Show groups"
@@ -84,8 +108,8 @@ export const Layer: React.FunctionComponent<LayerProps> = ({
           title="Delete Layer"
           onClick={() => onDelete()}
         />
-      </div>
+      </Toolbar>
       {showGroups && groups}
-    </div>
+    </Container>
   );
 };

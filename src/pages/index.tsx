@@ -50,6 +50,7 @@ const EmulatorLayersGrid = styled.div`
   grid-template-rows: max-content 1fr;
   grid-template-columns: 1fr;
   row-gap: var(--gutter-width);
+  height: calc(100vh - var(--gutter-width) - var(--gutter-width));
 
   .emulator {
     grid-column: 1;

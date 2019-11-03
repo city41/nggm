@@ -1,9 +1,0 @@
-.root {
-    height: 100%;
-    background-color: var(--dock-color);
-
-    padding: 2px 4px;
-    overflow-y: auto;
-
-    font-size: 0.8rem;
-}

@@ -1,11 +1,19 @@
 import React from "react";
-import classnames from "classnames";
+import styled from "styled-components";
 import { useAppState } from "../../state";
 import { IconButton } from "../primitives/iconButton";
 import { IoIosAdd } from "react-icons/io";
 import { Layer } from "./layer";
 
-import styles from "./layers.module.css";
+const Container = styled.div`
+  height: 100%;
+  background-color: var(--dock-color);
+
+  padding: 2px 4px;
+  overflow-y: auto;
+
+  font-size: 0.8rem;
+`;
 
 interface LayersProps {
   className?: string;
@@ -13,8 +21,6 @@ interface LayersProps {
 
 export const Layers: React.FunctionComponent<LayersProps> = ({ className }) => {
   const { state, dispatch } = useAppState();
-
-  const classes = classnames(styles.root, className);
 
   // reverse layers due to wanting the highest z-index layer to be at the top of
   // the list, which is opposite of how they are stored
@@ -40,14 +46,13 @@ export const Layers: React.FunctionComponent<LayersProps> = ({ className }) => {
     ));
 
   return (
-    <div className={classes}>
+    <Container className={className}>
       <IconButton
-        className={styles.buttonIcon}
         icon={IoIosAdd}
-        onClick={() => dispatch({ type: "NewLayer" })}
+        onClick={() => dispatch("NewLayer")}
         title="New Layer"
       />
       {layers}
-    </div>
+    </Container>
   );
 };
