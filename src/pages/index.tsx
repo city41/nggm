@@ -88,7 +88,7 @@ const App: React.FunctionComponent = () => {
         <DragPreviewLayer />
         <SpaceNeededDisclaimer>
           <h1>too small :(</h1>
-          <p>NGBG is a complex app and needs more space.</p>
+          <p>NGGM is a complex app and needs more space.</p>
           <p>Please increase the size of your browser if you can.</p>
         </SpaceNeededDisclaimer>
         <AppRoot>

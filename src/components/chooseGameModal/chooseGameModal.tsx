@@ -157,7 +157,7 @@ export const ChooseGameModal: React.FunctionComponent = () => {
         <a onClick={() => setShowWhy(!showWhy)}>why does my ROM not work?</a>
         {showWhy && (
           <div>
-            NGBG uses GnGeo as its emulator. GnGeo requires ROMs to be in a
+            NGGM uses GnGeo as its emulator. GnGeo requires ROMs to be in a
             specific format, and many ROMs out there today do not match. I will
             fix this eventually.
           </div>

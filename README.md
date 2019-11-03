@@ -1,4 +1,4 @@
-# NGBG
+# NGGM
 
 A Neo Geo background extraction tool. With just a few clicks, you can extract the backgrounds of Neo Geo games into animated gifs. Usually the hardest part is playing the game long enough to get the background you are interested in loaded into memory :)
 
@@ -25,7 +25,7 @@ TODO:
   * currently the tool assumes the background will be horizontally oriented
   * need a vert <-> hori toggle that applies the assumptions to either x or y, depending on chosen mode
 * loading indicator while downloading gngeo, which is about 3 megabytes
-  * would also be nice to keep trimming the stuff out of gngeo that ngbg doesn't need, to cut that 3 megs down more
+  * would also be nice to keep trimming the stuff out of gngeo that nggm doesn't need, to cut that 3 megs down more
 
 The tool can also extract character sprites pretty easily
 
