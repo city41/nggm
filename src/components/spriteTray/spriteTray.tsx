@@ -4,7 +4,7 @@ import { useDrag } from "react-dnd";
 import { getEmptyImage } from "react-dnd-html5-backend";
 import { SpriteEntry } from "./spriteEntry";
 import { useAppState } from "../../state";
-import { getSpriteData } from "../../state/spriteData";
+import { getSpriteData } from "../../sprite/spriteData";
 
 interface SpriteTrayProps {
   className?: string;

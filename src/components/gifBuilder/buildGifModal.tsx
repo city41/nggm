@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import Modal from "react-modal";
-import { createGif } from "../../state/createGif";
+import { createGif } from "../../gif/createGif";
 import { useAppState } from "../../state";
 
 type FrameStatus = { frame: number; totalFrames: number };

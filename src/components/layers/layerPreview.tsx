@@ -1,6 +1,6 @@
 import React from "react";
 import { Layer as LayerData } from "../../state/types";
-import { layerToDataUrl } from "../../state/toDataUrl";
+import { layerToDataUrl } from "../../canvas/toDataUrl";
 
 interface LayerPreviewProps {
   layer: LayerData;

@@ -1,6 +1,6 @@
 import React from "react";
 import { ExtractedSpriteGroup as ExtractedSpriteGroupData } from "../../state/types";
-import { spriteGroupToDataUrl } from "../../state/toDataUrl";
+import { spriteGroupToDataUrl } from "../../canvas/toDataUrl";
 
 interface GroupPreviewProps {
   group: ExtractedSpriteGroupData;

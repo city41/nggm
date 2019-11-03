@@ -1,5 +1,5 @@
 import React from "react";
-import { renderTileToCanvas } from "../../state/renderTileToCanvas";
+import { renderTileToCanvas } from "../../canvas/renderTileToCanvas";
 import {
   getNeoGeoPalette,
   convertNeoGeoPaletteToRGB

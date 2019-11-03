@@ -2,7 +2,7 @@ import React from "react";
 import {
   extractSpriteAndStickyCompanionsToGroup,
   extractSpritesIntoGroup
-} from "../state/extractSpriteGroup";
+} from "../sprite/extractSpriteGroup";
 import { ExtractedSprite } from "./composeScreen/extractedSprite";
 
 interface StickySpriteGroupDragPreviewProps {

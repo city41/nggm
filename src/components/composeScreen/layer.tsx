@@ -8,7 +8,7 @@ import {
   getMaxX,
   getMaxY,
   getAllSpritesFromLayers
-} from "../../state/spriteUtil";
+} from "../../sprite/spriteUtil";
 import { useAppState } from "../../state";
 
 import styles from "./layer.module.css";

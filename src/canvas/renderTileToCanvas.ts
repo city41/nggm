@@ -1,5 +1,5 @@
 import { memoize } from "lodash";
-import { RgbPalette } from "./types";
+import { RgbPalette } from "../state/types";
 
 // 16 rows, each row has 2 ints (32 bits each)
 const TILE_SIZE_INTS = 2 * 16;

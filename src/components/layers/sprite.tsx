@@ -1,6 +1,6 @@
 import React from "react";
 import { ExtractedSprite } from "../../state/types";
-import { IconButton } from "../components/iconButton";
+import { IconButton } from "../primitives/iconButton";
 import Delete from "@material-ui/icons/Delete";
 
 import styles from "./sprite.module.css";

@@ -1,7 +1,7 @@
 import React from "react";
 import classnames from "classnames";
 import { useAppState } from "../../state";
-import { IconButton } from "../components/iconButton";
+import { IconButton } from "../primitives/iconButton";
 import { IoIosAdd } from "react-icons/io";
 import { Layer } from "./layer";
 

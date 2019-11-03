@@ -1,6 +1,6 @@
 import React from "react";
 import classnames from "classnames";
-import { renderTileToCanvas } from "../../state/renderTileToCanvas";
+import { renderTileToCanvas } from "../../canvas/renderTileToCanvas";
 
 import styles from "./extractedTile.module.css";
 

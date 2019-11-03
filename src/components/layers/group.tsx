@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useAppState } from "../../state";
 import { ExtractedSpriteGroup } from "../../state/types";
-import { IconButton } from "../components/iconButton";
+import { IconButton } from "../primitives/iconButton";
 import Delete from "@material-ui/icons/Delete";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
