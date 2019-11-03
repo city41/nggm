@@ -5,11 +5,12 @@ import { DndProvider } from "react-dnd";
 import HTML5Backend from "react-dnd-html5-backend";
 import { Provider as AppStateProvider } from "../state/provider";
 import { DragPreviewLayer } from "../components/dragPreviewLayer";
-import { Emulator } from "../components/emulator";
 import { SpriteTray } from "../components/spriteTray";
 import { ComposeScreen } from "../components/composeScreen";
 import { Toolbar } from "../components/toolbar";
+import { Emulator } from "../components/emulator";
 import { Layers } from "../components/layers";
+import { TitleCard } from "../components/titleCard";
 import { ChooseGameModal } from "../components/chooseGameModal";
 
 const AppRoot = styled.div`
@@ -45,22 +46,13 @@ const ComposeScreenTrayGrid = styled.div`
   }
 `;
 
-const EmulatorLayersGrid = styled.div`
+const EmulatorLayersTitleGrid = styled.div`
   display: grid;
-  grid-template-rows: max-content 1fr;
+  position: relative;
+  grid-template-rows: max-content max-content 1fr;
   grid-template-columns: 1fr;
   row-gap: var(--gutter-width);
   height: calc(100vh - var(--gutter-width) - var(--gutter-width));
-
-  .emulator {
-    grid-column: 1;
-    grid-row: 1;
-  }
-
-  .layers {
-    grid-column: 1;
-    grid-row: 2;
-  }
 `;
 
 const SpaceNeededDisclaimer = styled.div`
@@ -112,10 +104,11 @@ const App: React.FunctionComponent = () => {
               <ComposeScreen className="composeScreen" />
               <SpriteTray className="spriteTray" />
             </ComposeScreenTrayGrid>
-            <EmulatorLayersGrid>
-              <Emulator className="emulator" />
-              <Layers className="layers" />
-            </EmulatorLayersGrid>
+            <EmulatorLayersTitleGrid>
+              <TitleCard />
+              <Emulator />
+              <Layers />
+            </EmulatorLayersTitleGrid>
           </AppRoot>
         </DndProvider>
       </AppStateProvider>

@@ -1,0 +1,1 @@
+export { TitleCard } from "./titleCard";
