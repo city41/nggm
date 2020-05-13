@@ -50,6 +50,7 @@ static void catch_me(int signo) {
 	exit(-1);
 }
 
+
 int run_rom(int argc, char *argv[])
 {
     char *rom_name;
@@ -119,4 +120,8 @@ int run_rom(int argc, char *argv[])
 
 
     return 0;
+}
+
+int main(int argc, char* argv[]) {
+  run_rom(argc, argv);
 }
