@@ -2,6 +2,16 @@ import React from "react";
 import styled from "styled-components";
 import { useAppState } from "../../state";
 
+import { Button as BaseButton } from "./button";
+
+import gridSvg from "../../images/grid.svg";
+import hammerSvg from "../../images/hammer.svg";
+import playSvg from "../../images/play.svg";
+import downSvg from "../../images/down.svg";
+import cropSvg from "../../images/crop.svg";
+import undoSvg from "../../images/undo.svg";
+import redoSvg from "../../images/redo.svg";
+
 interface ToolbarProps {
   className?: string;
 }
@@ -12,6 +22,13 @@ const Container = styled.div`
   grid-template-rows: repeat(5, 32px) 1fr 32px 32px;
 `;
 
+const Button = styled(BaseButton)`
+  margin-bottom: 2px;
+  &:last-child {
+    margin-bottom: 0;
+  }
+`;
+
 export const Toolbar: React.FunctionComponent<ToolbarProps> = ({
   className
 }) => {
@@ -19,13 +36,13 @@ export const Toolbar: React.FunctionComponent<ToolbarProps> = ({
 
   return (
     <Container className={className}>
-      <button
+      <Button
         title={`${state.showGrid ? "hide" : "show"} grid`}
         onClick={() => dispatch("ToggleGrid")}
       >
-        G
-      </button>
-      <button
+        <img src={gridSvg} alt="grid" />
+      </Button>
+      <Button
         title="crop"
         onClick={e => {
           e.stopPropagation();
@@ -33,26 +50,26 @@ export const Toolbar: React.FunctionComponent<ToolbarProps> = ({
           dispatch("ToggleCropping");
         }}
       >
-        C{state.isCropping ? "y" : "n"}
-      </button>
-      <button title="preview" onClick={() => dispatch("TogglePreview")}>
-        P{state.isPreviewing ? "y" : "n"}
-      </button>
-      <button title="down" onClick={() => dispatch("PushAllDown")}>
-        D
-      </button>
-      <button title="build gif" onClick={() => dispatch("BuildGif")}>
-        G
-      </button>
+        <img src={cropSvg} alt="crop" />
+      </Button>
+      <Button title="preview" onClick={() => dispatch("TogglePreview")}>
+        {state.isPreviewing ? "y" : <img src={playSvg} alt="preview" />}
+      </Button>
+      <Button title="down" onClick={() => dispatch("PushAllDown")}>
+        <img src={downSvg} alt="down" />
+      </Button>
+      <Button title="build gif" onClick={() => dispatch("BuildGif")}>
+        <img src={hammerSvg} alt="build gif" />
+      </Button>
 
       <div />
 
-      <button title="undo" disabled={!canUndo} onClick={() => undo()}>
-        U
-      </button>
-      <button title="redo" disabled={!canRedo} onClick={() => redo()}>
-        R
-      </button>
+      <Button title="undo" disabled={!canUndo} onClick={() => undo()}>
+        <img src={undoSvg} alt="undo" />
+      </Button>
+      <Button title="redo" disabled={!canRedo} onClick={() => redo()}>
+        <img src={redoSvg} alt="redo" />
+      </Button>
     </Container>
   );
 };

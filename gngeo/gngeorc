@@ -1,0 +1,10 @@
+datafile ./virtualfs/gngeo_data.zip
+rompath ./virtualfs
+p1control A=K122,B=K120,C=K97,D=K115,START=K49,COIN=K51,UP=K82,DOWN=K81,LEFT=K80,RIGHT=K79,MENU=K27
+p2control A=K121,B=K117,C=K105,D=K111,START=K50,COIN=K52,UP=K107,DOWN=K106,LEFT=K104,RIGHT=K108,MENU=K27
+scale 1
+joystick false
+system arcade
+sound false
+country usa
+showfps false
