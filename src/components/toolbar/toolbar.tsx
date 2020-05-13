@@ -39,6 +39,7 @@ export const Toolbar: React.FunctionComponent<ToolbarProps> = ({
       <Button
         title={`${state.showGrid ? "hide" : "show"} grid`}
         onClick={() => dispatch("ToggleGrid")}
+        isToggled={state.showGrid}
       >
         <img src={gridSvg} alt="grid" />
       </Button>
@@ -49,11 +50,16 @@ export const Toolbar: React.FunctionComponent<ToolbarProps> = ({
           dispatch({ type: "SetCrop", crop: undefined });
           dispatch("ToggleCropping");
         }}
+        isToggled={state.isCropping}
       >
         <img src={cropSvg} alt="crop" />
       </Button>
-      <Button title="preview" onClick={() => dispatch("TogglePreview")}>
-        {state.isPreviewing ? "y" : <img src={playSvg} alt="preview" />}
+      <Button
+        title="preview"
+        onClick={() => dispatch("TogglePreview")}
+        isToggled={state.isPreviewing}
+      >
+        <img src={playSvg} alt="preview" />
       </Button>
       <Button title="down" onClick={() => dispatch("PushAllDown")}>
         <img src={downSvg} alt="down" />
