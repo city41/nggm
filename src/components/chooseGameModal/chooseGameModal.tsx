@@ -10,6 +10,13 @@ const Title = styled.div`
   font-size: 24px;
 `;
 
+const Warning = styled.div`
+  background-color: rgba(240, 0, 0, 0.2);
+  color: red;
+  font-weight: bold;
+  padding: 8px;
+`;
+
 const Why = styled.div`
   margin-top: 8px;
   font-size: 0.8rem;
@@ -22,6 +29,14 @@ const Why = styled.div`
   & > div {
     margin-top: 8px;
   }
+`;
+
+const MustBeUS = styled.div`
+  display: inline-block;
+  margin-top: 8px;
+  font-weight: bold;
+  background-color: rgba(50, 200, 20, 0.2);
+  padding: 4px;
 `;
 
 let gngeoLoaded = false;
@@ -150,6 +165,14 @@ export const ChooseGameModal: React.FunctionComponent = () => {
     dispatch({ type: "SetDemo", demoData: data as DemoData });
   }
 
+  const biosDescription = (
+    <div>
+      <div>The BIOS file for the Neo Geo.</div>
+      <div>The file must be named neogeo.zip</div>
+      <MustBeUS>It must be a US bios.</MustBeUS>
+    </div>
+  );
+
   const romDescription = (
     <div>
       The game ROM, such as samsho2.zip
@@ -168,11 +191,12 @@ export const ChooseGameModal: React.FunctionComponent = () => {
 
   return (
     <Modal isOpen={isOpen}>
+      <Warning>NGGM is currently alpha quality at best, very raw!</Warning>
       <Title>To start, please provide these two files</Title>
       <FileStep
         stepNumber={1}
         title="Neo Geo BIOS"
-        description="The BIOS file for the Neo Geo, it must be named neogeo.zip"
+        description={biosDescription}
         onFileChosen={loadBiosFile}
         loading={loadingBios}
         fileName={biosName}
