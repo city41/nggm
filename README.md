@@ -28,9 +28,7 @@ TODO:
   * would also be nice to keep trimming the stuff out of gngeo that nggm doesn't need, to cut that 3 megs down more
 
 The tool can also extract character sprites pretty easily
-
 ## How to use
-
 This is TODO
 
 I will create detailed instructions as the tool matures. This tool proved to be a lot more work than I thought it would be, so it might be a while before it's really usable
@@ -63,5 +61,7 @@ player two
 
 The controls are defined in `gngeo/src/virtualfs/gngeorc`. They are defined using SDL key codes. Make changes, then `yarn build-gngeo` to get the changed gngeorc positioned for emscripten to consume it.
 
+# Building GNGeo for WASM
 
+See gngeo/EMSCRIPTEN.md
 

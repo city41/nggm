@@ -1,5 +1,9 @@
 # Building gngeo in emscripten
 
+## Prereq - SDL2
+
+Install SDL2 with `sudo apt install libsdl2-dev`
+
 ## install empscripten
 
 follow instructions here: https://emscripten.org/docs/getting_started/downloads.html
@@ -25,26 +29,11 @@ Also don't delete `def68k.o`, as if it goes missing, make will want to recreate 
 at root of gngeo
 
 1. `emconfigure ./configure`
-2. edit `gngeo/src/Makefile` and add `USE_ZLIB=1` in the two places `USE_SDL=2` is set
-3. `emmake make`
+2. edit `gngeo/src/Makefile` and add `-s USE_ZLIB=1` in the two places `-s USE_SDL=2` is set
 
-If all succeeded, you should have three `a.out.*` files at the root of the repo. These are useless.
+## Build GNGeo for WASM
 
-## build the emscripten html and bootstrap js
-
-head to `src/`
-
-then...
-
-1. `mv gngeo gngeo.o`
-2. `emcc gngeo.o -o gngeo.html -s USE_SDL=2 -s USE_ZLIB=1`
-
-## run it
-
-from `src/`
-
-1. `http-server`
-2. head to `http://localhost:8080/gngeo.html`
+At the root of nggm `yarn build-gngeo`
 
 # Virtual File System
 
